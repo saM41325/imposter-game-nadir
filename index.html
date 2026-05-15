@@ -95,7 +95,7 @@
             font-size: 1.1em;
         }
 
-        input, select {
+        input, select, textarea {
             width: 100%;
             padding: 12px;
             border: 2px solid #ddd;
@@ -105,7 +105,12 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        input:focus, select:focus {
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
@@ -140,6 +145,10 @@
 
         button.success {
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        button.warning {
+            background: linear-gradient(135deg, #ffa726 0%, #fb8c00 100%);
         }
 
         .player-list {
@@ -324,6 +333,11 @@
             color: #2f7d32;
         }
 
+        .alert.info {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
         .player-name-display {
             text-align: center;
             font-size: 1.8em;
@@ -424,6 +438,123 @@
             margin-bottom: 15px;
             text-align: center;
         }
+
+        .custom-words-section {
+            background: #fff3e0;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #ffa726;
+        }
+
+        .custom-words-section h3 {
+            color: #fb8c00;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .word-item {
+            background: white;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #ddd;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .word-item .word-content {
+            flex: 1;
+        }
+
+        .word-item .word-text {
+            font-weight: bold;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .word-item .hint-text {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 4px;
+        }
+
+        .word-item button {
+            width: auto;
+            padding: 8px 15px;
+            margin: 0;
+            font-size: 0.9em;
+        }
+
+        .custom-word-input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .custom-word-input-group input {
+            margin: 0;
+        }
+
+        .custom-word-input-group button {
+            margin: 0;
+            white-space: nowrap;
+        }
+
+        .word-count {
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 10px;
+            padding: 8px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .help-text {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 8px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            line-height: 1.6;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            background: #f8f9fa;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .tab.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -432,59 +563,98 @@
 
         <!-- Setup Screen -->
         <div id="setupScreen" class="screen active">
-            <div class="input-group">
-                <label>اختر الفئة:</label>
-                <select id="categorySelect">
-                    <option value="mixed">مختلط (جميع الفئات)</option>
-                    <option value="places">أماكن</option>
-                    <option value="jobs">مهن</option>
-                    <option value="items">أشياء</option>
-                    <option value="animals">حيوانات</option>
-                    <option value="food">طعام</option>
-                    <option value="countries">دول</option>
-                    <option value="actions">أفعال</option>
-                    <option value="insects">حشرات</option>
-                    <option value="clothes">ملابس</option>
-                    <option value="furniture">أثاث</option>
-                </select>
+            <!-- Tabs -->
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('settings')">⚙️ الإعدادات</div>
+                <div class="tab" onclick="switchTab('custom')">✏️ كلمات مخصصة</div>
             </div>
 
-            <div class="settings-section">
-                <h3>⚙️ إعدادات اللعبة</h3>
-                
-                <div class="settings-grid">
-                    <div class="setting-item">
-                        <label>عدد الجواسيس:</label>
-                        <input type="number" id="impostorCount" min="1" value="1">
+            <!-- Settings Tab -->
+            <div id="settingsTab" class="tab-content active">
+                <div class="input-group">
+                    <label>اختر الفئة:</label>
+                    <select id="categorySelect">
+                        <option value="custom">كلمات مخصصة</option>
+                        <option value="mixed">مختلط (جميع الفئات)</option>
+                        <option value="places">أماكن</option>
+                        <option value="jobs">مهن</option>
+                        <option value="items">أشياء</option>
+                        <option value="animals">حيوانات</option>
+                        <option value="food">طعام</option>
+                        <option value="countries">دول</option>
+                        <option value="actions">أفعال</option>
+                        <option value="insects">حشرات</option>
+                        <option value="clothes">ملابس</option>
+                        <option value="furniture">أثاث</option>
+                    </select>
+                </div>
+
+                <div class="settings-section">
+                    <h3>⚙️ إعدادات اللعبة</h3>
+                    
+                    <div class="settings-grid">
+                        <div class="setting-item">
+                            <label>عدد الجواسيس:</label>
+                            <input type="number" id="impostorCount" min="1" value="1">
+                        </div>
+                        <div class="setting-item">
+                            <label>المؤقت (ثانية):</label>
+                            <input type="number" id="timerDuration" min="0" value="180">
+                        </div>
                     </div>
-                    <div class="setting-item">
-                        <label>المؤقت (ثانية):</label>
-                        <input type="number" id="timerDuration" min="0" value="180">
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="votingEnabled">
+                        <label for="votingEnabled">تفعيل نظام التصويت</label>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="clueEnabled" checked>
+                        <label for="clueEnabled">إعطاء تلميح للجاسوس</label>
                     </div>
                 </div>
 
-                <div class="checkbox-group">
-                    <input type="checkbox" id="votingEnabled">
-                    <label for="votingEnabled">تفعيل نظام التصويت</label>
+                <div class="input-group">
+                    <label>أضف لاعب:</label>
+                    <input type="text" id="playerNameInput" placeholder="اسم اللاعب">
+                    <button onclick="addPlayer()">إضافة لاعب</button>
                 </div>
 
-                <div class="checkbox-group">
-                    <input type="checkbox" id="clueEnabled" checked>
-                    <label for="clueEnabled">إعطاء تلميح للجاسوس</label>
+                <div id="errorMessage"></div>
+
+                <div class="player-list" id="playerList"></div>
+
+                <button onclick="startGame()" class="success">ابدأ اللعبة</button>
+            </div>
+
+            <!-- Custom Words Tab -->
+            <div id="customTab" class="tab-content">
+                <div class="custom-words-section">
+                    <h3>✏️ أضف كلماتك الخاصة</h3>
+                    
+                    <div class="help-text">
+                        💡 <strong>كيفية الإضافة:</strong><br>
+                        • أدخل الكلمة في الحقل الأول<br>
+                        • أدخل التلميح في الحقل الثاني (اختياري)<br>
+                        • إذا لم تدخل تلميح، سيتم إنشاؤه تلقائياً<br>
+                        • اضغط "إضافة كلمة" لحفظ الكلمة
+                    </div>
+
+                    <div class="custom-word-input-group">
+                        <input type="text" id="customWordInput" placeholder="الكلمة">
+                        <input type="text" id="customHintInput" placeholder="التلميح (اختياري)">
+                        <button onclick="addCustomWord()" class="warning">إضافة كلمة</button>
+                    </div>
+
+                    <div id="customWordError"></div>
+
+                    <div class="word-count" id="customWordCount">عدد الكلمات: 0</div>
+
+                    <div class="player-list" id="customWordsList"></div>
+
+                    <button onclick="clearCustomWords()" class="secondary">حذف جميع الكلمات</button>
                 </div>
             </div>
-
-            <div class="input-group">
-                <label>أضف لاعب:</label>
-                <input type="text" id="playerNameInput" placeholder="اسم اللاعب">
-                <button onclick="addPlayer()">إضافة لاعب</button>
-            </div>
-
-            <div id="errorMessage"></div>
-
-            <div class="player-list" id="playerList"></div>
-
-            <button onclick="startGame()" class="success">ابدأ اللعبة</button>
         </div>
 
         <!-- Show Word Screen -->
@@ -645,6 +815,9 @@
             ]
         };
 
+        // Custom words storage
+        let customWords = [];
+
         let players = [];
         let impostors = [];
         let currentWord = "";
@@ -654,6 +827,127 @@
         let votes = {};
         let firstPlayer = "";
         let clueEnabled = true;
+
+        // Load custom words from localStorage on page load
+        window.addEventListener('load', function() {
+            loadCustomWords();
+        });
+
+        function switchTab(tab) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+            if (tab === 'settings') {
+                document.getElementById('settingsTab').classList.add('active');
+            } else if (tab === 'custom') {
+                document.getElementById('customTab').classList.add('active');
+            }
+        }
+
+        function addCustomWord() {
+            const wordInput = document.getElementById('customWordInput');
+            const hintInput = document.getElementById('customHintInput');
+            const word = wordInput.value.trim();
+            let hint = hintInput.value.trim();
+            const errorDiv = document.getElementById('customWordError');
+
+            if (!word) {
+                showCustomWordError('الرجاء إدخال الكلمة');
+                return;
+            }
+
+            // Check for duplicates
+            if (customWords.some(w => w.word === word)) {
+                showCustomWordError('هذه الكلمة موجودة بالفعل');
+                return;
+            }
+
+            // Generate hint if not provided
+            if (!hint) {
+                hint = getHint(word);
+            }
+
+            customWords.push({ word, hint });
+            wordInput.value = '';
+            hintInput.value = '';
+            errorDiv.innerHTML = '';
+            
+            saveCustomWords();
+            updateCustomWordsList();
+            showCustomWordSuccess('تم إضافة الكلمة بنجاح');
+        }
+
+        function showCustomWordError(message) {
+            const errorDiv = document.getElementById('customWordError');
+            errorDiv.innerHTML = `<div class="alert error">${message}</div>`;
+            setTimeout(() => {
+                errorDiv.innerHTML = '';
+            }, 3000);
+        }
+
+        function showCustomWordSuccess(message) {
+            const errorDiv = document.getElementById('customWordError');
+            errorDiv.innerHTML = `<div class="alert success">${message}</div>`;
+            setTimeout(() => {
+                errorDiv.innerHTML = '';
+            }, 2000);
+        }
+
+        function updateCustomWordsList() {
+            const list = document.getElementById('customWordsList');
+            const count = document.getElementById('customWordCount');
+            
+            list.innerHTML = '';
+            count.textContent = `عدد الكلمات: ${customWords.length}`;
+
+            customWords.forEach((item, index) => {
+                const wordItem = document.createElement('div');
+                wordItem.className = 'word-item';
+                wordItem.innerHTML = `
+                    <div class="word-content">
+                        <div class="word-text">${item.word}</div>
+                        <div class="hint-text">تلميح: ${item.hint}</div>
+                    </div>
+                    <button onclick="removeCustomWord(${index})">حذف</button>
+                `;
+                list.appendChild(wordItem);
+            });
+        }
+
+        function removeCustomWord(index) {
+            customWords.splice(index, 1);
+            saveCustomWords();
+            updateCustomWordsList();
+        }
+
+        function clearCustomWords() {
+            if (customWords.length === 0) {
+                showCustomWordError('لا توجد كلمات لحذفها');
+                return;
+            }
+
+            if (confirm('هل أنت متأكد من حذف جميع الكلمات؟')) {
+                customWords = [];
+                saveCustomWords();
+                updateCustomWordsList();
+                showCustomWordSuccess('تم حذف جميع الكلمات');
+            }
+        }
+
+        function saveCustomWords() {
+            localStorage.setItem('spyGameCustomWords', JSON.stringify(customWords));
+        }
+
+        function loadCustomWords() {
+            const saved = localStorage.getItem('spyGameCustomWords');
+            if (saved) {
+                customWords = JSON.parse(saved);
+                updateCustomWordsList();
+            }
+        }
 
         function addPlayer() {
             const input = document.getElementById('playerNameInput');
@@ -722,18 +1016,27 @@
             const category = document.getElementById('categorySelect').value;
             let wordList;
             
-            if (category === 'mixed') {
+            if (category === 'custom') {
+                if (customWords.length === 0) {
+                    showError('الرجاء إضافة كلمات مخصصة أولاً أو اختيار فئة أخرى');
+                    return;
+                }
+                const randomIndex = Math.floor(Math.random() * customWords.length);
+                currentWord = customWords[randomIndex].word;
+                currentHint = customWords[randomIndex].hint;
+            } else if (category === 'mixed') {
                 const allWords = [];
                 Object.values(words).forEach(catWords => {
                     allWords.push(...catWords);
                 });
                 wordList = allWords;
+                currentWord = wordList[Math.floor(Math.random() * wordList.length)];
+                currentHint = getHint(currentWord);
             } else {
                 wordList = words[category];
+                currentWord = wordList[Math.floor(Math.random() * wordList.length)];
+                currentHint = getHint(currentWord);
             }
-
-            currentWord = wordList[Math.floor(Math.random() * wordList.length)];
-            currentHint = getHint(currentWord);
 
             // Select random impostors
             const shuffledPlayers = [...players].sort(() => Math.random() - 0.5);
@@ -935,6 +1238,19 @@
         document.getElementById('playerNameInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 addPlayer();
+            }
+        });
+
+        // Allow Enter key to add custom word
+        document.getElementById('customWordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addCustomWord();
+            }
+        });
+
+        document.getElementById('customHintInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addCustomWord();
             }
         });
     </script>
