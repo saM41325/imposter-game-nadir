@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spy Game - من هو الجاسوس</title>
+    <title>لعبة الجاسوس</title>
     <style>
         * {
             margin: 0;
@@ -15,27 +15,24 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             padding: 20px;
-            direction: ltr;
+            direction: rtl;
         }
 
         .container {
+            max-width: 600px;
+            margin: 0 auto;
             background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 500px;
-            width: 100%;
             padding: 30px;
-            animation: slideIn 0.5s ease-out;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: fadeIn 0.5s ease-in;
         }
 
-        @keyframes slideIn {
+        @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(-30px);
+                transform: translateY(-20px);
             }
             to {
                 opacity: 1;
@@ -43,43 +40,47 @@
             }
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
         }
 
         h1 {
             text-align: center;
             color: #667eea;
-            margin-bottom: 10px;
-            font-size: 28px;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #764ba2;
             margin-bottom: 30px;
-            font-size: 18px;
-            direction: rtl;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
         }
 
         .screen {
             display: none;
-            animation: fadeIn 0.5s ease-out;
         }
 
         .screen.active {
             display: block;
+            animation: fadeIn 0.5s ease-in;
         }
 
         .input-group {
@@ -90,16 +91,18 @@
             display: block;
             margin-bottom: 8px;
             color: #333;
-            font-weight: 600;
+            font-weight: bold;
+            font-size: 1.1em;
         }
 
         input, select {
             width: 100%;
             padding: 12px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid #ddd;
             border-radius: 10px;
             font-size: 16px;
             transition: all 0.3s;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         input:focus, select:focus {
@@ -110,13 +113,13 @@
 
         button {
             width: 100%;
-            padding: 14px;
+            padding: 15px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
             border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 1.1em;
+            font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
             margin-top: 10px;
@@ -124,51 +127,232 @@
 
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
         }
 
         button:active {
             transform: translateY(0);
         }
 
-        .secondary-btn {
+        button.secondary {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         }
 
-        .success-btn {
+        button.success {
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
         }
 
-        .players-list {
+        .player-list {
             margin: 20px 0;
         }
 
         .player-item {
+            background: #f8f9fa;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            margin-bottom: 10px;
             animation: slideIn 0.3s ease-out;
         }
 
-        .player-name {
-            font-weight: 600;
+        .player-item .name {
+            font-weight: bold;
             color: #333;
         }
 
-        .remove-btn {
-            background: #ff4757;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
+        .player-item button {
             width: auto;
+            padding: 8px 15px;
             margin: 0;
+            font-size: 0.9em;
+        }
+
+        .word-display {
+            text-align: center;
+            margin: 30px 0;
+            padding: 40px;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            animation: pulse 2s infinite;
+        }
+
+        .word-display h2 {
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .word-display .hint {
+            font-size: 1.2em;
+            color: #666;
+            margin-top: 15px;
+        }
+
+        .impostor-display {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+        }
+
+        .impostor-display h2 {
+            color: white;
+        }
+
+        .timer {
+            text-align: center;
+            font-size: 3em;
+            font-weight: bold;
+            color: #667eea;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+
+        .timer.warning {
+            color: #f5576c;
+            animation: pulse 1s infinite;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .category-btn {
+            padding: 15px;
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .category-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .category-btn.selected {
+            background: #667eea;
+            color: white;
+        }
+
+        .voting-section {
+            margin: 20px 0;
+        }
+
+        .vote-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .vote-btn {
+            padding: 15px 10px;
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .vote-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .vote-btn.voted {
+            background: #4facfe;
+            border-color: #4facfe;
+            color: white;
+        }
+
+        .vote-results {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .vote-result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .alert {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .alert.error {
+            background: #ffe0e0;
+            color: #d32f2f;
+            animation: shake 0.5s;
+        }
+
+        .alert.success {
+            background: #e0ffe0;
+            color: #2f7d32;
+        }
+
+        .player-name-display {
+            text-align: center;
+            font-size: 1.8em;
+            color: #667eea;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .first-player-badge {
+            display: inline-block;
+            background: #ffd700;
+            color: #333;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-right: 10px;
+            box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .word-display h2 {
+                font-size: 2em;
+            }
+
+            .timer {
+                font-size: 2em;
+            }
+
+            .category-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .settings-grid {
@@ -178,1695 +362,518 @@
             margin: 20px 0;
         }
 
-        .word-reveal {
-            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            padding: 30px;
-            border-radius: 15px;
-            text-align: center;
-            margin: 20px 0;
-            animation: pulse 2s infinite;
-        }
-
-        .word-reveal h2 {
-            color: white;
-            font-size: 32px;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .clue {
-            color: white;
-            font-size: 16px;
-            font-style: italic;
-            direction: rtl;
-        }
-
-        .timer {
-            text-align: center;
-            font-size: 48px;
-            font-weight: bold;
-            color: #667eea;
-            margin: 20px 0;
-            animation: bounce 1s infinite;
-        }
-
-        .voting-section {
-            margin: 20px 0;
-        }
-
-        .vote-option {
-            padding: 12px;
-            background: #e8eaf6;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .vote-option:hover {
-            background: #c5cae9;
-            transform: translateX(5px);
-        }
-
-        .vote-count {
-            background: #667eea;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-        }
-
-        .category-badge {
-            display: inline-block;
-            background: #667eea;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-            margin-bottom: 15px;
-        }
-
-        .first-player {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            margin: 20px 0;
-            animation: pulse 1s infinite;
-        }
-
-        .error {
-            background: #ff4757;
-            color: white;
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            animation: fadeIn 0.3s;
-        }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 20px;
-            }
-
-            h1 {
-                font-size: 24px;
-            }
-
-            .settings-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .timer {
-                font-size: 36px;
-            }
-        }
-
-        .toggle-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin: 20px 0;
-            padding: 15px;
+        .setting-item {
             background: #f8f9fa;
+            padding: 15px;
             border-radius: 10px;
         }
 
-        .toggle {
-            position: relative;
-            width: 60px;
-            height: 30px;
-            background: #ccc;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: all 0.3s;
+        .setting-item label {
+            font-size: 0.9em;
+            margin-bottom: 5px;
         }
 
-        .toggle.active {
-            background: #667eea;
+        .setting-item input {
+            margin-top: 5px;
         }
 
-        .toggle::after {
-            content: '';
-            position: absolute;
-            width: 26px;
-            height: 26px;
-            background: white;
-            border-radius: 50%;
-            top: 2px;
-            left: 2px;
-            transition: all 0.3s;
-        }
-
-        .toggle.active::after {
-            left: 32px;
-        }
-
-        .info-text {
-            background: #e3f2fd;
-            padding: 12px;
-            border-radius: 10px;
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
             margin: 15px 0;
-            color: #1976d2;
-            font-size: 14px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            transform: scale(1.5);
+        }
+
+        .checkbox-group label {
+            margin: 0;
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <h1>🕵️ لعبة الجاسوس 🕵️</h1>
+
         <!-- Setup Screen -->
         <div id="setupScreen" class="screen active">
-            <h1>🕵️ Spy Game</h1>
-            <div class="subtitle">من هو الجاسوس</div>
-
-            <div id="errorMessage" style="display: none;" class="error"></div>
-
             <div class="input-group">
-                <label>Player Name - اسم اللاعب</label>
-                <input type="text" id="playerNameInput" placeholder="Enter player name...">
-                <button onclick="addPlayer()" style="margin-top: 10px;">Add Player - أضف لاعب</button>
-            </div>
-
-            <div class="players-list" id="playersList"></div>
-
-            <div class="info-text">
-                ℹ️ Minimum 3 players required - الحد الأدنى 3 لاعبين
-            </div>
-
-            <button onclick="showGameSettings()" class="success-btn">Next - التالي</button>
-        </div>
-
-        <!-- Game Settings Screen -->
-        <div id="settingsScreen" class="screen">
-            <h1>⚙️ Game Settings</h1>
-            <div class="subtitle">إعدادات اللعبة</div>
-
-            <div class="input-group">
-                <label>Category - الفئة</label>
+                <label>اختر الفئة:</label>
                 <select id="categorySelect">
-                    <option value="0">🍕 Food - الأكل</option>
-                    <option value="1">⚽ Sports - الرياضة</option>
-                    <option value="2">🐾 Animals - الحيوانات</option>
-                    <option value="3">🎬 Movies - الأفلام</option>
-                    <option value="4">🌍 Countries - البلدان</option>
-                    <option value="5">💼 Professions - المهن</option>
-                    <option value="6">🚗 Transport - النقل</option>
-                    <option value="7">🎵 Music - الموسيقى</option>
-                    <option value="8">📱 Technology - التكنولوجيا</option>
-                    <option value="9">🏠 Home Items - أدوات المنزل</option>
+                    <option value="mixed">مختلط (جميع الفئات)</option>
+                    <option value="places">أماكن</option>
+                    <option value="jobs">مهن</option>
+                    <option value="items">أشياء</option>
+                    <option value="animals">حيوانات</option>
+                    <option value="food">طعام</option>
+                    <option value="countries">دول</option>
+                    <option value="actions">أفعال</option>
+                    <option value="insects">حشرات</option>
+                    <option value="clothes">ملابس</option>
+                    <option value="furniture">أثاث</option>
                 </select>
             </div>
 
             <div class="settings-grid">
-                <div class="input-group">
-                    <label>Number of Spies - عدد الجواسيس</label>
-                    <input type="number" id="spyCount" value="1" min="1">
+                <div class="setting-item">
+                    <label>عدد الجواسيس:</label>
+                    <input type="number" id="impostorCount" min="1" value="1">
                 </div>
-
-                <div class="input-group">
-                    <label>Timer (seconds) - المؤقت</label>
-                    <input type="number" id="timerInput" value="180" min="30">
+                <div class="setting-item">
+                    <label>المؤقت (ثانية):</label>
+                    <input type="number" id="timerDuration" min="0" value="180">
                 </div>
             </div>
 
-            <div class="toggle-container">
-                <label style="margin: 0;">Enable Voting - تفعيل التصويت</label>
-                <div class="toggle" id="votingToggle" onclick="toggleVoting()"></div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="votingEnabled">
+                <label for="votingEnabled">تفعيل نظام التصويت</label>
             </div>
 
-            <button onclick="startGame()" class="success-btn">Start Game - ابدأ اللعبة</button>
-            <button onclick="backToSetup()" class="secondary-btn">Back - رجوع</button>
-        </div>
-
-        <!-- First Player Screen -->
-        <div id="firstPlayerScreen" class="screen">
-            <h1>🎯 Starting Player</h1>
-            <div class="subtitle">اللاعب الأول</div>
-
-            <div class="first-player">
-                <h2 id="firstPlayerName"></h2>
-                <p style="margin-top: 10px;">Will start the game! - سيبدأ اللعبة</p>
+            <div class="input-group">
+                <label>أضف لاعب:</label>
+                <input type="text" id="playerNameInput" placeholder="اسم اللاعب">
+                <button onclick="addPlayer()">إضافة لاعب</button>
             </div>
 
-            <button onclick="showWordReveal()" class="success-btn">Continue - متابعة</button>
+            <div id="errorMessage"></div>
+
+            <div class="player-list" id="playerList"></div>
+
+            <button onclick="startGame()" class="success">ابدأ اللعبة</button>
         </div>
 
-        <!-- Word Reveal Screen -->
-        <div id="wordRevealScreen" class="screen">
-            <h1>👀 Reveal Your Word</h1>
-            <div class="subtitle">اكشف كلمتك</div>
+        <!-- Show Word Screen -->
+        <div id="wordScreen" class="screen">
+            <div class="player-name-display" id="currentPlayerName"></div>
+            
+            <div id="wordDisplay"></div>
 
-            <div class="category-badge" id="currentCategory"></div>
+            <button onclick="nextPlayer()" class="success">اللاعب التالي</button>
+        </div>
 
-            <div class="info-text">
-                Player <span id="currentPlayerNumber"></span> of <span id="totalPlayers"></span>
+        <!-- Game Screen -->
+        <div id="gameScreen" class="screen">
+            <div id="timerDisplay" class="timer"></div>
+
+            <div class="alert success" id="firstPlayerAlert" style="display: none;"></div>
+
+            <div id="votingSection" class="voting-section" style="display: none;">
+                <h3 style="text-align: center; margin-bottom: 15px;">صوت على الجاسوس</h3>
+                <div class="vote-buttons" id="voteButtons"></div>
+                <button onclick="showVoteResults()" class="secondary" style="margin-top: 15px;">عرض النتائج</button>
             </div>
 
-            <button onclick="revealWord()" class="success-btn">Show My Word - أظهر كلمتي</button>
-        </div>
+            <div id="voteResults" class="vote-results" style="display: none;"></div>
 
-        <!-- Word Display Screen -->
-        <div id="wordDisplayScreen" class="screen">
-            <h1 id="roleTitle">📝 Your Word</h1>
-
-            <div class="word-reveal" id="wordDisplay"></div>
-
-            <button onclick="nextPlayer()" class="success-btn">Next Player - اللاعب التالي</button>
-        </div>
-
-        <!-- Game Play Screen -->
-        <div id="gamePlayScreen" class="screen">
-            <h1>🎮 Game in Progress</h1>
-            <div class="subtitle">اللعبة جارية</div>
-
-            <div class="category-badge" id="gameCategory"></div>
-
-            <div class="timer" id="timer">3:00</div>
-
-            <button onclick="toggleTimer()" id="timerBtn" class="secondary-btn">Pause Timer - أوقف المؤقت</button>
-            <button onclick="showVoting()" id="votingBtn" class="success-btn" style="display: none;">Start Voting - ابدأ التصويت</button>
-            <button onclick="endGame()" class="secondary-btn">End Game - إنهاء اللعبة</button>
-        </div>
-
-        <!-- Voting Screen -->
-        <div id="votingScreen" class="screen">
-            <h1>🗳️ Vote for the Spy</h1>
-            <div class="subtitle">صوت على الجاسوس</div>
-
-            <div class="voting-section" id="votingOptions"></div>
-
-            <button onclick="showResults()" class="success-btn">Show Results - أظهر النتائج</button>
-            <button onclick="backToGame()" class="secondary-btn">Back to Game - رجوع للعبة</button>
+            <button onclick="revealImpostors()">كشف الجواسيس</button>
+            <button onclick="resetGame()" class="secondary">جولة جديدة</button>
         </div>
 
         <!-- Results Screen -->
         <div id="resultsScreen" class="screen">
-            <h1>🏆 Game Results</h1>
-            <div class="subtitle">نتائج اللعبة</div>
-
-            <div id="resultsContent"></div>
-
-            <button onclick="playAgain()" class="success-btn">Play Again - العب مرة أخرى</button>
-            <button onclick="backToSetup()" class="secondary-btn">New Game - لعبة جديدة</button>
+            <div id="impostorReveal"></div>
+            <button onclick="resetGame()" class="success">لعب مرة أخرى</button>
         </div>
     </div>
 
     <script>
-        // Game Data
-        const gameData = {
-            categories: [
-                {
-                    name: "Food - الأكل",
-                    words: [
-                        { word: "Pizza", clue: "Italian dish", clueAr: "أكلة إيطالية" },
-                        { word: "Couscous", clue: "North African dish", clueAr: "أكلة مغاربية" },
-                        { word: "Burger", clue: "Fast food", clueAr: "أكل سريع" },
-                        { word: "Sushi", clue: "Japanese dish", clueAr: "أكلة يابانية" },
-                        { word: "Tajine", clue: "Moroccan pot", clueAr: "طبيخ مغربي" },
-                        { word: "Pasta", clue: "Italian noodles", clueAr: "معكرونة إيطالية" },
-                        { word: "Shawarma", clue: "Wrapped meat", clueAr: "لحم ملفوف" },
-                        { word: "Bourek", clue: "Fried pastry", clueAr: "معجنات مقلية" },
-                        { word: "Chorba", clue: "Algerian soup", clueAr: "شوربة جزائرية" },
-                        { word: "Mhadjeb", clue: "Stuffed flatbread", clueAr: "خبز محشي" },
-                        { word: "Rechta", clue: "Fresh pasta dish", clueAr: "رشتة" },
-                        { word: "Dolma", clue: "Stuffed vegetables", clueAr: "خضر محشية" },
-                        { word: "Kebab", clue: "Grilled meat", clueAr: "لحم مشوي" },
-                        { word: "Baklava", clue: "Sweet pastry", clueAr: "حلوى بالعسل" },
-                        { word: "Harira", clue: "Thick soup", clueAr: "حريرة" },
-                        { word: "Makroud", clue: "Semolina sweet", clueAr: "حلوى بالسميد" },
-                        { word: "Bradj", clue: "Date-filled cookie", clueAr: "كعك بالتمر" },
-                        { word: "Chakhchoukha", clue: "Shredded bread dish", clueAr: "شخشوخة" },
-                        { word: "Doubara", clue: "Tripe soup", clueAr: "دوارة الكرشة" },
-                        { word: "Garantita", clue: "Chickpea cake", clueAr: "كرنتيكة" },
-                        { word: "Tchoutchouka", clue: "Vegetable stew", clueAr: "شكشوكة" },
-                        { word: "Mesfouf", clue: "Sweet couscous", clueAr: "مسفوف" },
-                        { word: "Kalb Elouz", clue: "Almond cake", clueAr: "قلب اللوز" },
-                        { word: "Zlabia", clue: "Sweet fritter", clueAr: "زلابية" },
-                        { word: "Bouchiar", clue: "Lamb tripe", clueAr: "بوشيار" },
-                        { word: "Berkoukes", clue: "Large couscous", clueAr: "بركوكس" },
-                        { word: "Chakchouka", clue: "Egg tomato dish", clueAr: "شكشوكة" },
-                        { word: "Chorba Frik", clue: "Green wheat soup", clueAr: "شربة فريك" },
-                        { word: "Calentica", clue: "Chickpea oven cake", clueAr: "كلنتيكا" },
-                        { word: "Tamina", clue: "Semolina honey mix", clueAr: "طمينة" },
-                        { word: "Rfiss", clue: "Crushed bread sweet", clueAr: "رفيس" },
-                        { word: "Sfiria", clue: "Fried pastry balls", clueAr: "صفيرية" },
-                        { word: "Aiche", clue: "Wheat berry soup", clueAr: "عايش" },
-                        { word: "Lham Lahlou", clue: "Sweet meat", clueAr: "لحم حلو" },
-                        { word: "Mderbel", clue: "Vegetable couscous", clueAr: "مدربل" },
-                        { word: "Chekhchoukha", clue: "Bread tomato stew", clueAr: "شخشوخة" },
-                        { word: "Mhawet", clue: "Fried dough", clueAr: "محاوط" },
-                        { word: "Samsa", clue: "Triangular pastry", clueAr: "سمسا" },
-                        { word: "Ftayer", clue: "Small pastries", clueAr: "فطاير" },
-                        { word: "Mahjouba", clue: "Folded crepe", clueAr: "محجوبة" },
-                        { word: "Beghrir", clue: "Honeycomb pancake", clueAr: "بغرير" },
-                        { word: "Harcha", clue: "Semolina flatbread", clueAr: "حرشة" },
-                        { word: "Msemen", clue: "Square flatbread", clueAr: "مسمن" },
-                        { word: "Khobz Eddar", clue: "Homemade bread", clueAr: "خبز الدار" },
-                        { word: "Kesra", clue: "Round flatbread", clueAr: "كسرة" },
-                        { word: "Matlouh", clue: "Thick flatbread", clueAr: "مطلوع" },
-                        { word: "Khfaf", clue: "Light flatbread", clueAr: "خفاف" },
-                        { word: "Arayech", clue: "Thin pancake", clueAr: "عرايش" },
-                        { word: "Mbesses", clue: "Baby semolina", clueAr: "مبسس" },
-                        { word: "Tchicha", clue: "Barley drink", clueAr: "تشيشا" },
-                        { word: "Khobz Tajine", clue: "Pot bread", clueAr: "خبز طاجين" },
-                        { word: "Jari", clue: "Clay pot dish", clueAr: "جاري" },
-                        { word: "Tlitli", clue: "Small pasta", clueAr: "تليتلي" },
-                        { word: "Chekhchoukha Tlemceniya", clue: "Tlemcen specialty", clueAr: "شخشوخة تلمسانية" },
-                        { word: "Djouaz", clue: "Walnut sweets", clueAr: "جوز" },
-                        { word: "Tamriya", clue: "Date cookies", clueAr: "تمرية" },
-                        { word: "Khenchela", clue: "Wheat berry dish", clueAr: "خنشلة" },
-                        { word: "Marqa", clue: "Stew sauce", clueAr: "مرقة" },
-                        { word: "Loubia", clue: "Bean stew", clueAr: "لوبيا" },
-                        { word: "Chtitha", clue: "Spicy sauce", clueAr: "شطيطحة" },
-                        { word: "Hmiss", clue: "Chickpea salad", clueAr: "حمص" },
-                        { word: "Felfel Mhammar", clue: "Roasted pepper", clueAr: "فلفل محمر" },
-                        { word: "Slata Jazar", clue: "Carrot salad", clueAr: "سلطة جزر" },
-                        { word: "Slata Méchouia", clue: "Grilled salad", clueAr: "سلطة مشوية" },
-                        { word: "Khyar", clue: "Cucumber dish", clueAr: "خيار" },
-                        { word: "Batata Harra", clue: "Spicy potatoes", clueAr: "بطاطا حرة" },
-                        { word: "Zitoun", clue: "Olives", clueAr: "زيتون" },
-                        { word: "Matisha", clue: "Tomato salad", clueAr: "ماطيشة" },
-                        { word: "Lftour", clue: "Breakfast", clueAr: "الفطور" },
-                        { word: "Thé", clue: "Hot drink", clueAr: "أتاي" },
-                        { word: "Kahwa", clue: "Coffee", clueAr: "قهوة" },
-                        { word: "Halib", clue: "Milk", clueAr: "حليب" },
-                        { word: "Leben", clue: "Buttermilk", clueAr: "لبن" },
-                        { word: "Raïb", clue: "Fermented milk", clueAr: "رايب" },
-                        { word: "Zebda", clue: "Butter", clueAr: "زبدة" },
-                        { word: "Jben", clue: "Cheese", clueAr: "جبن" },
-                        { word: "Assel", clue: "Honey", clueAr: "عسل" },
-                        { word: "Zit Zitoun", clue: "Olive oil", clueAr: "زيت الزيتون" },
-                        { word: "L'hem", clue: "Meat", clueAr: "لحم" },
-                        { word: "Djej", clue: "Chicken", clueAr: "دجاج" },
-                        { word: "Hout", clue: "Fish", clueAr: "حوت" },
-                        { word: "Beyd", clue: "Eggs", clueAr: "بيض" },
-                        { word: "Khobz", clue: "Bread", clueAr: "خبز" },
-                        { word: "Roz", clue: "Rice", clueAr: "روز" },
-                        { word: "Smida", clue: "Semolina", clueAr: "سميدة" },
-                        { word: "Dqiq", clue: "Flour", clueAr: "دقيق" },
-                        { word: "Skkar", clue: "Sugar", clueAr: "سكر" },
-                        { word: "Melh", clue: "Salt", clueAr: "ملح" },
-                        { word: "Felfel", clue: "Pepper", clueAr: "فلفل" },
-                        { word: "Kamoun", clue: "Cumin", clueAr: "كمون" },
-                        { word: "Koriander", clue: "Coriander", clueAr: "كزبرة" },
-                        { word: "Karwiya", clue: "Caraway", clueAr: "كروية" },
-                        { word: "Za'tar", clue: "Thyme", clueAr: "زعتر" },
-                        { word: "Harr", clue: "Spicy", clueAr: "حر" },
-                        { word: "Helou", clue: "Sweet", clueAr: "حلو" },
-                        { word: "Marr", clue: "Bitter", clueAr: "مر" },
-                        { word: "Maleh", clue: "Salty", clueAr: "مالح" },
-                        { word: "Tayeb", clue: "Tasty", clueAr: "طيب" },
-                        { word: "Tmar", clue: "Dates", clueAr: "تمر" },
-                        { word: "Tin", clue: "Figs", clueAr: "تين" },
-                        { word: "Rummane", clue: "Pomegranate", clueAr: "رمان" }
-                    ]
-                },
-                {
-                    name: "Sports - الرياضة",
-                    words: [
-                        { word: "Football", clue: "Team ball sport", clueAr: "رياضة بالكرة" },
-                        { word: "Basketball", clue: "Hoop sport", clueAr: "رياضة بالسلة" },
-                        { word: "Tennis", clue: "Racket sport", clueAr: "رياضة بالمضرب" },
-                        { word: "Swimming", clue: "Water sport", clueAr: "رياضة مائية" },
-                        { word: "Boxing", clue: "Fighting sport", clueAr: "رياضة قتالية" },
-                        { word: "Running", clue: "Track sport", clueAr: "جري" },
-                        { word: "Cycling", clue: "Bike sport", clueAr: "رياضة بالدراجة" },
-                        { word: "Volleyball", clue: "Net ball game", clueAr: "كرة الطائرة" },
-                        { word: "Handball", clue: "Indoor ball game", clueAr: "كرة اليد" },
-                        { word: "Golf", clue: "Club and hole", clueAr: "رياضة بالعصا" },
-                        { word: "Baseball", clue: "Bat and ball", clueAr: "كرة قاعدية" },
-                        { word: "Rugby", clue: "Oval ball", clueAr: "كرة بيضاوية" },
-                        { word: "Cricket", clue: "British bat game", clueAr: "كريكت" },
-                        { word: "Judo", clue: "Japanese martial art", clueAr: "فن قتالي ياباني" },
-                        { word: "Karate", clue: "Striking martial art", clueAr: "كاراتيه" },
-                        { word: "Wrestling", clue: "Grappling sport", clueAr: "مصارعة" },
-                        { word: "Fencing", clue: "Sword fighting", clueAr: "مبارزة بالسيف" },
-                        { word: "Archery", clue: "Bow and arrow", clueAr: "رماية بالقوس" },
-                        { word: "Skiing", clue: "Snow sport", clueAr: "رياضة على الثلج" },
-                        { word: "Surfing", clue: "Wave riding", clueAr: "ركوب الأمواج" },
-                        { word: "Skateboarding", clue: "Board tricks", clueAr: "رياضة باللوح" },
-                        { word: "Gymnastics", clue: "Flexibility sport", clueAr: "جمباز" },
-                        { word: "Weightlifting", clue: "Strength sport", clueAr: "رفع الأثقال" },
-                        { word: "Marathon", clue: "Long distance run", clueAr: "سباق طويل" },
-                        { word: "Triathlon", clue: "Three sports", clueAr: "ثلاث رياضات" },
-                        { word: "Badminton", clue: "Shuttlecock game", clueAr: "رياضة بالريشة" },
-                        { word: "Table Tennis", clue: "Ping pong", clueAr: "بينغ بونغ" },
-                        { word: "Squash", clue: "Wall racket game", clueAr: "اسكواش" },
-                        { word: "Hockey", clue: "Stick and puck", clueAr: "هوكي" },
-                        { word: "Figure Skating", clue: "Ice dancing", clueAr: "تزلج فني" },
-                        { word: "Diving", clue: "Water jumping", clueAr: "غطس" },
-                        { word: "Rowing", clue: "Boat racing", clueAr: "تجديف" },
-                        { word: "Sailing", clue: "Wind boat sport", clueAr: "إبحار" },
-                        { word: "Polo", clue: "Horse ball game", clueAr: "بولو" },
-                        { word: "Equestrian", clue: "Horse riding", clueAr: "فروسية" },
-                        { word: "Motor Racing", clue: "Car speed sport", clueAr: "سباق سيارات" },
-                        { word: "Rallying", clue: "Off-road racing", clueAr: "رالي" },
-                        { word: "Motocross", clue: "Dirt bike racing", clueAr: "موتوكروس" },
-                        { word: "BMX", clue: "Bike stunts", clueAr: "دراجة حيل" },
-                        { word: "Rock Climbing", clue: "Wall climbing", clueAr: "تسلق الصخور" },
-                        { word: "Parkour", clue: "Urban movement", clueAr: "باركور" },
-                        { word: "Snowboarding", clue: "Snow board sport", clueAr: "لوح الثلج" },
-                        { word: "Bobsled", clue: "Ice sled racing", clueAr: "زحافة جليدية" },
-                        { word: "Curling", clue: "Ice stone game", clueAr: "كيرلنغ" },
-                        { word: "Lacrosse", clue: "Stick net game", clueAr: "لاكروس" },
-                        { word: "Water Polo", clue: "Pool ball game", clueAr: "كرة ماء" },
-                        { word: "Synchronized Swimming", clue: "Dance swimming", clueAr: "سباحة متزامنة" },
-                        { word: "Canoeing", clue: "Paddle boat", clueAr: "تجديف كانو" },
-                        { word: "Kayaking", clue: "Small boat sport", clueAr: "كاياك" },
-                        { word: "Rafting", clue: "River boat sport", clueAr: "رافتنغ" },
-                        { word: "Bungee Jumping", clue: "Elastic jump", clueAr: "قفز مطاطي" },
-                        { word: "Skydiving", clue: "Parachute sport", clueAr: "قفز بالمظلة" },
-                        { word: "Paragliding", clue: "Gliding flight", clueAr: "طيران شراعي" },
-                        { word: "Hang Gliding", clue: "Wing flying", clueAr: "طيران معلق" },
-                        { word: "Hot Air Ballooning", clue: "Balloon flight", clueAr: "منطاد هواء" },
-                        { word: "Paintball", clue: "Color shooting game", clueAr: "رماية ألوان" },
-                        { word: "Airsoft", clue: "Replica gun game", clueAr: "إيرسوفت" },
-                        { word: "Darts", clue: "Target throwing", clueAr: "رمي السهام" },
-                        { word: "Billiards", clue: "Pool table game", clueAr: "بلياردو" },
-                        { word: "Snooker", clue: "Cue sport", clueAr: "سنوكر" },
-                        { word: "Bowling", clue: "Pin knocking", clueAr: "بولينغ" },
-                        { word: "Croquet", clue: "Mallet ball game", clueAr: "كروكيت" },
-                        { word: "Boules", clue: "Ball throwing", clueAr: "بيتانك" },
-                        { word: "Bocce", clue: "Italian ball game", clueAr: "بوتشي" },
-                        { word: "Sepak Takraw", clue: "Kick volleyball", clueAr: "كرة قدم طائرة" },
-                        { word: "Kabaddi", clue: "Tag team sport", clueAr: "كبادي" },
-                        { word: "Kho Kho", clue: "Chase game", clueAr: "خو خو" },
-                        { word: "Sumo", clue: "Japanese wrestling", clueAr: "مصارعة يابانية" },
-                        { word: "Taekwondo", clue: "Korean martial art", clueAr: "تايكوندو" },
-                        { word: "Aikido", clue: "Defensive martial art", clueAr: "أيكيدو" },
-                        { word: "Kung Fu", clue: "Chinese martial art", clueAr: "كونغ فو" },
-                        { word: "Muay Thai", clue: "Thai boxing", clueAr: "ملاكمة تايلاندية" },
-                        { word: "Capoeira", clue: "Brazilian martial art", clueAr: "كابويرا" },
-                        { word: "Krav Maga", clue: "Israeli combat", clueAr: "كراف ماغا" },
-                        { word: "MMA", clue: "Mixed fighting", clueAr: "فنون قتالية مختلطة" },
-                        { word: "Kickboxing", clue: "Punch and kick", clueAr: "كيك بوكسينغ" },
-                        { word: "Savate", clue: "French kickboxing", clueAr: "سافات" },
-                        { word: "Sambo", clue: "Russian martial art", clueAr: "سامبو" },
-                        { word: "Kendo", clue: "Japanese sword art", clueAr: "كيندو" },
-                        { word: "Ninjutsu", clue: "Ninja art", clueAr: "نينجوتسو" },
-                        { word: "Tai Chi", clue: "Slow martial art", clueAr: "تاي تشي" },
-                        { word: "Wushu", clue: "Chinese martial art", clueAr: "ووشو" },
-                        { word: "Esports", clue: "Video game competition", clueAr: "رياضة إلكترونية" },
-                        { word: "Chess", clue: "Board strategy game", clueAr: "شطرنج" },
-                        { word: "Checkers", clue: "Board jumping game", clueAr: "ضاما" },
-                        { word: "Go", clue: "Asian board game", clueAr: "لعبة غو" },
-                        { word: "Backgammon", clue: "Dice board game", clueAr: "طاولة زهر" },
-                        { word: "Poker", clue: "Card gambling", clueAr: "بوكر" },
-                        { word: "Bridge", clue: "Card partnership", clueAr: "بريدج" },
-                        { word: "Mahjong", clue: "Tile game", clueAr: "ماهجونغ" },
-                        { word: "Dominoes", clue: "Tile matching", clueAr: "دومينو" },
-                        { word: "Scrabble", clue: "Word building", clueAr: "سكرابل" },
-                        { word: "Crossfit", clue: "High intensity training", clueAr: "كروسفيت" },
-                        { word: "Pilates", clue: "Core strengthening", clueAr: "بيلاتس" },
-                        { word: "Yoga", clue: "Flexibility practice", clueAr: "يوغا" },
-                        { word: "Zumba", clue: "Dance fitness", clueAr: "زومبا" },
-                        { word: "Aerobics", clue: "Cardio exercise", clueAr: "أيروبيكس" },
-                        { word: "Bodybuilding", clue: "Muscle building", clueAr: "كمال أجسام" },
-                        { word: "Powerlifting", clue: "Heavy lifting", clueAr: "رفع قوة" }
-                    ]
-                },
-                {
-                    name: "Animals - الحيوانات",
-                    words: [
-                        { word: "Lion", clue: "King of jungle", clueAr: "ملك الغابة" },
-                        { word: "Elephant", clue: "Long trunk", clueAr: "خرطوم طويل" },
-                        { word: "Tiger", clue: "Striped cat", clueAr: "قط مخطط" },
-                        { word: "Giraffe", clue: "Long neck", clueAr: "رقبة طويلة" },
-                        { word: "Zebra", clue: "Striped horse", clueAr: "حصان مخطط" },
-                        { word: "Monkey", clue: "Tree climber", clueAr: "يتسلق الشجر" },
-                        { word: "Bear", clue: "Honey lover", clueAr: "يحب العسل" },
-                        { word: "Wolf", clue: "Pack hunter", clueAr: "صياد جماعي" },
-                        { word: "Fox", clue: "Cunning animal", clueAr: "حيوان ماكر" },
-                        { word: "Rabbit", clue: "Long ears", clueAr: "آذان طويلة" },
-                        { word: "Camel", clue: "Desert ship", clueAr: "سفينة الصحراء" },
-                        { word: "Horse", clue: "Riding animal", clueAr: "حيوان ركوب" },
-                        { word: "Donkey", clue: "Stubborn animal", clueAr: "حيوان عنيد" },
-                        { word: "Cow", clue: "Milk giver", clueAr: "يعطي حليب" },
-                        { word: "Sheep", clue: "Wool giver", clueAr: "يعطي صوف" },
-                        { word: "Goat", clue: "Mountain climber", clueAr: "يتسلق الجبال" },
-                        { word: "Chicken", clue: "Egg layer", clueAr: "يبيض" },
-                        { word: "Duck", clue: "Water bird", clueAr: "طير مائي" },
-                        { word: "Pigeon", clue: "City bird", clueAr: "طير المدينة" },
-                        { word: "Eagle", clue: "Sky hunter", clueAr: "صياد السماء" },
-                        { word: "Owl", clue: "Night bird", clueAr: "طير الليل" },
-                        { word: "Parrot", clue: "Talking bird", clueAr: "طير يتكلم" },
-                        { word: "Peacock", clue: "Beautiful tail", clueAr: "ذيل جميل" },
-                        { word: "Penguin", clue: "Ice bird", clueAr: "طير الجليد" },
-                        { word: "Ostrich", clue: "Flightless bird", clueAr: "طير لا يطير" },
-                        { word: "Snake", clue: "No legs", clueAr: "بلا أرجل" },
-                        { word: "Crocodile", clue: "River predator", clueAr: "مفترس النهر" },
-                        { word: "Turtle", clue: "Shell carrier", clueAr: "يحمل بيت" },
-                        { word: "Lizard", clue: "Wall climber", clueAr: "يتسلق الحائط" },
-                        { word: "Frog", clue: "Jumping amphibian", clueAr: "يقفز كثير" },
-                        { word: "Fish", clue: "Water breather", clueAr: "يعيش في الماء" },
-                        { word: "Shark", clue: "Ocean predator", clueAr: "مفترس البحر" },
-                        { word: "Dolphin", clue: "Smart sea animal", clueAr: "حيوان بحري ذكي" },
-                        { word: "Whale", clue: "Biggest animal", clueAr: "أكبر حيوان" },
-                        { word: "Octopus", clue: "Eight arms", clueAr: "ثمانية أذرع" },
-                        { word: "Crab", clue: "Sidewalk walker", clueAr: "يمشي جانبي" },
-                        { word: "Butterfly", clue: "Flying insect", clueAr: "حشرة طائرة" },
-                        { word: "Bee", clue: "Honey maker", clueAr: "يصنع عسل" },
-                        { word: "Ant", clue: "Hard worker", clueAr: "يشتغل كثير" },
-                        { word: "Spider", clue: "Web maker", clueAr: "يصنع خيوط" },
-                        { word: "Scorpion", clue: "Desert stinger", clueAr: "يلسع" },
-                        { word: "Bat", clue: "Night flyer", clueAr: "يطير بالليل" },
-                        { word: "Rat", clue: "Small rodent", clueAr: "قارض صغير" },
-                        { word: "Mouse", clue: "Tiny rodent", clueAr: "قارض صغير جدا" },
-                        { word: "Squirrel", clue: "Nut collector", clueAr: "يجمع المكسرات" },
-                        { word: "Hedgehog", clue: "Spiky animal", clueAr: "حيوان شوكي" },
-                        { word: "Porcupine", clue: "Quill bearer", clueAr: "يحمل شوك" },
-                        { word: "Kangaroo", clue: "Jumping marsupial", clueAr: "يقفز بجيب" },
-                        { word: "Koala", clue: "Tree sleeper", clueAr: "ينام على الشجر" },
-                        { word: "Panda", clue: "Bamboo eater", clueAr: "ياكل بامبو" },
-                        { word: "Rhinoceros", clue: "Horn bearer", clueAr: "يحمل قرن" },
-                        { word: "Hippopotamus", clue: "River horse", clueAr: "حصان النهر" },
-                        { word: "Cheetah", clue: "Fastest land animal", clueAr: "أسرع حيوان" },
-                        { word: "Leopard", clue: "Spotted cat", clueAr: "قط منقط" },
-                        { word: "Jaguar", clue: "American cat", clueAr: "قط أمريكي" },
-                        { word: "Panther", clue: "Black cat", clueAr: "قط أسود" },
-                        { word: "Lynx", clue: "Ear tuft cat", clueAr: "قط بآذان مدببة" },
-                        { word: "Hyena", clue: "Laughing scavenger", clueAr: "يضحك" },
-                        { word: "Jackal", clue: "Small wolf", clueAr: "ذيب صغير" },
-                        { word: "Fennec Fox", clue: "Desert fox", clueAr: "فنك الصحراء" },
-                        { word: "Gazelle", clue: "Fast antelope", clueAr: "غزال سريع" },
-                        { word: "Antelope", clue: "Horned runner", clueAr: "عداء بقرون" },
-                        { word: "Buffalo", clue: "Wild cow", clueAr: "بقرة برية" },
-                        { word: "Bison", clue: "American buffalo", clueAr: "جاموس أمريكي" },
-                        { word: "Moose", clue: "Large deer", clueAr: "غزال كبير" },
-                        { word: "Deer", clue: "Antler bearer", clueAr: "يحمل قرون" },
-                        { word: "Reindeer", clue: "Snow deer", clueAr: "غزال الثلج" },
-                        { word: "Yak", clue: "Mountain cow", clueAr: "بقرة الجبل" },
-                        { word: "Llama", clue: "Andean camel", clueAr: "جمل الجبال" },
-                        { word: "Alpaca", clue: "Wool bearer", clueAr: "يعطي صوف" },
-                        { word: "Meerkat", clue: "Standing watcher", clueAr: "يراقب واقف" },
-                        { word: "Mongoose", clue: "Snake fighter", clueAr: "يحارب الثعابين" },
-                        { word: "Weasel", clue: "Small predator", clueAr: "مفترس صغير" },
-                        { word: "Otter", clue: "Water player", clueAr: "يلعب بالماء" },
-                        { word: "Seal", clue: "Ice swimmer", clueAr: "سباح الجليد" },
-                        { word: "Walrus", clue: "Tusked seal", clueAr: "فقمة بأنياب" },
-                        { word: "Polar Bear", clue: "Ice bear", clueAr: "دب الجليد" },
-                        { word: "Grizzly Bear", clue: "Brown bear", clueAr: "دب بني" },
-                        { word: "Sloth", clue: "Slow mover", clueAr: "يمشي ببطء" },
-                        { word: "Armadillo", clue: "Armored animal", clueAr: "حيوان مدرع" },
-                        { word: "Anteater", clue: "Ant eater", clueAr: "ياكل نمل" },
-                        { word: "Platypus", clue: "Duck billed", clueAr: "منقار بط" },
-                        { word: "Echidna", clue: "Spiny anteater", clueAr: "آكل نمل شوكي" },
-                        { word: "Wombat", clue: "Digging marsupial", clueAr: "يحفر" },
-                        { word: "Tasmanian Devil", clue: "Fierce marsupial", clueAr: "شرس" },
-                        { word: "Komodo Dragon", clue: "Giant lizard", clueAr: "سحلية عملاقة" },
-                        { word: "Chameleon", clue: "Color changer", clueAr: "يغير لونه" },
-                        { word: "Iguana", clue: "Large lizard", clueAr: "سحلية كبيرة" },
-                        { word: "Gecko", clue: "Wall walker", clueAr: "يمشي على الحائط" },
-                        { word: "Salamander", clue: "Fire lizard", clueAr: "سحلية النار" },
-                        { word: "Newt", clue: "Small salamander", clueAr: "سمندل صغير" },
-                        { word: "Toad", clue: "Land frog", clueAr: "ضفدع البر" },
-                        { word: "Alligator", clue: "American crocodile", clueAr: "تمساح أمريكي" },
-                        { word: "Python", clue: "Constrictor snake", clueAr: "ثعبان عاصر" },
-                        { word: "Cobra", clue: "Hood snake", clueAr: "ثعبان بغطاء" },
-                        { word: "Viper", clue: "Venomous snake", clueAr: "أفعى سامة" },
-                        { word: "Anaconda", clue: "Water snake", clueAr: "ثعبان الماء" },
-                        { word: "Boa", clue: "Tree snake", clueAr: "ثعبان الشجر" },
-                        { word: "Mamba", clue: "Fast snake", clueAr: "ثعبان سريع" },
-                        { word: "Rattlesnake", clue: "Tail shaker", clueAr: "يهز ذيله" }
-                    ]
-                },
-                {
-                    name: "Movies - الأفلام",
-                    words: [
-                        { word: "Titanic", clue: "Sinking ship", clueAr: "باخرة غارقة" },
-                        { word: "Avatar", clue: "Blue aliens", clueAr: "فضائيين زرق" },
-                        { word: "Inception", clue: "Dream in dream", clueAr: "حلم في حلم" },
-                        { word: "Matrix", clue: "Red or blue pill", clueAr: "حبة حمرا ولا زرقا" },
-                        { word: "Joker", clue: "Clown villain", clueAr: "شرير مهرج" },
-                        { word: "Batman", clue: "Dark knight", clueAr: "فارس الظلام" },
-                        { word: "Superman", clue: "Man of steel", clueAr: "رجل الفولاذ" },
-                        { word: "Spiderman", clue: "Web slinger", clueAr: "يطلق خيوط" },
-                        { word: "Iron Man", clue: "Armored hero", clueAr: "بطل مدرع" },
-                        { word: "Avengers", clue: "Hero team", clueAr: "فريق أبطال" },
-                        { word: "Star Wars", clue: "Space saga", clueAr: "حرب النجوم" },
-                        { word: "Harry Potter", clue: "Wizard boy", clueAr: "ولد ساحر" },
-                        { word: "Lord of the Rings", clue: "Ring quest", clueAr: "بحث عن خاتم" },
-                        { word: "Frozen", clue: "Ice princess", clueAr: "أميرة الجليد" },
-                        { word: "Lion King", clue: "African animals", clueAr: "حيوانات إفريقيا" },
-                        { word: "Toy Story", clue: "Living toys", clueAr: "لعب حية" },
-                        { word: "Finding Nemo", clue: "Lost fish", clueAr: "حوت ضايع" },
-                        { word: "Shrek", clue: "Green ogre", clueAr: "عفريت أخضر" },
-                        { word: "Aladdin", clue: "Magic lamp", clueAr: "مصباح سحري" },
-                        { word: "Beauty and the Beast", clue: "Cursed prince", clueAr: "أمير ملعون" },
-                        { word: "Cinderella", clue: "Glass slipper", clueAr: "صباط زجاجي" },
-                        { word: "Snow White", clue: "Seven dwarfs", clueAr: "سبعة أقزام" },
-                        { word: "Mulan", clue: "Chinese warrior", clueAr: "محاربة صينية" },
-                        { word: "Pocahontas", clue: "Native princess", clueAr: "أميرة هندية" },
-                        { word: "Tarzan", clue: "Jungle man", clueAr: "راجل الغابة" },
-                        { word: "Hercules", clue: "Greek hero", clueAr: "بطل يوناني" },
-                        { word: "Fast and Furious", clue: "Street racing", clueAr: "سباق سيارات" },
-                        { word: "Mission Impossible", clue: "Spy action", clueAr: "جاسوس وحركة" },
-                        { word: "James Bond", clue: "British spy", clueAr: "جاسوس بريطاني" },
-                        { word: "John Wick", clue: "Retired assassin", clueAr: "قاتل متقاعد" },
-                        { word: "Terminator", clue: "Robot killer", clueAr: "روبوت قاتل" },
-                        { word: "Predator", clue: "Alien hunter", clueAr: "صياد فضائي" },
-                        { word: "Alien", clue: "Space monster", clueAr: "وحش فضائي" },
-                        { word: "Jurassic Park", clue: "Dinosaur island", clueAr: "جزيرة ديناصورات" },
-                        { word: "Jaws", clue: "Killer shark", clueAr: "قرش قاتل" },
-                        { word: "Back to the Future", clue: "Time travel", clueAr: "سفر عبر الزمن" },
-                        { word: "Interstellar", clue: "Space journey", clueAr: "رحلة فضائية" },
-                        { word: "Gravity", clue: "Lost in space", clueAr: "تايه في الفضاء" },
-                        { word: "The Martian", clue: "Alone on Mars", clueAr: "وحيد على المريخ" },
-                        { word: "Gladiator", clue: "Roman fighter", clueAr: "محارب روماني" },
-                        { word: "Troy", clue: "Ancient war", clueAr: "حرب قديمة" },
-                        { word: "300", clue: "Spartan warriors", clueAr: "محاربين اسبرطة" },
-                        { word: "Braveheart", clue: "Scottish warrior", clueAr: "محارب اسكتلندي" },
-                        { word: "Rocky", clue: "Boxer story", clueAr: "قصة ملاكم" },
-                        { word: "Creed", clue: "Boxing legacy", clueAr: "إرث الملاكمة" },
-                        { word: "Karate Kid", clue: "Martial arts", clueAr: "فنون قتالية" },
-                        { word: "Kill Bill", clue: "Revenge story", clueAr: "قصة انتقام" },
-                        { word: "Pulp Fiction", clue: "Crime stories", clueAr: "قصص جريمة" },
-                        { word: "The Godfather", clue: "Mafia family", clueAr: "عائلة مافيا" },
-                        { word: "Goodfellas", clue: "Gangster life", clueAr: "حياة عصابات" },
-                        { word: "Scarface", clue: "Drug lord", clueAr: "تاجر مخدرات" },
-                        { word: "Casino", clue: "Las Vegas crime", clueAr: "جريمة لاس فيغاس" },
-                        { word: "Heat", clue: "Cop vs robber", clueAr: "شرطي ضد لص" },
-                        { word: "The Departed", clue: "Undercover cops", clueAr: "شرطة متخفية" },
-                        { word: "Training Day", clue: "Corrupt cop", clueAr: "شرطي فاسد" },
-                        { word: "Se7en", clue: "Seven deadly sins", clueAr: "سبعة خطايا" },
-                        { word: "Silence of the Lambs", clue: "Serial killer", clueAr: "قاتل متسلسل" },
-                        { word: "Psycho", clue: "Motel horror", clueAr: "رعب موتيل" },
-                        { word: "The Shining", clue: "Hotel horror", clueAr: "رعب فندق" },
-                        { word: "It", clue: "Clown horror", clueAr: "مهرج مخيف" },
-                        { word: "The Exorcist", clue: "Demon possession", clueAr: "تلبس شيطاني" },
-                        { word: "The Ring", clue: "Cursed video", clueAr: "فيديو ملعون" },
-                        { word: "The Conjuring", clue: "Ghost hunters", clueAr: "صيادين أشباح" },
-                        { word: "Insidious", clue: "Haunted family", clueAr: "عائلة مسكونة" },
-                        { word: "Saw", clue: "Deadly games", clueAr: "ألعاب قاتلة" },
-                        { word: "A Quiet Place", clue: "Silent survival", clueAr: "صمت للبقاء" },
-                        { word: "Get Out", clue: "Social horror", clueAr: "رعب اجتماعي" },
-                        { word: "Us", clue: "Doppelgangers", clueAr: "نسخ مزدوجة" },
-                        { word: "Hereditary", clue: "Family curse", clueAr: "لعنة عائلية" },
-                        { word: "Midsommar", clue: "Cult horror", clueAr: "رعب طائفة" },
-                        { word: "The Witch", clue: "Colonial horror", clueAr: "رعب استعماري" },
-                        { word: "Halloween", clue: "Masked killer", clueAr: "قاتل مقنع" },
-                        { word: "Friday the 13th", clue: "Camp slasher", clueAr: "قاتل المخيم" },
-                        { word: "Nightmare on Elm Street", clue: "Dream killer", clueAr: "قاتل الأحلام" },
-                        { word: "Scream", clue: "Phone killer", clueAr: "قاتل الهاتف" },
-                        { word: "The Purge", clue: "Legal crime night", clueAr: "ليلة جريمة قانونية" },
-                        { word: "Parasite", clue: "Class struggle", clueAr: "صراع طبقات" },
-                        { word: "Oldboy", clue: "Revenge mystery", clueAr: "انتقام غامض" },
-                        { word: "Spirited Away", clue: "Spirit world", clueAr: "عالم الأرواح" },
-                        { word: "My Neighbor Totoro", clue: "Forest spirit", clueAr: "روح الغابة" },
-                        { word: "Princess Mononoke", clue: "Nature vs humans", clueAr: "الطبيعة ضد البشر" },
-                        { word: "Your Name", clue: "Body swap", clueAr: "تبادل أجساد" },
-                        { word: "Weathering with You", clue: "Weather girl", clueAr: "بنت الطقس" },
-                        { word: "Akira", clue: "Psychic powers", clueAr: "قوى خارقة" },
-                        { word: "Ghost in the Shell", clue: "Cyborg cop", clueAr: "شرطية سايبورغ" },
-                        { word: "Howl's Moving Castle", clue: "Walking castle", clueAr: "قصر متحرك" },
-                        { word: "Ponyo", clue: "Fish girl", clueAr: "بنت سمكة" },
-                        { word: "Coco", clue: "Land of the dead", clueAr: "أرض الموتى" },
-                        { word: "Up", clue: "Flying house", clueAr: "دار طايرة" },
-                        { word: "Wall-E", clue: "Robot cleaner", clueAr: "روبوت منظف" },
-                        { word: "Inside Out", clue: "Emotions personified", clueAr: "مشاعر متجسدة" },
-                        { word: "Ratatouille", clue: "Cooking rat", clueAr: "فار طباخ" },
-                        { word: "Monsters Inc", clue: "Scare factory", clueAr: "مصنع تخويف" },
-                        { word: "The Incredibles", clue: "Super family", clueAr: "عائلة خارقة" },
-                        { word: "Brave", clue: "Scottish princess", clueAr: "أميرة اسكتلندية" },
-                        { word: "Moana", clue: "Ocean voyager", clueAr: "مسافرة البحر" },
-                        { word: "Tangled", clue: "Long hair", clueAr: "شعر طويل" },
-                        { word: "Zootopia", clue: "Animal city", clueAr: "مدينة حيوانات" },
-                        { word: "Big Hero 6", clue: "Robot healthcare", clueAr: "روبوت صحي" }
-                    ]
-                },
-                {
-                    name: "Countries - البلدان",
-                    words: [
-                        { word: "Algeria", clue: "North African country", clueAr: "بلاد شمال إفريقيا" },
-                        { word: "Egypt", clue: "Pyramids land", clueAr: "بلاد الأهرامات" },
-                        { word: "Morocco", clue: "Western neighbor", clueAr: "الجار الغربي" },
-                        { word: "Tunisia", clue: "Eastern neighbor", clueAr: "الجار الشرقي" },
-                        { word: "Libya", clue: "Desert neighbor", clueAr: "جارنا الصحراوي" },
-                        { word: "France", clue: "Eiffel Tower", clueAr: "برج إيفل" },
-                        { word: "Spain", clue: "Bullfighting", clueAr: "مصارعة الثيران" },
-                        { word: "Italy", clue: "Pizza country", clueAr: "بلاد البيتزا" },
-                        { word: "Germany", clue: "Beer and cars", clueAr: "البيرة والسيارات" },
-                        { word: "England", clue: "Big Ben", clueAr: "بيغ بن" },
-                        { word: "Turkey", clue: "East meets West", clueAr: "الشرق يلاقي الغرب" },
-                        { word: "Saudi Arabia", clue: "Holy cities", clueAr: "المدن المقدسة" },
-                        { word: "UAE", clue: "Burj Khalifa", clueAr: "برج خليفة" },
-                        { word: "Qatar", clue: "World Cup 2022", clueAr: "كأس العالم 2022" },
-                        { word: "Kuwait", clue: "Oil rich", clueAr: "غني بالنفط" },
-                        { word: "Iraq", clue: "Mesopotamia", clueAr: "بلاد الرافدين" },
-                        { word: "Syria", clue: "Ancient civilization", clueAr: "حضارة عريقة" },
-                        { word: "Lebanon", clue: "Cedar tree", clueAr: "شجرة الأرز" },
-                        { word: "Jordan", clue: "Petra city", clueAr: "مدينة البتراء" },
-                        { word: "Palestine", clue: "Holy land", clueAr: "الأرض المقدسة" },
-                        { word: "Sudan", clue: "Nile country", clueAr: "بلاد النيل" },
-                        { word: "Somalia", clue: "Horn of Africa", clueAr: "قرن إفريقيا" },
-                        { word: "Yemen", clue: "Arabia Felix", clueAr: "اليمن السعيد" },
-                        { word: "Oman", clue: "Arabian Gulf", clueAr: "الخليج العربي" },
-                        { word: "Mauritania", clue: "Desert country", clueAr: "بلد صحراوي" },
-                        { word: "USA", clue: "Land of freedom", clueAr: "بلاد الحرية" },
-                        { word: "Canada", clue: "Maple leaf", clueAr: "ورقة القيقب" },
-                        { word: "Mexico", clue: "Tacos land", clueAr: "بلاد التاكو" },
-                        { word: "Brazil", clue: "Carnival country", clueAr: "بلاد الكرنفال" },
-                        { word: "Argentina", clue: "Tango land", clueAr: "بلاد التانغو" },
-                        { word: "China", clue: "Great Wall", clueAr: "السور العظيم" },
-                        { word: "Japan", clue: "Rising sun", clueAr: "الشمس المشرقة" },
-                        { word: "South Korea", clue: "K-pop land", clueAr: "بلاد الكيبوب" },
-                        { word: "India", clue: "Taj Mahal", clueAr: "تاج محل" },
-                        { word: "Pakistan", clue: "Islamic republic", clueAr: "جمهورية إسلامية" },
-                        { word: "Bangladesh", clue: "Bengal land", clueAr: "بلاد البنغال" },
-                        { word: "Indonesia", clue: "Island nation", clueAr: "دولة الجزر" },
-                        { word: "Malaysia", clue: "Twin towers", clueAr: "البرجين التوأم" },
-                        { word: "Thailand", clue: "Land of smiles", clueAr: "بلاد الابتسامات" },
-                        { word: "Vietnam", clue: "Dragon land", clueAr: "بلاد التنين" },
-                        { word: "Philippines", clue: "Pearl of Orient", clueAr: "لؤلؤة الشرق" },
-                        { word: "Singapore", clue: "Lion city", clueAr: "مدينة الأسد" },
-                        { word: "Australia", clue: "Down under", clueAr: "القارة الجنوبية" },
-                        { word: "New Zealand", clue: "Kiwi land", clueAr: "بلاد الكيوي" },
-                        { word: "Russia", clue: "Largest country", clueAr: "أكبر دولة" },
-                        { word: "Poland", clue: "Central Europe", clueAr: "وسط أوروبا" },
-                        { word: "Greece", clue: "Ancient gods", clueAr: "الآلهة القديمة" },
-                        { word: "Sweden", clue: "Vikings land", clueAr: "بلاد الفايكنج" },
-                        { word: "Norway", clue: "Fjords country", clueAr: "بلاد المضائق" },
-                        { word: "Finland", clue: "Santa's home", clueAr: "بيت سانتا" },
-                        { word: "Denmark", clue: "Lego land", clueAr: "بلاد الليغو" },
-                        { word: "Netherlands", clue: "Windmills", clueAr: "طواحين الهواء" },
-                        { word: "Belgium", clue: "Chocolate land", clueAr: "بلاد الشوكولا" },
-                        { word: "Switzerland", clue: "Watches and banks", clueAr: "الساعات والبنوك" },
-                        { word: "Austria", clue: "Music country", clueAr: "بلاد الموسيقى" },
-                        { word: "Portugal", clue: "Western Iberia", clueAr: "غرب إيبيريا" },
-                        { word: "Ireland", clue: "Emerald isle", clueAr: "الجزيرة الزمردية" },
-                        { word: "Scotland", clue: "Bagpipes land", clueAr: "بلاد المزمار" },
-                        { word: "Wales", clue: "Dragon flag", clueAr: "علم التنين" },
-                        { word: "Iceland", clue: "Fire and ice", clueAr: "النار والجليد" },
-                        { word: "South Africa", clue: "Rainbow nation", clueAr: "أمة قوس قزح" },
-                        { word: "Nigeria", clue: "Giant of Africa", clueAr: "عملاق إفريقيا" },
-                        { word: "Kenya", clue: "Safari land", clueAr: "بلاد السفاري" },
-                        { word: "Ethiopia", clue: "Coffee origin", clueAr: "أصل القهوة" },
-                        { word: "Ghana", clue: "Gold Coast", clueAr: "ساحل الذهب" },
-                        { word: "Senegal", clue: "West Africa", clueAr: "غرب إفريقيا" },
-                        { word: "Tanzania", clue: "Kilimanjaro", clueAr: "كليمنجارو" },
-                        { word: "Uganda", clue: "Pearl of Africa", clueAr: "لؤلؤة إفريقيا" },
-                        { word: "Zimbabwe", clue: "Victoria Falls", clueAr: "شلالات فيكتوريا" },
-                        { word: "Zambia", clue: "Copper country", clueAr: "بلاد النحاس" },
-                        { word: "Botswana", clue: "Diamond land", clueAr: "بلاد الماس" },
-                        { word: "Namibia", clue: "Desert coast", clueAr: "ساحل الصحراء" },
-                        { word: "Angola", clue: "Portuguese Africa", clueAr: "إفريقيا البرتغالية" },
-                        { word: "Mozambique", clue: "Indian Ocean", clueAr: "المحيط الهندي" },
-                        { word: "Madagascar", clue: "Island nation", clueAr: "دولة جزيرة" },
-                        { word: "Mali", clue: "Timbuktu", clueAr: "تمبكتو" },
-                        { word: "Niger", clue: "Sahara country", clueAr: "بلد الصحراء" },
-                        { word: "Chad", clue: "Lake Chad", clueAr: "بحيرة تشاد" },
-                        { word: "Cameroon", clue: "Africa in miniature", clueAr: "إفريقيا مصغرة" },
-                        { word: "Ivory Coast", clue: "Cocoa producer", clueAr: "منتج الكاكاو" },
-                        { word: "Burkina Faso", clue: "Land of honest men", clueAr: "بلاد الشرفاء" },
-                        { word: "Rwanda", clue: "Land of hills", clueAr: "بلاد التلال" },
-                        { word: "Burundi", clue: "Heart of Africa", clueAr: "قلب إفريقيا" },
-                        { word: "Djibouti", clue: "Horn gateway", clueAr: "بوابة القرن" },
-                        { word: "Eritrea", clue: "Red Sea country", clueAr: "بلاد البحر الأحمر" },
-                        { word: "Comoros", clue: "Perfume islands", clueAr: "جزر العطور" },
-                        { word: "Seychelles", clue: "Paradise islands", clueAr: "جزر الجنة" },
-                        { word: "Mauritius", clue: "Island paradise", clueAr: "جنة الجزيرة" },
-                        { word: "Cape Verde", clue: "Green Cape", clueAr: "الرأس الأخضر" },
-                        { word: "Sao Tome", clue: "Chocolate islands", clueAr: "جزر الشوكولا" },
-                        { word: "Equatorial Guinea", clue: "Oil rich", clueAr: "غنية بالنفط" },
-                        { word: "Gabon", clue: "Forest country", clueAr: "بلد الغابات" },
-                        { word: "Congo", clue: "River country", clueAr: "بلد النهر" },
-                        { word: "DR Congo", clue: "Heart of darkness", clueAr: "قلب الظلام" },
-                        { word: "Central African Republic", clue: "Center of Africa", clueAr: "مركز إفريقيا" },
-                        { word: "Malawi", clue: "Warm heart", clueAr: "القلب الدافئ" },
-                        { word: "Lesotho", clue: "Mountain kingdom", clueAr: "مملكة الجبال" },
-                        { word: "Swaziland", clue: "Small kingdom", clueAr: "مملكة صغيرة" },
-                        { word: "Gambia", clue: "Smiling coast", clueAr: "الساحل المبتسم" },
-                        { word: "Guinea", clue: "West coast", clueAr: "الساحل الغربي" },
-                        { word: "Guinea-Bissau", clue: "Small Guinea", clueAr: "غينيا الصغيرة" },
-                        { word: "Sierra Leone", clue: "Lion mountains", clueAr: "جبال الأسد" }
-                    ]
-                },
-                {
-                    name: "Professions - المهن",
-                    words: [
-                        { word: "Doctor", clue: "Heals people", clueAr: "يداوي الناس" },
-                        { word: "Teacher", clue: "Educates students", clueAr: "يعلم التلاميذ" },
-                        { word: "Engineer", clue: "Builds things", clueAr: "يبني الحوايج" },
-                        { word: "Lawyer", clue: "Defends in court", clueAr: "يدافع في المحكمة" },
-                        { word: "Police Officer", clue: "Protects citizens", clueAr: "يحمي المواطنين" },
-                        { word: "Firefighter", clue: "Fights fires", clueAr: "يطفي الحرايق" },
-                        { word: "Nurse", clue: "Assists doctors", clueAr: "يساعد الطبيب" },
-                        { word: "Pilot", clue: "Flies planes", clueAr: "يطير بالطيارة" },
-                        { word: "Chef", clue: "Cooks food", clueAr: "يطبخ الماكلة" },
-                        { word: "Waiter", clue: "Serves food", clueAr: "يخدم الماكلة" },
-                        { word: "Barber", clue: "Cuts hair", clueAr: "يقص الشعر" },
-                        { word: "Mechanic", clue: "Fixes cars", clueAr: "يصلح الطوموبيلات" },
-                        { word: "Electrician", clue: "Works with wires", clueAr: "يخدم الكهرباء" },
-                        { word: "Plumber", clue: "Fixes pipes", clueAr: "يصلح الطيابة" },
-                        { word: "Carpenter", clue: "Works with wood", clueAr: "يخدم الخشب" },
-                        { word: "Painter", clue: "Colors walls", clueAr: "يصبغ الحيطان" },
-                        { word: "Artist", clue: "Creates art", clueAr: "يرسم ويبدع" },
-                        { word: "Musician", clue: "Plays music", clueAr: "يعزف الموسيقى" },
-                        { word: "Singer", clue: "Performs songs", clueAr: "يغني الأغاني" },
-                        { word: "Dancer", clue: "Performs dance", clueAr: "يرقص" },
-                        { word: "Actor", clue: "Performs roles", clueAr: "يمثل الأدوار" },
-                        { word: "Director", clue: "Makes films", clueAr: "يخرج الأفلام" },
-                        { word: "Photographer", clue: "Takes photos", clueAr: "يصور الصور" },
-                        { word: "Journalist", clue: "Reports news", clueAr: "ينقل الأخبار" },
-                        { word: "Writer", clue: "Creates stories", clueAr: "يكتب القصص" },
-                        { word: "Librarian", clue: "Manages books", clueAr: "يدير الكتب" },
-                        { word: "Accountant", clue: "Manages money", clueAr: "يحسب الفلوس" },
-                        { word: "Banker", clue: "Works in bank", clueAr: "يخدم في البنك" },
-                        { word: "Cashier", clue: "Handles money", clueAr: "يمسك الكاس" },
-                        { word: "Salesperson", clue: "Sells products", clueAr: "يبيع المنتجات" },
-                        { word: "Manager", clue: "Leads team", clueAr: "يدير الفريق" },
-                        { word: "CEO", clue: "Company leader", clueAr: "رئيس الشركة" },
-                        { word: "Secretary", clue: "Office assistant", clueAr: "مساعد المكتب" },
-                        { word: "Receptionist", clue: "Greets visitors", clueAr: "يستقبل الزوار" },
-                        { word: "Janitor", clue: "Cleans buildings", clueAr: "ينظف البنايات" },
-                        { word: "Security Guard", clue: "Protects property", clueAr: "يحرس الملكية" },
-                        { word: "Soldier", clue: "Serves military", clueAr: "يخدم في الجيش" },
-                        { word: "Sailor", clue: "Works on ships", clueAr: "يخدم في البواخر" },
-                        { word: "Fisherman", clue: "Catches fish", clueAr: "يصيد الحوت" },
-                        { word: "Farmer", clue: "Grows crops", clueAr: "يزرع المحاصيل" },
-                        { word: "Gardener", clue: "Tends plants", clueAr: "يعتني بالنباتات" },
-                        { word: "Veterinarian", clue: "Animal doctor", clueAr: "طبيب الحيوانات" },
-                        { word: "Zookeeper", clue: "Cares for animals", clueAr: "يعتني بالحيوانات" },
-                        { word: "Scientist", clue: "Does research", clueAr: "يبحث ويجرب" },
-                        { word: "Chemist", clue: "Studies chemicals", clueAr: "يدرس الكيمياء" },
-                        { word: "Physicist", clue: "Studies physics", clueAr: "يدرس الفيزياء" },
-                        { word: "Biologist", clue: "Studies life", clueAr: "يدرس الحياة" },
-                        { word: "Geologist", clue: "Studies Earth", clueAr: "يدرس الأرض" },
-                        { word: "Astronomer", clue: "Studies space", clueAr: "يدرس الفضاء" },
-                        { word: "Archaeologist", clue: "Studies ancient", clueAr: "يدرس القديم" },
-                        { word: "Psychologist", clue: "Studies mind", clueAr: "يدرس النفس" },
-                        { word: "Dentist", clue: "Treats teeth", clueAr: "يعالج السنان" },
-                        { word: "Surgeon", clue: "Performs operations", clueAr: "يجري العمليات" },
-                        { word: "Pharmacist", clue: "Dispenses medicine", clueAr: "يصرف الدواء" },
-                        { word: "Paramedic", clue: "Emergency medical", clueAr: "إسعافات أولية" },
-                        { word: "Therapist", clue: "Provides therapy", clueAr: "يعالج نفسيا" },
-                        { word: "Optometrist", clue: "Eye doctor", clueAr: "طبيب العيون" },
-                        { word: "Radiologist", clue: "X-ray specialist", clueAr: "أخصائي الأشعة" },
-                        { word: "Anesthesiologist", clue: "Sleep doctor", clueAr: "طبيب التخدير" },
-                        { word: "Pediatrician", clue: "Children's doctor", clueAr: "طبيب الأطفال" },
-                        { word: "Cardiologist", clue: "Heart doctor", clueAr: "طبيب القلب" },
-                        { word: "Dermatologist", clue: "Skin doctor", clueAr: "طبيب الجلد" },
-                        { word: "Neurologist", clue: "Brain doctor", clueAr: "طبيب الأعصاب" },
-                        { word: "Architect", clue: "Designs buildings", clueAr: "يصمم البنايات" },
-                        { word: "Civil Engineer", clue: "Builds infrastructure", clueAr: "مهندس مدني" },
-                        { word: "Electrical Engineer", clue: "Designs electrical", clueAr: "مهندس كهرباء" },
-                        { word: "Mechanical Engineer", clue: "Designs machines", clueAr: "مهندس ميكانيك" },
-                        { word: "Software Engineer", clue: "Codes programs", clueAr: "مهندس برمجيات" },
-                        { word: "IT Specialist", clue: "Computer expert", clueAr: "خبير كمبيوتر" },
-                        { word: "Web Developer", clue: "Creates websites", clueAr: "يصمم مواقع" },
-                        { word: "Data Analyst", clue: "Analyzes data", clueAr: "يحلل البيانات" },
-                        { word: "Graphic Designer", clue: "Creates graphics", clueAr: "مصمم جرافيك" },
-                        { word: "Fashion Designer", clue: "Designs clothes", clueAr: "مصمم أزياء" },
-                        { word: "Interior Designer", clue: "Designs interiors", clueAr: "مصمم ديكور" },
-                        { word: "Tailor", clue: "Sews clothes", clueAr: "يخيط الحوايج" },
-                        { word: "Shoemaker", clue: "Makes shoes", clueAr: "يصنع الصبابط" },
-                        { word: "Jeweler", clue: "Makes jewelry", clueAr: "يصنع الحلي" },
-                        { word: "Watchmaker", clue: "Repairs watches", clueAr: "يصلح الساعات" },
-                        { word: "Locksmith", clue: "Works with locks", clueAr: "يصلح القفلات" },
-                        { word: "Welder", clue: "Joins metals", clueAr: "يلحم المعادن" },
-                        { word: "Blacksmith", clue: "Forges metal", clueAr: "حداد" },
-                        { word: "Mason", clue: "Works with stone", clueAr: "بناء" },
-                        { word: "Roofer", clue: "Builds roofs", clueAr: "يبني السطوح" },
-                        { word: "Glazier", clue: "Installs glass", clueAr: "يركب الزجاج" },
-                        { word: "Tiler", clue: "Lays tiles", clueAr: "يركب الزليج" },
-                        { word: "Plasterer", clue: "Applies plaster", clueAr: "يبلط" },
-                        { word: "Decorator", clue: "Decorates spaces", clueAr: "يزين الفضاءات" },
-                        { word: "Florist", plue: "Arranges flowers", clueAr: "ينسق الزهور" },
-                        { word: "Butcher", clue: "Cuts meat", clueAr: "جزار" },
-                        { word: "Baker", clue: "Bakes bread", clueAr: "خباز" },
-                        { word: "Pastry Chef", clue: "Makes pastries", clueAr: "حلواني" },
-                        { word: "Bartender", clue: "Mixes drinks", clueAr: "يحضر المشروبات" },
-                        { word: "Sommelier", clue: "Wine expert", clueAr: "خبير نبيذ" },
-                        { word: "Taxi Driver", clue: "Drives taxi", clueAr: "طاكسي" },
-                        { word: "Bus Driver", clue: "Drives bus", clueAr: "سائق باص" },
-                        { word: "Truck Driver", clue: "Drives truck", clueAr: "سائق شاحنة" },
-                        { word: "Train Conductor", clue: "Operates train", clueAr: "سائق قطار" },
-                        { word: "Flight Attendant", clue: "Serves passengers", clueAr: "مضيفة طيران" },
-                        { word: "Tour Guide", clue: "Guides tourists", clueAr: "مرشد سياحي" }
-                    ]
-                },
-                {
-                    name: "Transport - النقل",
-                    words: [
-                        { word: "Car", clue: "Four wheels", clueAr: "أربع عجلات" },
-                        { word: "Bus", clue: "Public transport", clueAr: "نقل عمومي" },
-                        { word: "Taxi", clue: "Yellow cab", clueAr: "طاكسي" },
-                        { word: "Truck", clue: "Cargo vehicle", clueAr: "شاحنة" },
-                        { word: "Motorcycle", clue: "Two wheels", clueAr: "عجلتين" },
-                        { word: "Bicycle", clue: "Pedal power", clueAr: "بيسكليت" },
-                        { word: "Scooter", clue: "Small bike", clueAr: "دراجة صغيرة" },
-                        { word: "Train", clue: "Runs on tracks", clueAr: "يمشي على السكة" },
-                        { word: "Tram", clue: "City rail", clueAr: "ترامواي" },
-                        { word: "Subway", clue: "Underground train", clueAr: "مترو تحت الأرض" },
-                        { word: "Airplane", clue: "Flies high", clueAr: "يطير عالي" },
-                        { word: "Helicopter", clue: "Rotating blades", clueAr: "مروحية" },
-                        { word: "Jet", clue: "Fast plane", clueAr: "طيارة سريعة" },
-                        { word: "Hot Air Balloon", clue: "Floating basket", clueAr: "منطاد" },
-                        { word: "Ship", clue: "Large boat", clueAr: "باخرة كبيرة" },
-                        { word: "Boat", clue: "Water vessel", clueAr: "فلوكة" },
-                        { word: "Yacht", clue: "Luxury boat", clueAr: "يخت" },
-                        { word: "Ferry", clue: "Water transport", clueAr: "معدية" },
-                        { word: "Cruise Ship", clue: "Vacation boat", clueAr: "باخرة سياحية" },
-                        { word: "Submarine", clue: "Underwater vessel", clueAr: "غواصة" },
-                        { word: "Kayak", clue: "Small paddle boat", clueAr: "قارب تجديف" },
-                        { word: "Canoe", clue: "Narrow boat", clueAr: "كانو" },
-                        { word: "Raft", clue: "Flat boat", clueAr: "طوف" },
-                        { word: "Jet Ski", clue: "Water motorcycle", clueAr: "دراجة مائية" },
-                        { word: "Skateboard", clue: "Wheeled board", clueAr: "لوح التزلج" },
-                        { word: "Roller Skates", clue: "Wheeled shoes", clueAr: "أحذية بعجلات" },
-                        { word: "Segway", clue: "Self-balancing", clueAr: "سيغواي" },
-                        { word: "Golf Cart", clue: "Small electric car", clueAr: "عربة جولف" },
-                        { word: "Rickshaw", clue: "Three-wheel taxi", clueAr: "توك توك" },
-                        { word: "Cable Car", clue: "Aerial transport", clueAr: "تلفريك" },
-                        { word: "Gondola", clue: "Venice boat", clueAr: "قارب البندقية" },
-                        { word: "Ambulance", clue: "Emergency vehicle", clueAr: "سيارة الإسعاف" },
-                        { word: "Fire Truck", clue: "Red emergency", clueAr: "سيارة الإطفاء" },
-                        { word: "Police Car", clue: "Law enforcement", clueAr: "سيارة الشرطة" },
-                        { word: "Limousine", clue: "Luxury car", clueAr: "سيارة فخمة" },
-                        { word: "Van", clue: "Small truck", clueAr: "فان" },
-                        { word: "SUV", clue: "Sport utility", clueAr: "سيارة دفع رباعي" },
-                        { word: "Convertible", clue: "Open top car", clueAr: "سيارة مكشوفة" },
-                        { word: "Pickup Truck", clue: "Bed truck", clueAr: "بيكاب" },
-                        { word: "Tractor", clue: "Farm vehicle", clueAr: "جرار فلاحي" },
-                        { word: "Bulldozer", clue: "Heavy pusher", clueAr: "جرافة" },
-                        { word: "Excavator", clue: "Digging machine", clueAr: "حفارة" },
-                        { word: "Crane", clue: "Lifting machine", clueAr: "رافعة" },
-                        { word: "Forklift", clue: "Warehouse lifter", clueAr: "رافعة شوكية" },
-                        { word: "Cement Mixer", clue: "Rotating drum", clueAr: "خلاطة إسمنت" },
-                        { word: "Dump Truck", clue: "Tipping truck", clueAr: "شاحنة قلابة" },
-                        { word: "Tank", clue: "Military vehicle", clueAr: "دبابة" },
-                        { word: "ATV", clue: "All-terrain vehicle", clueAr: "دراجة رباعية" },
-                        { word: "Snowmobile", clue: "Snow vehicle", clueAr: "دراجة ثلجية" },
-                        { word: "Hovercraft", clue: "Air cushion vehicle", clueAr: "مركبة هوائية" },
-                        { word: "Glider", clue: "Engineless aircraft", clueAr: "طائرة شراعية" },
-                        { word: "Parachute", clue: "Falling slowly", clueAr: "مظلة" },
-                        { word: "Hang Glider", clue: "Wing flying", clueAr: "طائرة معلقة" },
-                        { word: "Paraglider", clue: "Parachute wing", clueAr: "مظلة شراعية" },
-                        { word: "Rocket", clue: "Space vehicle", clueAr: "صاروخ" },
-                        { word: "Space Shuttle", clue: "Reusable spacecraft", clueAr: "مكوك فضائي" },
-                        { word: "Satellite", clue: "Orbiting device", clueAr: "قمر صناعي" },
-                        { word: "Hoverboard", clue: "Self-balancing board", clueAr: "لوح طائر" },
-                        { word: "Electric Scooter", clue: "E-scooter", clueAr: "دراجة كهربائية" },
-                        { word: "Monorail", clue: "Single rail train", clueAr: "قطار أحادي" },
-                        { word: "Maglev Train", clue: "Magnetic train", clueAr: "قطار مغناطيسي" },
-                        { word: "Funicular", clue: "Cable railway", clueAr: "سكة حديدية مائلة" },
-                        { word: "Chairlift", clue: "Ski lift", clueAr: "مصعد كراسي" },
-                        { word: "Elevator", clue: "Vertical transport", clueAr: "مصعد" },
-                        { word: "Escalator", clue: "Moving stairs", clueAr: "سلم متحرك" },
-                        { word: "Moving Walkway", clue: "Conveyor belt", clueAr: "ممر متحرك" },
-                        { word: "Shopping Cart", clue: "Store cart", clueAr: "عربة التسوق" },
-                        { word: "Wheelchair", clue: "Mobility aid", clueAr: "كرسي متحرك" },
-                        { word: "Baby Stroller", clue: "Baby carriage", clueAr: "عربة أطفال" },
-                        { word: "Wagon", clue: "Four-wheel cart", clueAr: "عربة" },
-                        { word: "Carriage", clue: "Horse-drawn vehicle", clueAr: "عربة خيول" },
-                        { word: "Chariot", clue: "Ancient cart", clueAr: "عربة حربية" },
-                        { word: "Sleigh", clue: "Snow sled", clueAr: "زلاجة" },
-                        { word: "Sled", clue: "Snow slider", clueAr: "مزلاجة" },
-                        { word: "Toboggan", clue: "Long sled", clueAr: "زلاجة طويلة" },
-                        { word: "Bobsled", clue: "Racing sled", clueAr: "زلاجة سباق" },
-                        { word: "Luge", clue: "Small racing sled", clueAr: "زلاجة صغيرة" },
-                        { word: "Unicycle", clue: "One wheel", clueAr: "دراجة أحادية" },
-                        { word: "Tricycle", clue: "Three wheels", clueAr: "دراجة ثلاثية" },
-                        { word: "Tandem Bike", clue: "Two-person bike", clueAr: "دراجة ثنائية" },
-                        { word: "Recumbent Bike", clue: "Lying down bike", clueAr: "دراجة مستلقية" },
-                        { word: "Mountain Bike", clue: "Off-road bike", clueAr: "دراجة جبلية" },
-                        { word: "Road Bike", clue: "Racing bike", clueAr: "دراجة سباق" },
-                        { word: "BMX", clue: "Stunt bike", clueAr: "دراجة حيل" },
-                        { word: "Cruiser Bike", clue: "Comfort bike", clueAr: "دراجة راحة" },
-                        { word: "Electric Bike", clue: "E-bike", clueAr: "دراجة كهربائية" },
-                        { word: "Cargo Bike", clue: "Delivery bike", clueAr: "دراجة شحن" },
-                        { word: "Folding Bike", clue: "Compact bike", clueAr: "دراجة قابلة للطي" },
-                        { word: "Penny Farthing", clue: "Big wheel bike", clueAr: "دراجة قديمة" },
-                        { word: "Moped", clue: "Motorized bicycle", clueAr: "دراجة نارية صغيرة" },
-                        { word: "Dirt Bike", clue: "Off-road motorcycle", clueAr: "دراجة نارية برية" },
-                        { word: "Cruiser Motorcycle", clue: "Relaxed bike", clueAr: "دراجة نارية راحة" },
-                        { word: "Sport Bike", clue: "Racing motorcycle", clueAr: "دراجة نارية رياضية" },
-                        { word: "Touring Motorcycle", clue: "Long-distance bike", clueAr: "دراجة نارية سياحية" },
-                        { word: "Chopper", clue: "Custom motorcycle", clueAr: "دراجة نارية معدلة" },
-                        { word: "Scooter Motorcycle", clue: "Step-through bike", clueAr: "سكوتر" },
-                        { word: "Vespa", clue: "Italian scooter", clueAr: "فيسبا" },
-                        { word: "Segway", clue: "Personal transporter", clueAr: "سيغواي" },
-                        { word: "Hoverboard", clue: "Self-balancing scooter", clueAr: "هوفربورد" }
-                    ]
-                },
-                {
-                    name: "Music - الموسيقى",
-                    words: [
-                        { word: "Guitar", clue: "Six strings", clueAr: "ستة خيوط" },
-                        { word: "Piano", clue: "Black and white keys", clueAr: "مفاتيح بيضاء وسوداء" },
-                        { word: "Drums", clue: "Hit with sticks", clueAr: "يضرب بالعصيان" },
-                        { word: "Violin", clue: "Bow instrument", clueAr: "آلة بالقوس" },
-                        { word: "Flute", clue: "Blow instrument", clueAr: "آلة نفخ" },
-                        { word: "Saxophone", clue: "Jazz horn", clueAr: "بوق الجاز" },
-                        { word: "Trumpet", clue: "Brass instrument", clueAr: "بوق نحاسي" },
-                        { word: "Clarinet", clue: "Woodwind", clueAr: "كلارينيت" },
-                        { word: "Harmonica", clue: "Mouth organ", clueAr: "هارمونيكا" },
-                        { word: "Accordion", clue: "Squeeze box", clueAr: "أكورديون" },
-                        { word: "Harp", clue: "Many strings", clueAr: "خيوط كثيرة" },
-                        { word: "Cello", clue: "Big violin", clueAr: "كمان كبير" },
-                        { word: "Double Bass", clue: "Biggest string", clueAr: "أكبر آلة وترية" },
-                        { word: "Banjo", clue: "Country strings", clueAr: "بانجو" },
-                        { word: "Ukulele", clue: "Hawaiian guitar", clueAr: "جيتار هاوايي" },
-                        { word: "Mandolin", clue: "Small strings", clueAr: "ماندولين" },
-                        { word: "Lute", clue: "Ancient strings", clueAr: "عود قديم" },
-                        { word: "Sitar", clue: "Indian strings", clueAr: "آلة هندية" },
-                        { word: "Tambourine", clue: "Jingle drum", clueAr: "دف" },
-                        { word: "Bongo", clue: "Hand drums", clueAr: "طبول يدوية" },
-                        { word: "Conga", clue: "Tall drum", clueAr: "طبل طويل" },
-                        { word: "Djembe", clue: "African drum", clueAr: "طبل إفريقي" },
-                        { word: "Tabla", clue: "Indian drums", clueAr: "طبول هندية" },
-                        { word: "Xylophone", clue: "Wooden bars", clueAr: "قضبان خشبية" },
-                        { word: "Marimba", clue: "Big xylophone", clueAr: "زيلوفون كبير" },
-                        { word: "Glockenspiel", clue: "Metal bars", clueAr: "قضبان معدنية" },
-                        { word: "Triangle", clue: "Three-sided metal", clueAr: "معدن مثلث" },
-                        { word: "Cymbals", clue: "Crash plates", clueAr: "صنوج" },
-                        { word: "Gong", clue: "Large plate", clueAr: "صنج كبير" },
-                        { word: "Cowbell", clue: "Metal bell", clueAr: "جرس بقرة" },
-                        { word: "Castanets", clue: "Hand clappers", clueAr: "كاستانيت" },
-                        { word: "Maracas", clue: "Shaker", clueAr: "خشخيشة" },
-                        { word: "Shaker", clue: "Rhythm instrument", clueAr: "آلة إيقاعية" },
-                        { word: "Rainstick", clue: "Rain sound", clueAr: "عصا المطر" },
-                        { word: "Kazoo", clue: "Buzzing instrument", clueAr: "كازو" },
-                        { word: "Oboe", clue: "Double reed", clueAr: "مزمار مزدوج" },
-                        { word: "Bassoon", clue: "Low woodwind", clueAr: "باصون" },
-                        { word: "Trombone", clue: "Sliding brass", clueAr: "ترومبون" },
-                        { word: "French Horn", clue: "Coiled brass", clueAr: "بوق فرنسي" },
-                        { word: "Tuba", clue: "Biggest brass", clueAr: "أكبر بوق" },
-                        { word: "Euphonium", clue: "Small tuba", clueAr: "توبا صغير" },
-                        { word: "Cornet", clue: "Small trumpet", clueAr: "بوق صغير" },
-                        { word: "Bugle", clue: "Military horn", clueAr: "بوق عسكري" },
-                        { word: "Bagpipes", clue: "Scottish pipes", clueAr: "مزمار اسكتلندي" },
-                        { word: "Pan Flute", clue: "Multiple pipes", clueAr: "مزمار متعدد" },
-                        { word: "Recorder", clue: "Simple flute", clueAr: "مزمار بسيط" },
-                        { word: "Ocarina", clue: "Egg-shaped flute", clueAr: "مزمار بيضاوي" },
-                        { word: "Didgeridoo", clue: "Australian tube", clueAr: "أنبوب أسترالي" },
-                        { word: "Synthesizer", clue: "Electronic keys", clueAr: "آلة إلكترونية" },
-                        { word: "Keyboard", clue: "Electronic piano", clueAr: "بيانو إلكتروني" },
-                        { word: "Organ", clue: "Church instrument", clueAr: "أرغن" },
-                        { word: "Harpsichord", clue: "Plucked keys", clueAr: "هاربسكورد" },
-                        { word: "Electric Guitar", clue: "Amplified strings", clueAr: "جيتار كهربائي" },
-                        { word: "Bass Guitar", clue: "Low strings", clueAr: "جيتار باص" },
-                        { word: "Acoustic Guitar", clue: "Hollow body guitar", clueAr: "جيتار صوتي" },
-                        { word: "Classical Guitar", clue: "Nylon strings", clueAr: "جيتار كلاسيكي" },
-                        { word: "Twelve-String Guitar", clue: "Double strings", clueAr: "جيتار 12 وتر" },
-                        { word: "Resonator Guitar", clue: "Metal cone guitar", clueAr: "جيتار معدني" },
-                        { word: "Lap Steel Guitar", clue: "Horizontal guitar", clueAr: "جيتار أفقي" },
-                        { word: "Pedal Steel Guitar", clue: "Pedal guitar", clueAr: "جيتار بدواسات" },
-                        { word: "Vibraphone", clue: "Vibrating bars", clueAr: "فيبرافون" },
-                        { word: "Timpani", clue: "Kettle drums", clueAr: "طبول كبيرة" },
-                        { word: "Snare Drum", clue: "Wire drum", clueAr: "طبل بأسلاك" },
-                        { word: "Bass Drum", clue: "Big drum", clueAr: "طبل كبير" },
-                        { word: "Tom-Tom", clue: "Drum set piece", clueAr: "طبل متوسط" },
-                        { word: "Hi-Hat", clue: "Foot cymbals", clueAr: "صنج القدم" },
-                        { word: "Ride Cymbal", clue: "Rhythm cymbal", clueAr: "صنج الإيقاع" },
-                        { word: "Crash Cymbal", clue: "Accent cymbal", clueAr: "صنج التركيز" },
-                        { word: "Splash Cymbal", clue: "Small cymbal", clueAr: "صنج صغير" },
-                        { word: "China Cymbal", clue: "Trashy cymbal", clueAr: "صنج صيني" },
-                        { word: "Electric Drums", clue: "Electronic drum kit", clueAr: "طبول إلكترونية" },
-                        { word: "Cajon", clue: "Box drum", clueAr: "طبل صندوق" },
-                        { word: "Darbuka", clue: "Goblet drum", clueAr: "دربوكة" },
-                        { word: "Bendir", clue: "Frame drum", clueAr: "بندير" },
-                        { word: "Riq", clue: "Tambourine type", clueAr: "رق" },
-                        { word: "Oud", clue: "Arabic lute", clueAr: "عود" },
-                        { word: "Qanun", clue: "Zither instrument", clueAr: "قانون" },
-                        { word: "Ney", clue: "Arabic flute", clueAr: "ناي" },
-                        { word: "Mizmar", clue: "Double reed pipe", clueAr: "مزمار" },
-                        { word: "Rabab", clue: "Bowed instrument", clueAr: "رباب" },
-                        { word: "Kamanjah", clue: "Arabic violin", clueAr: "كمنجة" },
-                        { word: "Santoor", clue: "Hammered dulcimer", clueAr: "سنطور" },
-                        { word: "Erhu", clue: "Chinese violin", clueAr: "كمان صيني" },
-                        { word: "Pipa", clue: "Chinese lute", clueAr: "عود صيني" },
-                        { word: "Guzheng", clue: "Chinese zither", clueAr: "قانون صيني" },
-                        { word: "Shamisen", clue: "Japanese lute", clueAr: "عود ياباني" },
-                        { word: "Koto", clue: "Japanese zither", clueAr: "قانون ياباني" },
-                        { word: "Shakuhachi", clue: "Japanese flute", clueAr: "مزمار ياباني" },
-                        { word: "Theremin", clue: "Touchless instrument", clueAr: "ثيرمين" },
-                        { word: "Melodica", clue: "Keyboard harmonica", clueAr: "ميلوديكا" },
-                        { word: "Hurdy-Gurdy", clue: "Cranked strings", clueAr: "آلة بعجلة" },
-                        { word: "Dulcimer", clue: "Hammered strings", clueAr: "دولسيمر" },
-                        { word: "Autoharp", clue: "Button zither", clueAr: "أوتوهارب" },
-                        { word: "Zither", clue: "Flat strings", clueAr: "قيثارة" },
-                        { word: "Psaltery", clue: "Plucked zither", clueAr: "سالتيري" },
-                        { word: "Lyre", clue: "Ancient Greek", clueAr: "قيثارة يونانية" },
-                        { word: "Kalimba", clue: "Thumb piano", clueAr: "بيانو الإبهام" }
-                    ]
-                },
-                {
-                    name: "Technology - التكنولوجيا",
-                    words: [
-                        { word: "Computer", clue: "Desktop machine", clueAr: "جهاز المكتب" },
-                        { word: "Laptop", clue: "Portable computer", clueAr: "كمبيوتر محمول" },
-                        { word: "Smartphone", clue: "Mobile phone", clueAr: "هاتف ذكي" },
-                        { word: "Tablet", clue: "Touch screen", clueAr: "لوحة لمسية" },
-                        { word: "Monitor", clue: "Display screen", clueAr: "شاشة العرض" },
-                        { word: "Keyboard", clue: "Typing device", clueAr: "جهاز الطباعة" },
-                        { word: "Mouse", clue: "Clicking device", clueAr: "فأرة" },
-                        { word: "Printer", clue: "Paper output", clueAr: "طابعة" },
-                        { word: "Scanner", clue: "Document reader", clueAr: "ماسح ضوئي" },
-                        { word: "Webcam", clue: "Internet camera", clueAr: "كاميرا ويب" },
-                        { word: "Headphones", clue: "Ear speakers", clueAr: "سماعات الأذن" },
-                        { word: "Microphone", clue: "Sound recorder", clueAr: "ميكروفون" },
-                        { word: "Speaker", clue: "Sound output", clueAr: "مكبر الصوت" },
-                        { word: "Router", clue: "Internet box", clueAr: "موزع الإنترنت" },
-                        { word: "Modem", clue: "Internet connector", clueAr: "مودم" },
-                        { word: "USB Drive", clue: "Flash storage", clueAr: "ذاكرة فلاش" },
-                        { word: "Hard Drive", clue: "Data storage", clueAr: "قرص صلب" },
-                        { word: "SSD", clue: "Solid state drive", clueAr: "قرص الحالة الصلبة" },
-                        { word: "RAM", clue: "Memory chip", clueAr: "ذاكرة الوصول" },
-                        { word: "CPU", clue: "Processor", clueAr: "المعالج" },
-                        { word: "GPU", clue: "Graphics processor", clueAr: "معالج الرسومات" },
-                        { word: "Motherboard", clue: "Main circuit", clueAr: "اللوحة الأم" },
-                        { word: "Power Supply", clue: "Energy provider", clueAr: "مزود الطاقة" },
-                        { word: "Cooling Fan", clue: "Heat remover", clueAr: "مروحة التبريد" },
-                        { word: "Cable", clue: "Wire connector", clueAr: "كابل" },
-                        { word: "Charger", clue: "Battery filler", clueAr: "شاحن" },
-                        { word: "Battery", clue: "Power storage", clueAr: "بطارية" },
-                        { word: "Remote Control", clue: "Wireless controller", clueAr: "جهاز التحكم" },
-                        { word: "Television", clue: "Video screen", clueAr: "تلفاز" },
-                        { word: "Radio", clue: "Audio receiver", clueAr: "راديو" },
-                        { word: "Camera", clue: "Photo taker", clueAr: "كاميرا" },
-                        { word: "Video Camera", clue: "Movie recorder", clueAr: "كاميرا فيديو" },
-                        { word: "Projector", clue: "Large display", clueAr: "جهاز العرض" },
-                        { word: "Smart Watch", clue: "Wrist computer", clueAr: "ساعة ذكية" },
-                        { word: "Fitness Tracker", clue: "Activity monitor", clueAr: "متتبع اللياقة" },
-                        { word: "E-Reader", clue: "Digital book", clueAr: "قارئ إلكتروني" },
-                        { word: "Game Console", clue: "Gaming system", clueAr: "جهاز ألعاب" },
-                        { word: "VR Headset", clue: "Virtual reality", clueAr: "نظارة الواقع الافتراضي" },
-                        { word: "Drone", clue: "Flying robot", clueAr: "طائرة بدون طيار" },
-                        { word: "3D Printer", clue: "Object maker", clueAr: "طابعة ثلاثية" },
-                        { word: "Smart Speaker", clue: "Voice assistant", clueAr: "مكبر صوت ذكي" },
-                        { word: "Security Camera", clue: "Surveillance device", clueAr: "كاميرا مراقبة" },
-                        { word: "Doorbell Camera", clue: "Smart doorbell", clueAr: "جرس باب ذكي" },
-                        { word: "Smart Lock", clue: "Electronic lock", clueAr: "قفل ذكي" },
-                        { word: "Thermostat", clue: "Temperature control", clueAr: "منظم حرارة" },
-                        { word: "Smart Light", clue: "Controlled bulb", clueAr: "مصباح ذكي" },
-                        { word: "Solar Panel", clue: "Sun energy", clueAr: "لوح شمسي" },
-                        { word: "Wind Turbine", clue: "Wind energy", clueAr: "توربين رياح" },
-                        { word: "Electric Car", clue: "Battery vehicle", clueAr: "سيارة كهربائية" },
-                        { word: "Robot", clue: "Automated machine", clueAr: "روبوت" },
-                        { word: "AI Assistant", clue: "Smart helper", clueAr: "مساعد ذكي" },
-                        { word: "Barcode Scanner", clue: "Code reader", clueAr: "قارئ الباركود" },
-                        { word: "Credit Card Reader", clue: "Payment device", clueAr: "قارئ البطاقة" },
-                        { word: "ATM", clue: "Cash machine", clueAr: "موزع نقود" },
-                        { word: "POS Terminal", clue: "Payment terminal", clueAr: "جهاز الدفع" },
-                        { word: "Digital Scale", clue: "Electronic weight", clueAr: "ميزان رقمي" },
-                        { word: "Calculator", clue: "Math device", clueAr: "آلة حاسبة" },
-                        { word: "GPS", clue: "Location finder", clueAr: "جهاز تحديد المواقع" },
-                        { word: "Satellite Dish", clue: "Signal receiver", clueAr: "طبق الأقمار" },
-                        { word: "Antenna", clue: "Signal catcher", clueAr: "هوائي" },
-                        { word: "Server", clue: "Data provider", clueAr: "خادم" },
-                        { word: "Cloud Storage", clue: "Online storage", clueAr: "تخزين سحابي" },
-                        { word: "Firewall", clue: "Security barrier", clueAr: "جدار ناري" },
-                        { word: "Antivirus", clue: "Protection software", clueAr: "مضاد فيروسات" },
-                        { word: "Operating System", clue: "Computer software", clueAr: "نظام التشغيل" },
-                        { word: "Browser", clue: "Web navigator", clueAr: "متصفح" },
-                        { word: "Search Engine", clue: "Web finder", clueAr: "محرك بحث" },
-                        { word: "Social Media", clue: "Online network", clueAr: "وسائل التواصل" },
-                        { word: "Email", clue: "Electronic mail", clueAr: "بريد إلكتروني" },
-                        { word: "Video Call", clue: "Face chat", clueAr: "مكالمة فيديو" },
-                        { word: "Streaming", clue: "Online video", clueAr: "بث مباشر" },
-                        { word: "Download", clue: "Get file", clueAr: "تحميل" },
-                        { word: "Upload", clue: "Send file", clueAr: "رفع ملف" },
-                        { word: "Wifi", clue: "Wireless internet", clueAr: "إنترنت لاسلكي" },
-                        { word: "Bluetooth", clue: "Short range wireless", clueAr: "بلوتوث" },
-                        { word: "NFC", clue: "Near field", clueAr: "اتصال قريب" },
-                        { word: "QR Code", clue: "Square barcode", clueAr: "رمز مربع" },
-                        { word: "Touchscreen", clue: "Touch interface", clueAr: "شاشة لمسية" },
-                        { word: "Stylus", clue: "Touch pen", clueAr: "قلم لمسي" },
-                        { word: "Trackpad", clue: "Touch mouse", clueAr: "لوحة لمس" },
-                        { word: "Joystick", clue: "Game controller", clueAr: "عصا تحكم" },
-                        { word: "Gamepad", clue: "Gaming controller", clueAr: "يد التحكم" },
-                        { word: "Motion Sensor", clue: "Movement detector", clueAr: "مستشعر حركة" },
-                        { word: "Fingerprint Scanner", clue: "Biometric reader", clueAr: "قارئ بصمة" },
-                        { word: "Face Recognition", clue: "Face scanner", clueAr: "تعرف على الوجه" },
-                        { word: "Voice Recognition", clue: "Voice identifier", clueAr: "تعرف على الصوت" },
-                        { word: "Augmented Reality", clue: "Mixed reality", clueAr: "واقع معزز" },
-                        { word: "Blockchain", clue: "Digital ledger", clueAr: "سلسلة كتل" },
-                        { word: "Cryptocurrency", clue: "Digital money", clueAr: "عملة رقمية" },
-                        { word: "Machine Learning", clue: "AI learning", clueAr: "تعلم آلي" },
-                        { word: "Neural Network", clue: "AI brain", clueAr: "شبكة عصبية" },
-                        { word: "Quantum Computer", clue: "Advanced processor", clueAr: "كمبيوتر كمي" },
-                        { word: "Hologram", clue: "3D image", clueAr: "صورة ثلاثية" },
-                        { word: "Biometric", clue: "Body measurement", clueAr: "قياس حيوي" },
-                        { word: "Encryption", clue: "Code protection", clueAr: "تشفير" },
-                        { word: "Algorithm", clue: "Code steps", clueAr: "خوارزمية" },
-                        { word: "Database", clue: "Data collection", clueAr: "قاعدة بيانات" }
-                    ]
-                },
-                {
-                    name: "Home Items - أدوات المنزل",
-                    words: [
-                        { word: "Bed", clue: "Sleep furniture", clueAr: "أثاث النوم" },
-                        { word: "Sofa", clue: "Living room seat", clueAr: "كنبة" },
-                        { word: "Table", clue: "Flat surface", clueAr: "طاولة" },
-                        { word: "Chair", clue: "Sitting furniture", clueAr: "كرسي" },
-                        { word: "Wardrobe", clue: "Clothes storage", clueAr: "خزانة الملابس" },
-                        { word: "Dresser", clue: "Drawer furniture", clueAr: "خزانة أدراج" },
-                        { word: "Nightstand", clue: "Bedside table", clueAr: "طاولة السرير" },
-                        { word: "Bookshelf", clue: "Book storage", clueAr: "رف الكتب" },
-                        { word: "Desk", clue: "Work table", clueAr: "مكتب" },
-                        { word: "Coffee Table", clue: "Low table", clueAr: "طاولة صالون" },
-                        { word: "Dining Table", clue: "Eating table", clueAr: "طاولة الطعام" },
-                        { word: "TV Stand", clue: "Television holder", clueAr: "حامل التلفاز" },
-                        { word: "Lamp", clue: "Light source", clueAr: "مصباح" },
-                        { word: "Ceiling Fan", clue: "Overhead cooler", clueAr: "مروحة السقف" },
-                        { word: "Curtain", clue: "Window cover", clueAr: "ستارة" },
-                        { word: "Blinds", clue: "Slat cover", clueAr: "ستائر عمودية" },
-                        { word: "Carpet", clue: "Floor cover", clueAr: "سجادة" },
-                        { word: "Rug", clue: "Small carpet", clueAr: "زربية" },
-                        { word: "Mirror", clue: "Reflection", clueAr: "مرآة" },
-                        { word: "Picture Frame", clue: "Photo holder", clueAr: "إطار صورة" },
-                        { word: "Clock", clue: "Time teller", clueAr: "ساعة حائط" },
-                        { word: "Vase", clue: "Flower holder", clueAr: "مزهرية" },
-                        { word: "Plant Pot", clue: "Plant container", clueAr: "إناء نبات" },
-                        { word: "Cushion", clue: "Soft pillow", clueAr: "وسادة" },
-                        { word: "Pillow", clue: "Head rest", clueAr: "مخدة" },
-                        { word: "Blanket", clue: "Bed cover", clueAr: "غطاء" },
-                        { word: "Bedsheet", clue: "Bed fabric", clueAr: "ملاءة" },
-                        { word: "Comforter", clue: "Thick blanket", clueAr: "لحاف" },
-                        { word: "Mattress", clue: "Bed cushion", clueAr: "فراش" },
-                        { word: "Fan", clue: "Air cooler", clueAr: "مروحة" },
-                        { word: "Heater", clue: "Room warmer", clueAr: "مدفأة" },
-                        { word: "Air Conditioner", clue: "Climate control", clueAr: "مكيف" },
-                        { word: "Humidifier", clue: "Moisture adder", clueAr: "مرطب" },
-                        { word: "Dehumidifier", clue: "Moisture remover", clueAr: "مزيل رطوبة" },
-                        { word: "Vacuum Cleaner", clue: "Floor cleaner", clueAr: "مكنسة كهربائية" },
-                        { word: "Broom", clue: "Floor sweeper", clueAr: "مكنسة" },
-                        { word: "Mop", clue: "Floor washer", clueAr: "ممسحة" },
-                        { word: "Bucket", clue: "Water container", clueAr: "دلو" },
-                        { word: "Dustpan", clue: "Dust collector", clueAr: "مجرفة" },
-                        { word: "Trash Can", clue: "Waste bin", clueAr: "سلة مهملات" },
-                        { word: "Laundry Basket", clue: "Clothes holder", clueAr: "سلة غسيل" },
-                        { word: "Iron", clue: "Clothes presser", clueAr: "مكواة" },
-                        { word: "Ironing Board", clue: "Iron surface", clueAr: "طاولة كي" },
-                        { word: "Washing Machine", clue: "Clothes washer", clueAr: "غسالة" },
-                        { word: "Dryer", clue: "Clothes drier", clueAr: "نشافة" },
-                        { word: "Refrigerator", clue: "Food cooler", clueAr: "ثلاجة" },
-                        { word: "Freezer", clue: "Food freezer", clueAr: "مجمد" },
-                        { word: "Oven", clue: "Baking box", clueAr: "فرن" },
-                        { word: "Stove", clue: "Cooking surface", clueAr: "موقد" },
-                        { word: "Microwave", clue: "Quick heater", clueAr: "ميكرويف" },
-                        { word: "Toaster", clue: "Bread heater", clueAr: "محمصة" },
-                        { word: "Blender", clue: "Food mixer", clueAr: "خلاط" },
-                        { word: "Food Processor", clue: "Kitchen machine", clueAr: "معالج طعام" },
-                        { word: "Mixer", clue: "Batter beater", clueAr: "خلاط يدوي" },
-                        { word: "Coffee Maker", clue: "Coffee brewer", clueAr: "صانعة قهوة" },
-                        { word: "Kettle", clue: "Water boiler", clueAr: "غلاية" },
-                        { word: "Teapot", clue: "Tea maker", clueAr: "إبريق شاي" },
-                        { word: "Dish", clue: "Plate", clueAr: "صحن" },
-                        { word: "Bowl", clue: "Round dish", clueAr: "وعاء" },
-                        { word: "Cup", clue: "Drink holder", clueAr: "كأس" },
-                        { word: "Glass", clue: "Clear cup", clueAr: "كأس زجاجي" },
-                        { word: "Mug", clue: "Handle cup", clueAr: "كوب" },
-                        { word: "Fork", clue: "Pronged utensil", clueAr: "شوكة" },
-                        { word: "Knife", clue: "Cutting tool", clueAr: "سكين" },
-                        { word: "Spoon", clue: "Scooping tool", clueAr: "ملعقة" },
-                        { word: "Chopsticks", clue: "Asian utensils", clueAr: "عيدان الأكل" },
-                        { word: "Cutting Board", clue: "Chopping surface", clueAr: "لوح تقطيع" },
-                        { word: "Pan", clue: "Frying vessel", clueAr: "مقلاة" },
-                        { word: "Pot", clue: "Cooking vessel", clueAr: "قدر" },
-                        { word: "Lid", clue: "Pot cover", clueAr: "غطاء" },
-                        { word: "Colander", clue: "Strainer", clueAr: "مصفاة" },
-                        { word: "Grater", clue: "Food shredder", clueAr: "مبشرة" },
-                        { word: "Peeler", clue: "Skin remover", clueAr: "مقشرة" },
-                        { word: "Can Opener", clue: "Tin opener", clueAr: "فتاحة علب" },
-                        { word: "Bottle Opener", clue: "Cap remover", clueAr: "فتاحة زجاجات" },
-                        { word: "Corkscrew", clue: "Wine opener", clueAr: "فتاحة نبيذ" },
-                        { word: "Measuring Cup", clue: "Volume measurer", clueAr: "كوب قياس" },
-                        { word: "Measuring Spoon", clue: "Amount measurer", clueAr: "ملعقة قياس" },
-                        { word: "Kitchen Scale", clue: "Food weigher", clueAr: "ميزان مطبخ" },
-                        { word: "Timer", clue: "Time counter", clueAr: "مؤقت" },
-                        { word: "Apron", clue: "Cooking protector", clueAr: "مئزر" },
-                        { word: "Oven Mitt", clue: "Hot pad", clueAr: "قفاز فرن" },
-                        { word: "Dish Rack", clue: "Plate dryer", clueAr: "حامل أطباق" },
-                        { word: "Sponge", clue: "Dish cleaner", clueAr: "إسفنجة" },
-                        { word: "Dish Soap", clue: "Plate cleaner", clueAr: "سائل جلي" },
-                        { word: "Paper Towel", clue: "Disposable wipe", clueAr: "منشفة ورقية" },
-                        { word: "Napkin", clue: "Mouth wiper", clueAr: "منديل" },
-                        { word: "Placemat", clue: "Table protector", clueAr: "حصيرة طاولة" },
-                        { word: "Coaster", clue: "Cup mat", clueAr: "قاعدة كوب" },
-                        { word: "Salt Shaker", clue: "Salt dispenser", clueAr: "ملاحة" },
-                        { word: "Pepper Mill", clue: "Pepper grinder", clueAr: "مطحنة فلفل" },
-                        { word: "Sugar Bowl", clue: "Sugar container", clueAr: "وعاء سكر" },
-                        { word: "Butter Dish", clue: "Butter holder", clueAr: "صحن زبدة" },
-                        { word: "Bread Box", clue: "Bread keeper", clueAr: "علبة خبز" },
-                        { word: "Cookie Jar", clue: "Cookie container", clueAr: "برطمان كعك" },
-                        { word: "Canister", clue: "Storage container", clueAr: "علبة تخزين" }
-                    ]
-                }
+        // Game data
+        const words = {
+            places: [
+                "مسجد", "مدرسة", "مستشفى", "مطار", "محطة قطار", "ملعب", "حديقة", "شاطئ", "جبل", "صحراء",
+                "مكتبة", "متحف", "سوق", "مول", "مطعم", "مقهى", "فندق", "سينما", "مسرح", "حديقة حيوان",
+                "حوض سمك", "منتزه", "كهف", "واحة", "نهر", "بحيرة", "بحر", "محيط", "غابة", "حقل",
+                "مزرعة", "قرية", "مدينة", "عاصمة", "ميناء", "جسر", "نفق", "برج", "قلعة", "قصر",
+                "معبد", "كنيسة", "معرض", "استاد", "قاعة", "مختبر", "مصنع", "ورشة", "محل", "صيدلية",
+                "بنك", "مكتب بريد", "مخبز", "جزارة", "سوبرماركت", "محطة وقود", "موقف", "كوبري", "ميدان", "شارع",
+                "حارة", "زقاق", "ساحة", "كورنيش", "نادي", "جمعية", "مركز", "عيادة", "مختبر", "ستوديو",
+                "قاعة أفراح", "روضة", "حضانة", "جامعة", "معهد", "أكاديمية", "قاعة رياضة", "مسبح", "منتجع", "فيلا",
+                "شقة", "بيت", "عمارة", "ناطحة سحاب", "كشك", "خيمة", "كوخ", "قبو", "علية", "شرفة",
+                "حديقة منزل", "فناء", "ممر", "سلم", "مصعد", "موقف سيارات", "جراج", "مخزن", "مستودع", "سقيفة"
+            ],
+            jobs: [
+                "طبيب", "معلم", "مهندس", "محامي", "طيار", "شرطي", "رجل إطفاء", "طباخ", "نادل", "سائق",
+                "كهربائي", "سباك", "نجار", "حداد", "بناء", "رسام", "مصور", "صحفي", "كاتب", "مؤلف",
+                "ممثل", "مخرج", "مغني", "موسيقار", "راقص", "رياضي", "مدرب", "حكم", "مزارع", "صياد",
+                "راعي", "بحار", "قبطان", "جندي", "ضابط", "قاضي", "محقق", "حارس", "عامل", "موظف",
+                "مدير", "سكرتير", "محاسب", "خبير", "استشاري", "مبرمج", "مصمم", "فني", "ميكانيكي", "خباز",
+                "جزار", "عطار", "صيدلي", "ممرض", "جراح", "طبيب أسنان", "طبيب عيون", "طبيب بيطري", "عالم", "باحث",
+                "أستاذ جامعي", "مدرس خصوصي", "مربي", "حارس أمن", "جاسوس", "دبلوماسي", "سفير", "وزير", "رئيس", "عمدة",
+                "مرشد سياحي", "مضيف طيران", "بواب", "حمال", "ساعي بريد", "عامل نظافة", "بستاني", "مهندس زراعي", "طبيب نفسي", "أخصائي اجتماعي",
+                "مذيع", "مقدم برامج", "مراسل", "محرر", "مترجم", "خطاط", "نحات", "خزاف", "مهرج", "ساحر",
+                "عارض أزياء", "مصمم أزياء", "حلاق", "كوافير", "خياط", "إسكافي", "صائغ", "نقاش", "دهان", "بلاط"
+            ],
+            items: [
+                "هاتف", "حاسوب", "تلفاز", "ثلاجة", "فرن", "مكيف", "مروحة", "ساعة", "كاميرا", "مفتاح",
+                "قلم", "كتاب", "دفتر", "حقيبة", "محفظة", "نظارة", "مرآة", "فرشاة", "مشط", "صابون",
+                "منشفة", "وسادة", "بطانية", "سجادة", "ستارة", "مصباح", "شمعة", "ولاعة", "عود ثقاب", "سكين",
+                "ملعقة", "شوكة", "صحن", "كوب", "إبريق", "قدر", "مقلاة", "غلاية", "خلاط", "عصارة",
+                "سلة", "دلو", "مكنسة", "ممسحة", "كرسي", "طاولة", "سرير", "خزانة", "رف", "باب",
+                "نافذة", "مفتاح", "قفل", "جرس", "هاتف", "راديو", "ميكروفون", "سماعة", "شاحن", "بطارية",
+                "مسطرة", "ممحاة", "مبراة", "دباسة", "مقص", "لاصق", "غراء", "ألوان", "فرشاة رسم", "لوحة",
+                "إطار", "تقويم", "خريطة", "بوصلة", "منظار", "تلسكوب", "ميزان", "ترمومتر", "ساعة إيقاف", "منبه",
+                "راديو", "جهاز تحكم", "لوحة مفاتيح", "فأرة", "شاشة", "طابعة", "ماسح ضوئي", "فلاش", "قرص", "فلاشة",
+                "سماعات", "ميكروفون", "كابل", "محول", "مقبس", "مفك", "شاكوش", "كماشة", "منشار", "مسمار"
+            ],
+            animals: [
+                "أسد", "نمر", "فهد", "ذئب", "ثعلب", "دب", "قرد", "فيل", "زرافة", "حصان",
+                "حمار", "جمل", "بقرة", "خروف", "ماعز", "خنزير", "كلب", "قطة", "أرنب", "فأر",
+                "سنجاب", "قنفذ", "خلد", "وطواط", "غزال", "أيل", "ظبي", "جاموس", "ثور", "عجل",
+                "حمار وحشي", "كنغر", "كوالا", "باندا", "دولفين", "حوت", "قرش", "أخطبوط", "قنديل", "سلحفاة",
+                "تمساح", "ثعبان", "سحلية", "ضفدع", "سمندل", "عقرب", "عنكبوت", "نحلة", "نملة", "ذبابة",
+                "بعوضة", "صرصور", "خنفساء", "جندب", "فراشة", "يعسوب", "دودة", "حلزون", "محار", "جمبري",
+                "سلطعون", "إسفنج", "نجم البحر", "حصان البحر", "سمكة", "قنديل", "شعاب مرجانية", "دب قطبي", "بطريق", "فقمة",
+                "أسد بحر", "حوت قاتل", "دلفين", "خروف البحر", "ثعلب الماء", "قندس", "قضاعة", "ابن عرس", "سمور", "ظربان",
+                "راكون", "أبو شوكة", "آكل النمل", "كسلان", "أرماديلو", "نيص", "جرذ الخلد", "لاما", "ألبكة", "ياك"
+            ],
+            food: [
+                "أرز", "خبز", "معكرونة", "بطاطس", "طماطم", "خيار", "خس", "جزر", "بصل", "ثوم",
+                "فلفل", "باذنجان", "كوسا", "فاصوليا", "بازلاء", "ذرة", "قرع", "ملفوف", "قرنبيط", "بروكلي",
+                "سبانخ", "جرجير", "بقدونس", "كزبرة", "نعناع", "ريحان", "زعتر", "شبت", "كرفس", "زيتون",
+                "تفاح", "برتقال", "موز", "عنب", "فراولة", "كرز", "خوخ", "مشمش", "برقوق", "تين",
+                "رمان", "كيوي", "أناناس", "مانجو", "بطيخ", "شمام", "ليمون", "جريب فروت", "يوسفي", "تمر",
+                "لحم بقر", "لحم غنم", "دجاج", "سمك", "روبيان", "بيض", "حليب", "جبن", "زبدة", "قشطة",
+                "لبن", "سكر", "ملح", "فلفل أسود", "كمون", "كركم", "زنجبيل", "قرفة", "هيل", "قرنفل",
+                "عسل", "مربى", "شوكولاتة", "كيك", "بسكويت", "آيس كريم", "حلوى", "عصير", "شاي", "قهوة",
+                "ماء", "صودا", "كولا", "برغر", "بيتزا", "شاورما", "فلافل", "حمص", "فول", "كشري",
+                "مندي", "كبسة", "مقلوبة", "منسف", "ملوخية", "بامية", "محشي", "كفتة", "كباب", "شيش طاووق"
+            ],
+            countries: [
+                "مصر", "السعودية", "الإمارات", "الكويت", "قطر", "البحرين", "عمان", "اليمن", "العراق", "سوريا",
+                "لبنان", "الأردن", "فلسطين", "ليبيا", "تونس", "الجزائر", "المغرب", "موريتانيا", "السودان", "الصومال",
+                "جيبوتي", "جزر القمر", "أمريكا", "كندا", "المكسيك", "البرازيل", "الأرجنتين", "تشيلي", "كولومبيا", "بيرو",
+                "بريطانيا", "فرنسا", "ألمانيا", "إيطاليا", "إسبانيا", "البرتغال", "هولندا", "بلجيكا", "سويسرا", "النمسا",
+                "روسيا", "أوكرانيا", "بولندا", "رومانيا", "اليونان", "تركيا", "السويد", "النرويج", "فنلندا", "الدنمارك",
+                "الصين", "اليابان", "كوريا الجنوبية", "كوريا الشمالية", "الهند", "باكستان", "بنغلاديش", "إندونيسيا", "ماليزيا", "تايلاند",
+                "فيتنام", "الفلبين", "سنغافورة", "ميانمار", "كمبوديا", "لاوس", "أفغانستان", "إيران", "أستراليا", "نيوزيلندا",
+                "جنوب أفريقيا", "نيجيريا", "كينيا", "إثيوبيا", "غانا", "تنزانيا", "أوغندا", "الكاميرون", "ساحل العاج", "السنغال",
+                "المجر", "التشيك", "صربيا", "كرواتيا", "بلغاريا", "أيرلندا", "آيسلندا", "إستونيا", "لاتفيا", "ليتوانيا",
+                "الأرجنتين", "فنزويلا", "الإكوادور", "بوليفيا", "باراغواي", "أوروغواي", "كوبا", "جامايكا", "بنما", "كوستاريكا"
+            ],
+            actions: [
+                "يمشي", "يركض", "يقفز", "يسبح", "يطير", "يزحف", "يتسلق", "ينام", "يستيقظ", "يأكل",
+                "يشرب", "يطبخ", "يغسل", "ينظف", "يكنس", "يمسح", "يرتب", "يطوي", "يكوي", "يخيط",
+                "يقرأ", "يكتب", "يرسم", "يلون", "يغني", "يرقص", "يعزف", "يصفق", "يصفر", "يضحك",
+                "يبكي", "يصرخ", "يهمس", "يتكلم", "يسكت", "يسمع", "ينظر", "يشم", "يتذوق", "يلمس",
+                "يفكر", "يتذكر", "ينسى", "يحلم", "يتخيل", "يفهم", "يتعلم", "يعلم", "يدرس", "يحفظ",
+                "يلعب", "يسلي", "يستمتع", "يفرح", "يحزن", "يغضب", "يخاف", "يشجع", "يهاجم", "يدافع",
+                "يساعد", "يساند", "يحمي", "ينقذ", "يعالج", "يداوي", "يضمد", "يحقن", "يفحص", "يشخص",
+                "يصلي", "يصوم", "يتصدق", "يحج", "يدعو", "يذكر", "يسبح", "يستغفر", "يتوب", "يشكر",
+                "يعمل", "يتعب", "يرتاح", "ينتظر", "يستعجل", "يتأخر", "يسرع", "يبطئ", "يتوقف", "يستمر",
+                "يفتح", "يغلق", "يدفع", "يسحب", "يرفع", "ينزل", "يصعد", "يهبط", "يدخل", "يخرج"
+            ],
+            insects: [
+                "نملة", "نحلة", "ذبابة", "بعوضة", "صرصور", "جندب", "جرادة", "فراشة", "عثة", "دبور",
+                "زنبور", "يعسوب", "خنفساء", "دعسوقة", "سوسة", "قمل", "برغوث", "بق", "قراد", "عنكبوت",
+                "عقرب", "حريش", "دودة أرض", "دودة قز", "يرقانة", "شرنقة", "ذبابة الفاكهة", "ذبابة تسي تسي", "نملة بيضاء", "زيز",
+                "فرس النبي", "عصا الحشرة", "حشرة ورق", "خنفساء الروث", "خنفساء القلف", "سوسة القطن", "دودة القطن", "ديدان الحرير", "نحلة العسل", "نحلة نجار",
+                "دبور الطين", "دبور الرمل", "زنبور الخشب", "ذبابة اللحم", "ذبابة المجاري", "بعوضة النمر", "بعوضة الملاريا", "بق الفراش", "قمل الرأس", "قمل الجسم",
+                "برغوث الفئران", "برغوث القطط", "برغوث الكلاب", "قراد الغنم", "قراد الكلاب", "عث الغبار", "عث الدقيق", "عث الملابس", "صرصور ألماني", "صرصور أمريكي",
+                "صرصور شرقي", "جندب أخضر", "جندب بني", "جرادة الصحراء", "جرادة مصرية", "فراشة الملك", "فراشة الليمون", "فراشة أبو دقيق", "عثة الفستان", "عثة الطحين",
+                "يعسوب أحمر", "يعسوب أزرق", "خنفساء خضراء", "خنفساء ذهبية", "دعسوقة حمراء", "دعسوقة صفراء", "سوسة الأرز", "سوسة الذرة", "سوسة الفول", "عنكبوت بيت",
+                "عنكبوت حديقة", "عنكبوت ذئب", "عنكبوت قافز", "عقرب أصفر", "عقرب أسود", "حريش منزلي", "حريش استوائي", "دودة الأرض الحمراء", "دودة الأرض السوداء", "يرقة فراشة",
+                "يرقة خنفساء", "شرنقة فراشة", "شرنقة عثة", "بيض نمل", "بيض نحل", "بيض ذباب", "بيض بعوض", "ملكة النمل", "ملكة النحل", "ذكر النحل"
+            ],
+            clothes: [
+                "قميص", "بنطلون", "فستان", "تنورة", "جاكيت", "معطف", "سترة", "عباءة", "ثوب", "قفطان",
+                "جلباب", "بدلة", "كنزة", "تيشيرت", "بلوزة", "بيجامة", "ملابس داخلية", "حمالة صدر", "سروال", "شورت",
+                "جينز", "بنطلون رياضي", "تراكسوت", "سويت شيرت", "هودي", "سترة صوف", "كارديجان", "بوليرو", "شال", "وشاح",
+                "كوفية", "طاقية", "قبعة", "عمامة", "حجاب", "طرحة", "نقاب", "غطاء رأس", "قفازات", "جوارب",
+                "شراب", "جزمة", "حذاء", "صندل", "شبشب", "كعب عالي", "حذاء رياضي", "حذاء جلد", "بوت", "موكاسان",
+                "إسبادريل", "كروكس", "فليب فلوب", "حزام", "ربطة عنق", "بابيون", "بروش", "أزرار", "سحاب", "كبسون",
+                "جيب", "ياقة", "كم", "ذيل", "بطانة", "حاشية", "رقعة", "طرز", "تطريز", "دانتيل",
+                "فرو", "جلد", "قطن", "حرير", "صوف", "كتان", "قطيفة", "مخمل", "ساتان", "شيفون",
+                "دنيم", "قماش", "نسيج", "خيط", "إبرة", "مقص قماش", "ماكينة خياطة", "منوال", "كشتبان", "شريط قياس",
+                "دبابيس", "أزرار خياطة", "خيط حرير", "خيط صوف", "صبغة", "مكواة", "طاولة كي", "منشر", "مشبك غسيل", "سلة غسيل"
+            ],
+            furniture: [
+                "كرسي", "طاولة", "سرير", "خزانة", "دولاب", "رف", "مكتبة", "صوفا", "كنبة", "أريكة",
+                "كرسي هزاز", "كرسي بذراعين", "بوف", "طاولة قهوة", "طاولة طعام", "طاولة مكتب", "طاولة تلفاز", "طاولة جانبية", "كومودينو", "تسريحة",
+                "مرآة", "إطار صورة", "لوحة", "ساعة حائط", "ثريا", "نجفة", "لمبة", "أباجورة", "سجادة", "موكيت",
+                "ستارة", "ستارة رول", "ستارة شيفون", "ستارة قطيفة", "وسادة", "مخدة", "مسند ظهر", "مسند قدم", "بطانية", "لحاف",
+                "شرشف", "كفر مخدة", "غطاء سرير", "ناموسية", "خزانة ملابس", "خزانة مطبخ", "خزانة حمام", "خزانة أحذية", "خزانة كتب", "خزانة صينية",
+                "رف كتب", "رف حائط", "رف أحذية", "رف مطبخ", "رف تلفاز", "مكتب", "مكتب كمبيوتر", "كرسي مكتب", "كرسي طعام", "كرسي بار",
+                "سرير مفرد", "سرير دبل", "سرير كينج", "سرير أطفال", "سرير بطابقين", "سرير هزاز", "مرتبة", "قاعدة سرير", "لوح رأس", "لوح قدم",
+                "خزانة ملفات", "درج", "رف تخزين", "صندوق تخزين", "سلة تخزين", "منظم", "حامل معاطف", "شماعة", "مرآة أرضية", "باراڤان",
+                "طاولة كي", "طاولة قابلة للطي", "كرسي قابل للطي", "سرير قابل للطي", "صوفا سرير", "ركنة", "زاوية", "كرسي استرخاء", "كرسي حديقة", "طاولة حديقة",
+                "أرجوحة", "مظلة", "خيمة", "كشك", "برجولة", "مقعد", "دكة", "كنبة حديقة", "سرير تشمس", "أثاث خشبي", "أثاث معدني"
             ]
         };
 
-        // Game State
         let players = [];
-        let spies = [];
+        let impostors = [];
+        let currentWord = "";
+        let currentHint = "";
         let currentPlayerIndex = 0;
-        let currentWord = null;
-        let currentCategory = null;
-        let votingEnabled = false;
         let timerInterval = null;
-        let timeRemaining = 180;
-        let timerPaused = false;
         let votes = {};
-        let firstPlayer = null;
+        let firstPlayer = "";
 
-        // Utility Functions
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
-        }
-
-        function showError(message) {
-            const errorDiv = document.getElementById('errorMessage');
-            errorDiv.textContent = message;
-            errorDiv.style.display = 'block';
-            setTimeout(() => {
-                errorDiv.style.display = 'none';
-            }, 3000);
-        }
-
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
-
-        // Player Management
         function addPlayer() {
             const input = document.getElementById('playerNameInput');
             const name = input.value.trim();
+            const errorDiv = document.getElementById('errorMessage');
 
             if (!name) {
-                showError('Please enter a player name - أدخل اسم اللاعب');
+                showError('الرجاء إدخال اسم اللاعب');
                 return;
             }
 
             if (players.includes(name)) {
-                showError('Player name already exists - الاسم موجود مسبقاً');
+                showError('هذا الاسم موجود بالفعل');
                 return;
             }
 
             players.push(name);
             input.value = '';
-            updatePlayersList();
+            errorDiv.innerHTML = '';
+            updatePlayerList();
         }
 
-        function removePlayer(name) {
-            players = players.filter(p => p !== name);
-            updatePlayersList();
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.innerHTML = `<div class="alert error">${message}</div>`;
+            setTimeout(() => {
+                errorDiv.innerHTML = '';
+            }, 3000);
         }
 
-        function updatePlayersList() {
-            const list = document.getElementById('playersList');
-            if (players.length === 0) {
-                list.innerHTML = '<p style="text-align: center; color: #999;">No players added yet - لم تتم إضافة لاعبين بعد</p>';
-                return;
-            }
-
-            list.innerHTML = players.map(player => `
-                <div class="player-item">
-                    <span class="player-name">${player}</span>
-                    <button class="remove-btn" onclick="removePlayer('${player}')">Remove - حذف</button>
-                </div>
-            `).join('');
+        function updatePlayerList() {
+            const list = document.getElementById('playerList');
+            list.innerHTML = '';
+            players.forEach((player, index) => {
+                const item = document.createElement('div');
+                item.className = 'player-item';
+                item.innerHTML = `
+                    <span class="name">${player}</span>
+                    <button onclick="removePlayer(${index})">حذف</button>
+                `;
+                list.appendChild(item);
+            });
         }
 
-        // Game Settings
-        function showGameSettings() {
-            if (players.length < 3) {
-                showError('Minimum 3 players required - الحد الأدنى 3 لاعبين');
-                return;
-            }
-            showScreen('settingsScreen');
+        function removePlayer(index) {
+            players.splice(index, 1);
+            updatePlayerList();
         }
 
-        function toggleVoting() {
-            const toggle = document.getElementById('votingToggle');
-            votingEnabled = !votingEnabled;
-            toggle.classList.toggle('active');
-        }
-
-        function backToSetup() {
-            showScreen('setupScreen');
-        }
-
-        // Game Start
         function startGame() {
-            const categoryIndex = parseInt(document.getElementById('categorySelect').value);
-            const spyCountInput = parseInt(document.getElementById('spyCount').value);
-            const timerInput = parseInt(document.getElementById('timerInput').value);
-
-            if (spyCountInput >= players.length) {
-                showError('Too many spies! - جواسيس كثار بزاف');
+            if (players.length < 3) {
+                showError('يجب إضافة 3 لاعبين على الأقل');
                 return;
             }
 
-            if (spyCountInput < 1) {
-                showError('At least 1 spy required - على الأقل جاسوس واحد');
+            const impostorCount = parseInt(document.getElementById('impostorCount').value);
+            if (impostorCount >= players.length) {
+                showError('عدد الجواسيس يجب أن يكون أقل من عدد اللاعبين');
                 return;
             }
 
-            // Reset game state
-            currentPlayerIndex = 0;
-            timeRemaining = timerInput;
-            votes = {};
-
-            // Select category and word
-            currentCategory = gameData.categories[categoryIndex];
-            const randomWord = currentCategory.words[Math.floor(Math.random() * currentCategory.words.length)];
-            currentWord = randomWord;
-
-            // Shuffle players and select spies
-            const shuffledPlayers = shuffleArray([...players]);
-            spies = shuffledPlayers.slice(0, spyCountInput);
+            // Select random word
+            const category = document.getElementById('categorySelect').value;
+            let wordList;
             
-            // Select first player randomly
-            firstPlayer = shuffledPlayers[Math.floor(Math.random() * shuffledPlayers.length)];
+            if (category === 'mixed') {
+                const allWords = [];
+                Object.values(words).forEach(catWords => {
+                    allWords.push(...catWords);
+                });
+                wordList = allWords;
+            } else {
+                wordList = words[category];
+            }
 
-            // Show first player screen
-            document.getElementById('firstPlayerName').textContent = firstPlayer;
-            showScreen('firstPlayerScreen');
+            currentWord = wordList[Math.floor(Math.random() * wordList.length)];
+            currentHint = getHint(currentWord);
+
+            // Select random impostors
+            const shuffledPlayers = [...players].sort(() => Math.random() - 0.5);
+            impostors = shuffledPlayers.slice(0, impostorCount);
+
+            // Reset and start
+            currentPlayerIndex = 0;
+            votes = {};
+            
+            // Select random first player
+            firstPlayer = players[Math.floor(Math.random() * players.length)];
+
+            showScreen('wordScreen');
+            showPlayerWord();
         }
 
-        function showWordReveal() {
-            document.getElementById('currentCategory').textContent = currentCategory.name;
-            document.getElementById('currentPlayerNumber').textContent = currentPlayerIndex + 1;
-            document.getElementById('totalPlayers').textContent = players.length;
-            showScreen('wordRevealScreen');
+        function getHint(word) {
+            // Generate a simple hint (first and last letter)
+            if (word.length <= 2) return word[0] + "*";
+            return word[0] + "*".repeat(word.length - 2) + word[word.length - 1];
         }
 
-        function revealWord() {
-            const currentPlayer = players[currentPlayerIndex];
-            const isSpy = spies.includes(currentPlayer);
-
-            const roleTitle = document.getElementById('roleTitle');
+        function showPlayerWord() {
+            const player = players[currentPlayerIndex];
+            const isImpostor = impostors.includes(player);
+            
+            document.getElementById('currentPlayerName').textContent = `🎮 ${player}`;
+            
             const wordDisplay = document.getElementById('wordDisplay');
-
-            if (isSpy) {
-                roleTitle.textContent = '🕵️ You are the SPY!';
-                roleTitle.style.color = '#ff4757';
+            if (isImpostor) {
                 wordDisplay.innerHTML = `
-                    <h2 style="color: white;">SPY - جاسوس</h2>
-                    <p class="clue">${currentWord.clue}</p>
-                    <p class="clue">${currentWord.clueAr}</p>
+                    <div class="word-display impostor-display">
+                        <h2>🕵️ أنت الجاسوس!</h2>
+                        <div class="hint">تلميح: ${currentHint}</div>
+                    </div>
                 `;
             } else {
-                roleTitle.textContent = '📝 Your Word';
-                roleTitle.style.color = '#667eea';
                 wordDisplay.innerHTML = `
-                    <h2 style="color: white;">${currentWord.word}</h2>
+                    <div class="word-display">
+                        <h2>${currentWord}</h2>
+                    </div>
                 `;
             }
-
-            showScreen('wordDisplayScreen');
         }
 
         function nextPlayer() {
             currentPlayerIndex++;
-            
             if (currentPlayerIndex >= players.length) {
-                startGamePlay();
+                startGamePhase();
             } else {
-                showWordReveal();
+                showPlayerWord();
             }
         }
 
-        // Game Play
-        function startGamePlay() {
-            document.getElementById('gameCategory').textContent = currentCategory.name;
+        function startGamePhase() {
+            showScreen('gameScreen');
             
-            if (votingEnabled) {
-                document.getElementById('votingBtn').style.display = 'block';
+            // Show first player alert
+            const alert = document.getElementById('firstPlayerAlert');
+            alert.innerHTML = `<span class="first-player-badge">🎯 يبدأ</span> ${firstPlayer}`;
+            alert.style.display = 'block';
+
+            // Start timer
+            const duration = parseInt(document.getElementById('timerDuration').value);
+            if (duration > 0) {
+                startTimer(duration);
             }
 
-            showScreen('gamePlayScreen');
-            startTimer();
+            // Setup voting if enabled
+            if (document.getElementById('votingEnabled').checked) {
+                document.getElementById('votingSection').style.display = 'block';
+                setupVoting();
+            }
         }
 
-        function startTimer() {
-            updateTimerDisplay();
-            timerInterval = setInterval(() => {
-                if (!timerPaused) {
-                    timeRemaining--;
-                    updateTimerDisplay();
-                    
-                    if (timeRemaining <= 0) {
-                        clearInterval(timerInterval);
-                        if (votingEnabled) {
-                            showVoting();
-                        } else {
-                            endGame();
-                        }
-                    }
+        function startTimer(duration) {
+            let timeLeft = duration;
+            const timerDisplay = document.getElementById('timerDisplay');
+
+            function updateTimer() {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 30) {
+                    timerDisplay.classList.add('warning');
+                } else {
+                    timerDisplay.classList.remove('warning');
                 }
-            }, 1000);
-        }
 
-        function updateTimerDisplay() {
-            const minutes = Math.floor(timeRemaining / 60);
-            const seconds = timeRemaining % 60;
-            document.getElementById('timer').textContent = 
-                `${minutes}:${seconds.toString().padStart(2, '0')}`;
-        }
-
-        function toggleTimer() {
-            timerPaused = !timerPaused;
-            const btn = document.getElementById('timerBtn');
-            btn.textContent = timerPaused ? 'Resume Timer - استئناف المؤقت' : 'Pause Timer - أوقف المؤقت';
-        }
-
-        // Voting System
-        function showVoting() {
-            clearInterval(timerInterval);
-            votes = {};
-            players.forEach(player => votes[player] = 0);
-
-            const votingOptions = document.getElementById('votingOptions');
-            votingOptions.innerHTML = players.map(player => `
-                <div class="vote-option" onclick="castVote('${player}')">
-                    <span>${player}</span>
-                    <span class="vote-count" id="vote-${player}">0</span>
-                </div>
-            `).join('');
-
-            showScreen('votingScreen');
-        }
-
-        function castVote(player) {
-            votes[player]++;
-            document.getElementById(`vote-${player}`).textContent = votes[player];
-        }
-
-        function backToGame() {
-            showScreen('gamePlayScreen');
-            if (!timerPaused && timeRemaining > 0) {
-                startTimer();
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timerDisplay.textContent = 'انتهى الوقت!';
+                } else {
+                    timeLeft--;
+                }
             }
+
+            updateTimer();
+            timerInterval = setInterval(updateTimer, 1000);
         }
 
-        function showResults() {
-            const maxVotes = Math.max(...Object.values(votes));
-            const votedPlayers = Object.entries(votes)
-                .filter(([_, count]) => count === maxVotes)
-                .map(([name, _]) => name);
+        function setupVoting() {
+            const voteButtons = document.getElementById('voteButtons');
+            voteButtons.innerHTML = '';
+            
+            players.forEach(player => {
+                votes[player] = 0;
+                const btn = document.createElement('button');
+                btn.className = 'vote-btn';
+                btn.textContent = player;
+                btn.onclick = () => vote(player, btn);
+                voteButtons.appendChild(btn);
+            });
+        }
 
-            const resultsContent = document.getElementById('resultsContent');
+        function vote(player, btn) {
+            votes[player]++;
+            btn.classList.add('voted');
+            btn.textContent = `${player} (${votes[player]})`;
+        }
+
+        function showVoteResults() {
+            const resultsDiv = document.getElementById('voteResults');
+            const sortedVotes = Object.entries(votes).sort((a, b) => b[1] - a[1]);
             
-            let resultHTML = '<div style="text-align: center; margin: 20px 0;">';
-            
-            resultHTML += '<h3 style="color: #667eea; margin-bottom: 15px;">Voting Results - نتائج التصويت</h3>';
-            
-            // Show vote counts
-            resultHTML += '<div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px;">';
-            Object.entries(votes).sort((a, b) => b[1] - a[1]).forEach(([player, count]) => {
-                resultHTML += `
-                    <div style="display: flex; justify-content: space-between; padding: 8px; margin: 5px 0; background: white; border-radius: 8px;">
-                        <span style="font-weight: 600;">${player}</span>
-                        <span style="color: #667eea;">${count} votes</span>
+            let html = '<h3 style="text-align: center; margin-bottom: 15px;">نتائج التصويت</h3>';
+            sortedVotes.forEach(([player, count]) => {
+                const isImpostor = impostors.includes(player);
+                html += `
+                    <div class="vote-result-item">
+                        <span>${player} ${isImpostor ? '🕵️' : ''}</span>
+                        <span>${count} ${count === 1 ? 'صوت' : 'أصوات'}</span>
                     </div>
                 `;
             });
-            resultHTML += '</div>';
+            
+            resultsDiv.innerHTML = html;
+            resultsDiv.style.display = 'block';
+        }
 
-            // Show most voted
-            if (votedPlayers.length === 1) {
-                resultHTML += `<div style="background: #fff3cd; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-                    <h4 style="color: #856404;">Most Voted - الأكثر تصويتاً</h4>
-                    <p style="font-size: 20px; font-weight: bold; color: #856404;">${votedPlayers[0]}</p>
-                </div>`;
-            } else {
-                resultHTML += `<div style="background: #fff3cd; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-                    <h4 style="color: #856404;">Tie - تعادل</h4>
-                    <p style="font-weight: bold; color: #856404;">${votedPlayers.join(', ')}</p>
-                </div>`;
+        function revealImpostors() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
             }
 
-            // Show actual spies
-            resultHTML += '<div style="background: #f8d7da; padding: 15px; border-radius: 10px; margin-bottom: 20px;">';
-            resultHTML += '<h4 style="color: #721c24;">The Real Spies - الجواسيس الحقيقيون</h4>';
-            resultHTML += `<p style="font-size: 20px; font-weight: bold; color: #721c24;">${spies.join(', ')}</p>`;
-            resultHTML += '</div>';
+            const revealDiv = document.getElementById('impostorReveal');
+            let html = '<h2 style="text-align: center; color: #667eea; margin-bottom: 30px;">🎯 النتائج</h2>';
+            html += `<div class="word-display"><h2>الكلمة كانت: ${currentWord}</h2></div>`;
+            
+            html += '<h3 style="margin: 30px 0 15px; text-align: center;">الجواسيس:</h3>';
+            impostors.forEach(impostor => {
+                html += `<div class="word-display impostor-display"><h2>🕵️ ${impostor}</h2></div>`;
+            });
 
-            // Show the word
-            resultHTML += '<div style="background: #d4edda; padding: 15px; border-radius: 10px;">';
-            resultHTML += '<h4 style="color: #155724;">The Word - الكلمة</h4>';
-            resultHTML += `<p style="font-size: 24px; font-weight: bold; color: #155724;">${currentWord.word}</p>`;
-            resultHTML += '</div>';
+            html += '<h3 style="margin: 30px 0 15px; text-align: center;">اللاعبون العاديون:</h3>';
+            const normalPlayers = players.filter(p => !impostors.includes(p));
+            normalPlayers.forEach(player => {
+                html += `<div class="word-display"><h2>✅ ${player}</h2></div>`;
+            });
 
-            resultHTML += '</div>';
-
-            resultsContent.innerHTML = resultHTML;
+            revealDiv.innerHTML = html;
             showScreen('resultsScreen');
         }
 
-        function endGame() {
-            clearInterval(timerInterval);
-            
-            const resultsContent = document.getElementById('resultsContent');
-            
-            let resultHTML = '<div style="text-align: center; margin: 20px 0;">';
-            
-            // Show the spies
-            resultHTML += '<div style="background: #f8d7da; padding: 20px; border-radius: 10px; margin-bottom: 20px;">';
-            resultHTML += '<h3 style="color: #721c24;">The Spies - الجواسيس</h3>';
-            resultHTML += `<p style="font-size: 24px; font-weight: bold; color: #721c24; margin-top: 10px;">${spies.join(', ')}</p>`;
-            resultHTML += '</div>';
-
-            // Show the word
-            resultHTML += '<div style="background: #d4edda; padding: 20px; border-radius: 10px;">';
-            resultHTML += '<h3 style="color: #155724;">The Word - الكلمة</h3>';
-            resultHTML += `<p style="font-size: 32px; font-weight: bold; color: #155724; margin-top: 10px;">${currentWord.word}</p>`;
-            resultHTML += '<p style="font-size: 16px; color: #155724; margin-top: 10px; font-style: italic;">${currentWord.clue} - ${currentWord.clueAr}</p>';
-            resultHTML += '</div>';
-
-            resultHTML += '</div>';
-
-            resultsContent.innerHTML = resultHTML;
-            showScreen('resultsScreen');
-        }
-
-        function playAgain() {
-            // Reset only game-specific state, keep players
+        function resetGame() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            impostors = [];
+            currentWord = "";
+            currentHint = "";
             currentPlayerIndex = 0;
-            spies = [];
-            currentWord = null;
-            currentCategory = null;
             votes = {};
-            timeRemaining = parseInt(document.getElementById('timerInput').value);
-            timerPaused = false;
-            clearInterval(timerInterval);
-            
-            showScreen('settingsScreen');
+            firstPlayer = "";
+            document.getElementById('voteResults').style.display = 'none';
+            showScreen('setupScreen');
         }
 
-        // Initialize
-        updatePlayersList();
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
 
         // Allow Enter key to add player
         document.getElementById('playerNameInput').addEventListener('keypress', function(e) {
