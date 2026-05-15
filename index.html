@@ -199,6 +199,19 @@
             color: white;
         }
 
+        .impostor-display .hint {
+            color: #ffe0e0;
+        }
+
+        .impostor-display-no-hint {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+        }
+
+        .impostor-display-no-hint h2 {
+            color: white;
+        }
+
         .timer {
             text-align: center;
             font-size: 3em;
@@ -382,15 +395,34 @@
             align-items: center;
             gap: 10px;
             margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
         }
 
         .checkbox-group input[type="checkbox"] {
             width: auto;
             transform: scale(1.5);
+            cursor: pointer;
         }
 
         .checkbox-group label {
             margin: 0;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .settings-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .settings-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            text-align: center;
         }
     </style>
 </head>
@@ -417,20 +449,29 @@
                 </select>
             </div>
 
-            <div class="settings-grid">
-                <div class="setting-item">
-                    <label>عدد الجواسيس:</label>
-                    <input type="number" id="impostorCount" min="1" value="1">
+            <div class="settings-section">
+                <h3>⚙️ إعدادات اللعبة</h3>
+                
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <label>عدد الجواسيس:</label>
+                        <input type="number" id="impostorCount" min="1" value="1">
+                    </div>
+                    <div class="setting-item">
+                        <label>المؤقت (ثانية):</label>
+                        <input type="number" id="timerDuration" min="0" value="180">
+                    </div>
                 </div>
-                <div class="setting-item">
-                    <label>المؤقت (ثانية):</label>
-                    <input type="number" id="timerDuration" min="0" value="180">
-                </div>
-            </div>
 
-            <div class="checkbox-group">
-                <input type="checkbox" id="votingEnabled">
-                <label for="votingEnabled">تفعيل نظام التصويت</label>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="votingEnabled">
+                    <label for="votingEnabled">تفعيل نظام التصويت</label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="clueEnabled" checked>
+                    <label for="clueEnabled">إعطاء تلميح للجاسوس</label>
+                </div>
             </div>
 
             <div class="input-group">
@@ -612,6 +653,7 @@
         let timerInterval = null;
         let votes = {};
         let firstPlayer = "";
+        let clueEnabled = true;
 
         function addPlayer() {
             const input = document.getElementById('playerNameInput');
@@ -673,6 +715,9 @@
                 return;
             }
 
+            // Check if clue is enabled
+            clueEnabled = document.getElementById('clueEnabled').checked;
+
             // Select random word
             const category = document.getElementById('categorySelect').value;
             let wordList;
@@ -719,12 +764,23 @@
             
             const wordDisplay = document.getElementById('wordDisplay');
             if (isImpostor) {
-                wordDisplay.innerHTML = `
-                    <div class="word-display impostor-display">
-                        <h2>🕵️ أنت الجاسوس!</h2>
-                        <div class="hint">تلميح: ${currentHint}</div>
-                    </div>
-                `;
+                if (clueEnabled) {
+                    // Show impostor with hint
+                    wordDisplay.innerHTML = `
+                        <div class="word-display impostor-display">
+                            <h2>🕵️ أنت الجاسوس!</h2>
+                            <div class="hint">تلميح: ${currentHint}</div>
+                        </div>
+                    `;
+                } else {
+                    // Show impostor without hint
+                    wordDisplay.innerHTML = `
+                        <div class="word-display impostor-display-no-hint">
+                            <h2>🕵️ أنت الجاسوس!</h2>
+                            <p style="margin-top: 15px; font-size: 1.1em;">لا يوجد تلميح</p>
+                        </div>
+                    `;
+                }
             } else {
                 wordDisplay.innerHTML = `
                     <div class="word-display">
