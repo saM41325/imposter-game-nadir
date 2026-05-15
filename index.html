@@ -213,18 +213,19 @@
             padding: 40px;
             background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
             border-radius: 15px;
-            min-height: 150px;
+            height: 250px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s;
+            position: relative;
+            transition: background 0.3s ease;
         }
 
         .word-display h2 {
             font-size: 2.5em;
             color: #333;
-            margin-bottom: 10px;
+            margin: 0;
         }
 
         .word-display .hint {
@@ -233,25 +234,38 @@
             margin-top: 15px;
         }
 
+        .word-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            padding: 20px;
+        }
+
         .word-hidden {
             filter: blur(20px);
             user-select: none;
             pointer-events: none;
+            opacity: 0;
         }
 
         .word-visible {
             animation: blurReveal 0.5s ease-out forwards;
+            opacity: 1;
         }
 
         .hidden-placeholder {
             font-size: 3em;
             color: #999;
-            text-align: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
         .impostor-display {
             background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-            color: white;
         }
 
         .impostor-display h2 {
@@ -264,10 +278,13 @@
 
         .impostor-display-no-hint {
             background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-            color: white;
         }
 
         .impostor-display-no-hint h2 {
+            color: white;
+        }
+
+        .impostor-display-no-hint p {
             color: white;
         }
 
@@ -423,8 +440,12 @@
                 font-size: 2em;
             }
 
+            .word-display {
+                height: 200px;
+            }
+
             .word-display h2 {
-                font-size: 2em;
+                font-size: 1.8em;
             }
 
             .timer {
@@ -521,6 +542,10 @@
 
         .word-item .word-content {
             flex: 1;
+            position: static;
+            transform: none;
+            width: auto;
+            padding: 0;
         }
 
         .word-item .word-text {
@@ -1126,6 +1151,7 @@
             wordVisible = !wordVisible;
             const wordElement = document.getElementById('actualWord');
             const cardElement = document.getElementById('wordCard');
+            const placeholderElement = document.getElementById('placeholder');
             const button = document.getElementById('toggleWordBtn');
             const player = players[currentPlayerIndex];
             const isImpostor = impostors.includes(player);
@@ -1133,6 +1159,7 @@
             if (wordVisible) {
                 wordElement.classList.remove('word-hidden');
                 wordElement.classList.add('word-visible');
+                placeholderElement.style.display = 'none';
                 button.innerHTML = '<span class="eye-icon">👁️</span> إخفاء';
                 
                 // Change card color if impostor
@@ -1146,6 +1173,7 @@
             } else {
                 wordElement.classList.remove('word-visible');
                 wordElement.classList.add('word-hidden');
+                placeholderElement.style.display = 'block';
                 button.innerHTML = '<span class="eye-icon">👁️</span> إظهار الدور';
                 
                 // Reset to default color
@@ -1170,21 +1198,21 @@
                 if (clueEnabled) {
                     wordDisplay.innerHTML = `
                         <div id="wordCard" class="word-display">
-                            <div id="actualWord" class="word-hidden">
+                            <div id="actualWord" class="word-content word-hidden">
                                 <h2>🕵️ أنت الجاسوس!</h2>
                                 <div class="hint">تلميح: ${currentHint}</div>
                             </div>
-                            <div class="hidden-placeholder">🔒</div>
+                            <div id="placeholder" class="hidden-placeholder">🔒</div>
                         </div>
                     `;
                 } else {
                     wordDisplay.innerHTML = `
                         <div id="wordCard" class="word-display">
-                            <div id="actualWord" class="word-hidden">
+                            <div id="actualWord" class="word-content word-hidden">
                                 <h2>🕵️ أنت الجاسوس!</h2>
                                 <p style="margin-top: 15px; font-size: 1.1em;">لا يوجد تلميح</p>
                             </div>
-                            <div class="hidden-placeholder">🔒</div>
+                            <div id="placeholder" class="hidden-placeholder">🔒</div>
                         </div>
                     `;
                 }
@@ -1192,8 +1220,10 @@
                 // Normal player - show hidden word with reveal button
                 wordDisplay.innerHTML = `
                     <div id="wordCard" class="word-display">
-                        <h2 id="actualWord" class="word-hidden">${currentWord}</h2>
-                        <div class="hidden-placeholder">🔒</div>
+                        <div id="actualWord" class="word-content word-hidden">
+                            <h2>${currentWord}</h2>
+                        </div>
+                        <div id="placeholder" class="hidden-placeholder">🔒</div>
                     </div>
                 `;
             }
