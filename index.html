@@ -218,6 +218,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            transition: all 0.3s;
         }
 
         .word-display h2 {
@@ -251,7 +252,6 @@
         .impostor-display {
             background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
             color: white;
-            animation: pulse 2s infinite;
         }
 
         .impostor-display h2 {
@@ -265,11 +265,14 @@
         .impostor-display-no-hint {
             background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
             color: white;
-            animation: pulse 2s infinite;
         }
 
         .impostor-display-no-hint h2 {
             color: white;
+        }
+
+        .impostor-revealed {
+            animation: pulse 2s infinite;
         }
 
         .timer {
@@ -1122,16 +1125,31 @@
         function toggleWordVisibility() {
             wordVisible = !wordVisible;
             const wordElement = document.getElementById('actualWord');
+            const cardElement = document.getElementById('wordCard');
             const button = document.getElementById('toggleWordBtn');
+            const player = players[currentPlayerIndex];
+            const isImpostor = impostors.includes(player);
             
             if (wordVisible) {
                 wordElement.classList.remove('word-hidden');
                 wordElement.classList.add('word-visible');
-                button.innerHTML = '<span class="eye-icon">👁️</span> إخفاء الكلمة';
+                button.innerHTML = '<span class="eye-icon">👁️</span> إخفاء';
+                
+                // Change card color if impostor
+                if (isImpostor) {
+                    if (clueEnabled) {
+                        cardElement.className = 'word-display impostor-display impostor-revealed';
+                    } else {
+                        cardElement.className = 'word-display impostor-display-no-hint impostor-revealed';
+                    }
+                }
             } else {
                 wordElement.classList.remove('word-visible');
                 wordElement.classList.add('word-hidden');
-                button.innerHTML = '<span class="eye-icon">👁️</span> إظهار الكلمة';
+                button.innerHTML = '<span class="eye-icon">👁️</span> إظهار الدور';
+                
+                // Reset to default color
+                cardElement.className = 'word-display';
             }
         }
 
@@ -1148,40 +1166,44 @@
             const buttonContainer = document.getElementById('showHideButtonContainer');
             
             if (isImpostor) {
-                // Impostor - no show/hide button
-                buttonContainer.innerHTML = '';
-                
+                // Impostor - show hidden card with reveal button
                 if (clueEnabled) {
-                    // Show impostor with hint
                     wordDisplay.innerHTML = `
-                        <div class="word-display impostor-display">
-                            <h2>🕵️ أنت الجاسوس!</h2>
-                            <div class="hint">تلميح: ${currentHint}</div>
+                        <div id="wordCard" class="word-display">
+                            <div id="actualWord" class="word-hidden">
+                                <h2>🕵️ أنت الجاسوس!</h2>
+                                <div class="hint">تلميح: ${currentHint}</div>
+                            </div>
+                            <div class="hidden-placeholder">🔒</div>
                         </div>
                     `;
                 } else {
-                    // Show impostor without hint
                     wordDisplay.innerHTML = `
-                        <div class="word-display impostor-display-no-hint">
-                            <h2>🕵️ أنت الجاسوس!</h2>
-                            <p style="margin-top: 15px; font-size: 1.1em;">لا يوجد تلميح</p>
+                        <div id="wordCard" class="word-display">
+                            <div id="actualWord" class="word-hidden">
+                                <h2>🕵️ أنت الجاسوس!</h2>
+                                <p style="margin-top: 15px; font-size: 1.1em;">لا يوجد تلميح</p>
+                            </div>
+                            <div class="hidden-placeholder">🔒</div>
                         </div>
                     `;
                 }
             } else {
-                // Normal player - show word hidden with button
+                // Normal player - show hidden word with reveal button
                 wordDisplay.innerHTML = `
-                    <div class="word-display">
+                    <div id="wordCard" class="word-display">
                         <h2 id="actualWord" class="word-hidden">${currentWord}</h2>
+                        <div class="hidden-placeholder">🔒</div>
                     </div>
                 `;
-                
-                buttonContainer.innerHTML = `
-                    <button id="toggleWordBtn" class="show-hide-btn" onclick="toggleWordVisibility()">
-                        <span class="eye-icon">👁️</span> إظهار الكلمة
-                    </button>
-                `;
             }
+            
+            // Show reveal button for all players
+            buttonContainer.innerHTML = `
+                <button id="toggleWordBtn" class="show-hide-btn" onclick="toggleWordVisibility()">
+                    <span class="eye-icon">👁️</span> إظهار الدور
+                </button>
+            `;
         }
 
         function nextPlayer() {
