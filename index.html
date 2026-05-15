@@ -66,6 +66,28 @@
             75% { transform: translateX(10px); }
         }
 
+        @keyframes blurReveal {
+            from {
+                filter: blur(20px);
+                opacity: 0;
+            }
+            to {
+                filter: blur(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes blurHide {
+            from {
+                filter: blur(0);
+                opacity: 1;
+            }
+            to {
+                filter: blur(20px);
+                opacity: 0;
+            }
+        }
+
         h1 {
             text-align: center;
             color: #667eea;
@@ -151,6 +173,13 @@
             background: linear-gradient(135deg, #ffa726 0%, #fb8c00 100%);
         }
 
+        button.show-hide-btn {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            margin-top: 20px;
+            font-size: 1.3em;
+            padding: 20px;
+        }
+
         .player-list {
             margin: 20px 0;
         }
@@ -184,7 +213,11 @@
             padding: 40px;
             background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
             border-radius: 15px;
-            animation: pulse 2s infinite;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
         .word-display h2 {
@@ -199,9 +232,26 @@
             margin-top: 15px;
         }
 
+        .word-hidden {
+            filter: blur(20px);
+            user-select: none;
+            pointer-events: none;
+        }
+
+        .word-visible {
+            animation: blurReveal 0.5s ease-out forwards;
+        }
+
+        .hidden-placeholder {
+            font-size: 3em;
+            color: #999;
+            text-align: center;
+        }
+
         .impostor-display {
             background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
             color: white;
+            animation: pulse 2s infinite;
         }
 
         .impostor-display h2 {
@@ -215,6 +265,7 @@
         .impostor-display-no-hint {
             background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
             color: white;
+            animation: pulse 2s infinite;
         }
 
         .impostor-display-no-hint h2 {
@@ -555,6 +606,11 @@
         .tab-content.active {
             display: block;
         }
+
+        .eye-icon {
+            font-size: 1.5em;
+            margin-left: 10px;
+        }
     </style>
 </head>
 <body>
@@ -662,6 +718,8 @@
             <div class="player-name-display" id="currentPlayerName"></div>
             
             <div id="wordDisplay"></div>
+
+            <div id="showHideButtonContainer"></div>
 
             <button onclick="nextPlayer()" class="success">اللاعب التالي</button>
         </div>
@@ -827,6 +885,7 @@
         let votes = {};
         let firstPlayer = "";
         let clueEnabled = true;
+        let wordVisible = false;
 
         // Load custom words from localStorage on page load
         window.addEventListener('load', function() {
@@ -1045,6 +1104,7 @@
             // Reset and start
             currentPlayerIndex = 0;
             votes = {};
+            wordVisible = false;
             
             // Select random first player
             firstPlayer = players[Math.floor(Math.random() * players.length)];
@@ -1059,14 +1119,38 @@
             return word[0] + "*".repeat(word.length - 2) + word[word.length - 1];
         }
 
+        function toggleWordVisibility() {
+            wordVisible = !wordVisible;
+            const wordElement = document.getElementById('actualWord');
+            const button = document.getElementById('toggleWordBtn');
+            
+            if (wordVisible) {
+                wordElement.classList.remove('word-hidden');
+                wordElement.classList.add('word-visible');
+                button.innerHTML = '<span class="eye-icon">👁️</span> إخفاء الكلمة';
+            } else {
+                wordElement.classList.remove('word-visible');
+                wordElement.classList.add('word-hidden');
+                button.innerHTML = '<span class="eye-icon">👁️</span> إظهار الكلمة';
+            }
+        }
+
         function showPlayerWord() {
             const player = players[currentPlayerIndex];
             const isImpostor = impostors.includes(player);
             
+            // Reset word visibility for each player
+            wordVisible = false;
+            
             document.getElementById('currentPlayerName').textContent = `🎮 ${player}`;
             
             const wordDisplay = document.getElementById('wordDisplay');
+            const buttonContainer = document.getElementById('showHideButtonContainer');
+            
             if (isImpostor) {
+                // Impostor - no show/hide button
+                buttonContainer.innerHTML = '';
+                
                 if (clueEnabled) {
                     // Show impostor with hint
                     wordDisplay.innerHTML = `
@@ -1085,10 +1169,18 @@
                     `;
                 }
             } else {
+                // Normal player - show word hidden with button
                 wordDisplay.innerHTML = `
                     <div class="word-display">
-                        <h2>${currentWord}</h2>
+                        <h2 id="actualWord" class="word-hidden">${currentWord}</h2>
+                        <div class="hidden-placeholder">🔒</div>
                     </div>
+                `;
+                
+                buttonContainer.innerHTML = `
+                    <button id="toggleWordBtn" class="show-hide-btn" onclick="toggleWordVisibility()">
+                        <span class="eye-icon">👁️</span> إظهار الكلمة
+                    </button>
                 `;
             }
         }
@@ -1223,6 +1315,7 @@
             currentPlayerIndex = 0;
             votes = {};
             firstPlayer = "";
+            wordVisible = false;
             document.getElementById('voteResults').style.display = 'none';
             showScreen('setupScreen');
         }
