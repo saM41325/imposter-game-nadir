@@ -672,10 +672,16 @@
         }
 
         /* Sound Control */
-        .sound-control {
+        .sound-controls {
             position: fixed;
             top: 20px;
             left: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .sound-control {
             background: white;
             border-radius: 50%;
             width: 50px;
@@ -685,7 +691,6 @@
             justify-content: center;
             cursor: pointer;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            z-index: 1000;
             transition: all 0.3s;
         }
 
@@ -695,6 +700,7 @@
 
         .sound-control.muted {
             background: #f8f9fa;
+            opacity: 0.6;
         }
 
         @media (max-width: 480px) {
@@ -729,13 +735,30 @@
             .winner-announcement .winner-name {
                 font-size: 1.5em;
             }
+
+            .sound-controls {
+                top: 10px;
+                left: 10px;
+                gap: 5px;
+            }
+
+            .sound-control {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2em;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Sound Control -->
-    <div class="sound-control" id="soundControl" onclick="toggleSound()">
-        <span id="soundIcon">🔊</span>
+    <!-- Sound Controls -->
+    <div class="sound-controls">
+        <div class="sound-control" id="soundControl" onclick="toggleSound()" title="تشغيل/إيقاف المؤثرات الصوتية">
+            <span id="soundIcon">🔊</span>
+        </div>
+        <div class="sound-control" id="musicControl" onclick="toggleMusic()" title="تشغيل/إيقاف الموسيقى">
+            <span id="musicIcon">🎵</span>
+        </div>
     </div>
 
     <div class="container">
@@ -991,30 +1014,234 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
     <script>
-        // ================== SOUND EFFECTS ==================
-        const sounds = {
-            button: new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZUQ0PVKzn7LBiHAU7k9r0yXkpBSh+zPLaizsIGGe57OihUxELTqXh8bllHAc5kdz0xHknBSl/zPDajT0JFWa57uihUxEKTaXg8rhlHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0'),
-            reveal: new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZUQ0PVKzn7LBiHAU7k9r0yXkpBSh+zPLaizsIGGe57OihUxELTqXh8bllHAc5kdz0xHknBSl/zPDajT0JFWa57uihUxEKTaXg8rhlHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0'),
-            timer: new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZUQ0PVKzn7LBiHAU7k9r0yXkpBSh+zPLaizsIGGe57OihUxELTqXh8bllHAc5kdz0xHknBSl/zPDajT0JFWa57uihUxEKTaXg8rhlHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0'),
-            win: new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZUQ0PVKzn7LBiHAU7k9r0yXkpBSh+zPLaizsIGGe57OihUxELTqXh8bllHAc5kdz0xHknBSl/zPDajT0JFWa57uihUxEKTaXg8rhlHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0'),
-            vote: new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZUQ0PVKzn7LBiHAU7k9r0yXkpBSh+zPLaizsIGGe57OihUxELTqXh8bllHAc5kdz0xHknBSl/zPDajT0JFWa57uihUxEKTaXg8rhlHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0')
-        };
+        // ================== AUDIO CONTEXT FOR SOUND GENERATION ==================
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const audioContext = new AudioContext();
 
+        // Sound generator functions
+        function playClickSound() {
+            if (!soundEnabled) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 800;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.1);
+        }
+
+        function playRevealSound() {
+            if (!soundEnabled) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.3);
+            oscillator.type = 'triangle';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.3);
+        }
+
+        function playTimerSound() {
+            if (!soundEnabled) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 1000;
+            oscillator.type = 'square';
+            
+            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.15);
+        }
+
+        function playVoteSound() {
+            if (!soundEnabled) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.2);
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.25, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.2);
+        }
+
+        function playWinSound() {
+            if (!soundEnabled) return;
+            
+            // Play a triumphant melody
+            const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+            const duration = 0.2;
+            
+            notes.forEach((freq, index) => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = freq;
+                oscillator.type = 'sine';
+                
+                const startTime = audioContext.currentTime + (index * duration);
+                gainNode.gain.setValueAtTime(0.3, startTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+                
+                oscillator.start(startTime);
+                oscillator.stop(startTime + duration);
+            });
+        }
+
+        function playSelectSound() {
+            if (!soundEnabled) return;
+            
+            // Menu selection sound
+            const oscillator1 = audioContext.createOscillator();
+            const oscillator2 = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator1.connect(gainNode);
+            oscillator2.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator1.frequency.value = 600;
+            oscillator2.frequency.value = 900;
+            oscillator1.type = 'sine';
+            oscillator2.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+            
+            oscillator1.start(audioContext.currentTime);
+            oscillator2.start(audioContext.currentTime);
+            oscillator1.stop(audioContext.currentTime + 0.15);
+            oscillator2.stop(audioContext.currentTime + 0.15);
+        }
+
+        // ================== BACKGROUND MUSIC ==================
+        let backgroundMusic = null;
+        let musicEnabled = true;
         let soundEnabled = true;
+
+        function createBackgroundMusic() {
+            // Create a simple ambient background music using Web Audio API
+            const musicContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            function playAmbientNote(frequency, startTime, duration) {
+                const oscillator = musicContext.createOscillator();
+                const gainNode = musicContext.createGain();
+                const filter = musicContext.createBiquadFilter();
+                
+                oscillator.connect(filter);
+                filter.connect(gainNode);
+                gainNode.connect(musicContext.destination);
+                
+                oscillator.frequency.value = frequency;
+                oscillator.type = 'sine';
+                
+                filter.type = 'lowpass';
+                filter.frequency.value = 800;
+                
+                gainNode.gain.setValueAtTime(0, startTime);
+                gainNode.gain.linearRampToValueAtTime(0.05, startTime + 0.5);
+                gainNode.gain.linearRampToValueAtTime(0.05, startTime + duration - 0.5);
+                gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
+                
+                oscillator.start(startTime);
+                oscillator.stop(startTime + duration);
+            }
+            
+            function playMusicLoop() {
+                if (!musicEnabled) return;
+                
+                const now = musicContext.currentTime;
+                const noteDuration = 2;
+                
+                // Relaxing chord progression: C - Am - F - G
+                const chords = [
+                    [261.63, 329.63, 392.00], // C major
+                    [220.00, 261.63, 329.63], // A minor
+                    [174.61, 220.00, 261.63], // F major
+                    [196.00, 246.94, 293.66]  // G major
+                ];
+                
+                chords.forEach((chord, chordIndex) => {
+                    chord.forEach(frequency => {
+                        playAmbientNote(frequency, now + (chordIndex * noteDuration), noteDuration);
+                    });
+                });
+                
+                setTimeout(playMusicLoop, (chords.length * noteDuration * 1000) - 100);
+            }
+            
+            backgroundMusic = { context: musicContext, play: playMusicLoop };
+        }
+
+        function startBackgroundMusic() {
+            if (!backgroundMusic) {
+                createBackgroundMusic();
+            }
+            if (musicEnabled) {
+                backgroundMusic.play();
+            }
+        }
 
         function toggleSound() {
             soundEnabled = !soundEnabled;
             document.getElementById('soundIcon').textContent = soundEnabled ? '🔊' : '🔇';
             document.getElementById('soundControl').classList.toggle('muted', !soundEnabled);
-            playSound('button');
-        }
-
-        function playSound(soundName) {
-            if (soundEnabled && sounds[soundName]) {
-                sounds[soundName].currentTime = 0;
-                sounds[soundName].play().catch(e => console.log('Sound play failed:', e));
+            if (soundEnabled) {
+                playClickSound();
             }
         }
+
+        function toggleMusic() {
+            musicEnabled = !musicEnabled;
+            document.getElementById('musicIcon').textContent = musicEnabled ? '🎵' : '🎶';
+            document.getElementById('musicControl').classList.toggle('muted', !musicEnabled);
+            
+            if (musicEnabled) {
+                startBackgroundMusic();
+            }
+            playClickSound();
+        }
+
+        // Start background music when user interacts with the page
+        document.addEventListener('click', function initMusic() {
+            startBackgroundMusic();
+            document.removeEventListener('click', initMusic);
+        }, { once: true });
 
         // ================== FIREBASE CONFIGURATION ==================
         const firebaseConfig = {
@@ -1082,12 +1309,12 @@
 
         // ================== POINTS SYSTEM ==================
         const POINTS = {
-            IMPOSTOR_WIN: 10,      // Impostor wins (not caught)
-            IMPOSTOR_CAUGHT: -5,   // Impostor caught
-            CITIZEN_WIN: 5,        // Citizen catches impostor
-            CITIZEN_LOSS: -3,      // Citizen fails
-            CORRECT_VOTE: 3,       // Voted correctly
-            WRONG_VOTE: -1         // Voted wrong
+            IMPOSTOR_WIN: 10,
+            IMPOSTOR_CAUGHT: -5,
+            CITIZEN_WIN: 5,
+            CITIZEN_LOSS: -3,
+            CORRECT_VOTE: 3,
+            WRONG_VOTE: -1
         };
 
         let leaderboardRef = null;
@@ -1134,7 +1361,7 @@
 
         // ================== MODE SELECTION ==================
         function selectMode(mode) {
-            playSound('button');
+            playSelectSound();
             gameMode = mode;
             if (mode === 'offline') {
                 showScreen('offlineSetupScreen');
@@ -1144,7 +1371,7 @@
         }
 
         function backToMode() {
-            playSound('button');
+            playClickSound();
             if (roomRef) {
                 leaveRoom();
             }
@@ -1256,7 +1483,7 @@
         }
 
         function createRoom() {
-            playSound('button');
+            playClickSound();
             const name = document.getElementById('playerName').value.trim();
             if (!name) {
                 showOnlineError('الرجاء إدخال اسمك');
@@ -1299,12 +1526,12 @@
         }
 
         function showJoinRoom() {
-            playSound('button');
+            playClickSound();
             document.getElementById('joinRoomDiv').style.display = 'block';
         }
 
         function joinRoom() {
-            playSound('button');
+            playClickSound();
             const name = document.getElementById('playerName').value.trim();
             const code = document.getElementById('roomCode').value.trim();
 
@@ -1405,7 +1632,7 @@
         }
 
         function startOnlineGame() {
-            playSound('button');
+            playSelectSound();
             if (!isHost) return;
 
             playersRef.once('value').then(snapshot => {
@@ -1554,7 +1781,7 @@
         }
 
         function toggleOnlineWordVisibility() {
-            playSound('reveal');
+            playRevealSound();
             const wordElement = document.getElementById('onlineActualWord');
             const placeholderElement = document.getElementById('onlinePlaceholder');
             const button = document.getElementById('onlineToggleWordBtn');
@@ -1573,7 +1800,7 @@
         }
 
         function setReadyToVote() {
-            playSound('button');
+            playClickSound();
             if (hasReadyToVote) return;
             
             hasReadyToVote = true;
@@ -1653,7 +1880,7 @@
                 if (remaining <= 30) {
                     timerDisplay.classList.add('warning');
                     if (remaining !== lastSecond && remaining <= 10 && remaining > 0) {
-                        playSound('timer');
+                        playTimerSound();
                     }
                 } else {
                     timerDisplay.classList.remove('warning');
@@ -1705,7 +1932,7 @@
         }
 
         function voteOnline(playerName, btn) {
-            playSound('vote');
+            playVoteSound();
             if (hasVoted) return;
 
             gameRef.child('votes').child(currentPlayerName).set(playerName);
@@ -1739,13 +1966,11 @@
             const votes = gameData.votes || {};
             const impostors = Object.keys(gameData.impostors || {});
             
-            // Count votes
             const voteCounts = {};
             Object.values(votes).forEach(votedFor => {
                 voteCounts[votedFor] = (voteCounts[votedFor] || 0) + 1;
             });
 
-            // Find most voted player
             let mostVotedPlayer = null;
             let maxVotes = 0;
             Object.entries(voteCounts).forEach(([player, count]) => {
@@ -1755,7 +1980,6 @@
                 }
             });
 
-            // Determine winner and distribute points
             const impostorsCaught = mostVotedPlayer && impostors.includes(mostVotedPlayer);
             let winner = null;
             const pointsDistribution = {};
@@ -1785,7 +2009,6 @@
                         }
                     }
 
-                    // Bonus for correct vote
                     if (votedFor && impostors.includes(votedFor)) {
                         points += POINTS.CORRECT_VOTE;
                     } else if (votedFor) {
@@ -1812,10 +2035,9 @@
         function showOnlineResults(gameData) {
             showScreen('onlineResultsScreen');
             
-            playSound('win');
+            playWinSound();
             createConfetti();
 
-            // Show winner
             const winnerDiv = document.getElementById('onlineWinnerAnnouncement');
             if (gameData.winner) {
                 const isImpostor = gameData.impostors[gameData.winner];
@@ -1833,12 +2055,10 @@
                 `;
             }
 
-            // Show word
             document.getElementById('onlineWordReveal').innerHTML = `
                 <div class="word-display"><h2>الكلمة كانت: ${gameData.word}</h2></div>
             `;
 
-            // Show vote results
             const voteCounts = {};
             Object.values(gameData.votes || {}).forEach(votedFor => {
                 voteCounts[votedFor] = (voteCounts[votedFor] || 0) + 1;
@@ -1865,7 +2085,6 @@
             voteHtml += '</div>';
             document.getElementById('onlineVoteResultsDiv').innerHTML = voteHtml;
 
-            // Show impostors
             const impostorsList = Object.keys(gameData.impostors || {});
             let impostorHtml = '<h3 style="margin: 30px 0 15px; text-align: center;">الجواسيس الحقيقيون:</h3>';
             impostorsList.forEach(impostor => {
@@ -1873,7 +2092,6 @@
             });
             document.getElementById('onlineImpostorReveal').innerHTML = impostorHtml;
 
-            // Show points distribution
             const pointsDistribution = gameData.pointsDistribution || {};
             let pointsHtml = '<div class="vote-results"><h3 style="text-align: center; margin-bottom: 15px;">توزيع النقاط</h3>';
             
@@ -1892,12 +2110,11 @@
             pointsHtml += '</div>';
             document.getElementById('onlinePointsDistribution').innerHTML = pointsHtml;
 
-            // Update leaderboard
             updateLeaderboard();
         }
 
         function backToLobby() {
-            playSound('button');
+            playClickSound();
             hasVoted = false;
             hasSeenWord = false;
             hasReadyToVote = false;
@@ -1954,7 +2171,7 @@
 
         // ================== OFFLINE FUNCTIONS ==================
         function addPlayer() {
-            playSound('button');
+            playClickSound();
             const input = document.getElementById('playerNameInput');
             const name = input.value.trim();
             const errorDiv = document.getElementById('errorMessage');
@@ -1998,13 +2215,13 @@
         }
 
         function removePlayer(index) {
-            playSound('button');
+            playClickSound();
             players.splice(index, 1);
             updatePlayerList();
         }
 
         function startOfflineGame() {
-            playSound('button');
+            playSelectSound();
             if (players.length < 3) {
                 showError('يجب إضافة 3 لاعبين على الأقل');
                 return;
@@ -2053,7 +2270,7 @@
         }
 
         function toggleWordVisibility() {
-            playSound('reveal');
+            playRevealSound();
             wordVisible = !wordVisible;
             const wordElement = document.getElementById('actualWord');
             const cardElement = document.getElementById('wordCard');
@@ -2137,7 +2354,7 @@
         }
 
         function nextPlayer() {
-            playSound('button');
+            playClickSound();
             currentPlayerIndex++;
             if (currentPlayerIndex >= players.length) {
                 startGamePhase();
@@ -2177,7 +2394,7 @@
                 if (timeLeft <= 30) {
                     timerDisplay.classList.add('warning');
                     if (timeLeft !== lastSecond && timeLeft <= 10 && timeLeft > 0) {
-                        playSound('timer');
+                        playTimerSound();
                     }
                 } else {
                     timerDisplay.classList.remove('warning');
@@ -2212,14 +2429,14 @@
         }
 
         function vote(player, btn) {
-            playSound('vote');
+            playVoteSound();
             votes[player]++;
             btn.classList.add('voted');
             btn.textContent = `${player} (${votes[player]})`;
         }
 
         function showVoteResults() {
-            playSound('button');
+            playSelectSound();
             const resultsDiv = document.getElementById('voteResults');
             const sortedVotes = Object.entries(votes).sort((a, b) => b[1] - a[1]);
             
@@ -2239,7 +2456,7 @@
         }
 
         function revealImpostors() {
-            playSound('win');
+            playWinSound();
             createConfetti();
             
             if (timerInterval) {
@@ -2266,7 +2483,7 @@
         }
 
         function resetGame() {
-            playSound('button');
+            playClickSound();
             if (timerInterval) {
                 clearInterval(timerInterval);
             }
@@ -2288,14 +2505,6 @@
             document.getElementById(screenId).classList.add('active');
         }
 
-        // Add button click sounds to all buttons
-        document.addEventListener('click', function(e) {
-            if (e.target.tagName === 'BUTTON') {
-                playSound('button');
-            }
-        });
-
-        // Event listeners
         document.getElementById('playerNameInput')?.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 addPlayer();
