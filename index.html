@@ -744,7 +744,7 @@
             position: absolute;
             left: 0;
             top: 70px;
-            width: 280px;
+            width: 250px;
             max-height: 350px;
             overflow-y: auto;
             display: none;
@@ -788,71 +788,16 @@
             color: white;
         }
 
-        .music-input-group {
-            margin-top: 12px;
-            padding-top: 12px;
+        .music-option.mute {
+            background: #ff6b6b;
+            color: white;
+            margin-top: 15px;
             border-top: 2px solid #ddd;
-            display: flex;
-            gap: 5px;
+            padding-top: 15px;
         }
 
-        .music-input-group input {
-            flex: 1;
-            padding: 8px;
-            font-size: 0.85em;
-            margin: 0;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-        }
-
-        .music-input-group button {
-            flex: 0.35;
-            padding: 8px;
-            margin: 0;
-            font-size: 0.85em;
-        }
-
-        .volume-control {
-            background: white;
-            border-radius: 25px;
-            padding: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            width: 200px;
-        }
-
-        .volume-control label {
-            font-size: 0.9em;
-            color: #667eea;
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-
-        .volume-slider {
-            width: 100%;
-            height: 5px;
-            border-radius: 5px;
-            background: #ddd;
-            outline: none;
-            -webkit-appearance: none;
-        }
-
-        .volume-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
-            background: #667eea;
-            cursor: pointer;
-        }
-
-        .volume-slider::-moz-range-thumb {
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
-            background: #667eea;
-            cursor: pointer;
+        .music-option.mute:hover {
+            background: #ee5a6f;
         }
 
         .room-controls {
@@ -946,11 +891,6 @@
                 font-size: 1.2em;
             }
 
-            .volume-control {
-                width: 150px;
-                padding: 10px;
-            }
-
             .music-selector {
                 width: 200px;
                 left: -80px;
@@ -988,7 +928,7 @@
         
         <!-- Music Control Wrapper -->
         <div class="music-selector-wrapper">
-            <div class="sound-control" id="musicControl" onclick="toggleMusicMenu()" title="تشغيل/إيقاف الموسيقى">
+            <div class="sound-control" id="musicControl" onclick="toggleMusicMenu()" title="اختيار الموسيقى">
                 <span id="musicIcon">🎵</span>
             </div>
             
@@ -1006,22 +946,10 @@
                     🕵️ موسيقى غامضة
                 </div>
                 
-                <div class="music-input-group">
-                    <input 
-                        type="text" 
-                        id="musicUrlInput" 
-                        placeholder="رابط الموسيقى...">
-                    <button onclick="addCustomMusic()">إضافة</button>
+                <div class="music-option mute" onclick="toggleMusic()">
+                    <span id="muteButtonText">🔇 إيقاف الموسيقى</span>
                 </div>
             </div>
-        </div>
-
-        <!-- Volume Control -->
-        <div class="volume-control">
-            <label>الأصوات 🔊</label>
-            <input type="range" min="0" max="100" value="70" class="volume-slider" id="sfxVolume" oninput="updateSfxVolume(this.value)">
-            <label style="margin-top: 10px;">الموسيقى 🎵</label>
-            <input type="range" min="0" max="100" value="30" class="volume-slider" id="musicVolume" oninput="updateMusicVolume(this.value)">
         </div>
     </div>
 
@@ -1296,21 +1224,10 @@
 
         // Music URLs - Replace with your own music URLs
         const musicLibrary = {
-            epic: 'https://res.cloudinary.com/djiukbvoa/video/upload/v1779034937/Intro_Part_1_Monita_s_Theme_-_Nintendo_Land_-_Music_zb4gny.mp3',
-            chill: 'https://res.cloudinary.com/djiukbvoa/video/upload/v1779029694/no_copyright_music_coffee_time_cute_vlog_music_tnkkp3.mp3',
+            epic: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+            chill: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
             mystery: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
         };
-
-        function updateSfxVolume(value) {
-            sfxVolume = value / 100;
-        }
-
-        function updateMusicVolume(value) {
-            musicVolume = value / 100;
-            if (backgroundAudioPlayer && backgroundAudioPlayer.src) {
-                backgroundAudioPlayer.volume = musicVolume;
-            }
-        }
 
         function toggleMusicMenu() {
             const selector = document.getElementById('musicSelector');
@@ -1324,6 +1241,12 @@
 
             if (musicLibrary[musicKey]) {
                 playUrlMusic(musicLibrary[musicKey]);
+                
+                // Enable music if it was muted
+                if (!musicEnabled) {
+                    musicEnabled = true;
+                    updateMuteButtonText();
+                }
             }
 
             // Close selector
@@ -1331,11 +1254,11 @@
         }
 
         function updateMusicOptions() {
-            document.querySelectorAll('.music-option').forEach(option => {
+            document.querySelectorAll('.music-option:not(.mute)').forEach(option => {
                 option.classList.remove('active');
             });
             
-            const activeOption = Array.from(document.querySelectorAll('.music-option')).find(opt => {
+            const activeOption = Array.from(document.querySelectorAll('.music-option:not(.mute)')).find(opt => {
                 return opt.textContent.includes(
                     currentMusic === 'epic' ? 'حماسية' :
                     currentMusic === 'chill' ? 'هادئة' :
@@ -1346,25 +1269,6 @@
             if (activeOption) {
                 activeOption.classList.add('active');
             }
-        }
-
-        function addCustomMusic() {
-            const urlInput = document.getElementById('musicUrlInput');
-            const url = urlInput.value.trim();
-            
-            if (!url) {
-                alert('الرجاء إدخال رابط الموسيقى');
-                return;
-            }
-
-            if (!url.startsWith('http://') && !url.startsWith('https://')) {
-                alert('الرجاء التأكد من أن الرابط يبدأ بـ http:// أو https://');
-                return;
-            }
-
-            playUrlMusic(url);
-            urlInput.value = '';
-            document.getElementById('musicSelector').classList.remove('active');
         }
 
         function playUrlMusic(url) {
@@ -1378,7 +1282,6 @@
             if (musicEnabled) {
                 backgroundAudioPlayer.play().catch(error => {
                     console.log("Audio play failed:", error);
-                    alert('فشل تشغيل الموسيقى. تأكد من صحة الرابط والحصول على إذن الوصول.');
                 });
             }
         }
@@ -1400,8 +1303,7 @@
 
         function toggleMusic() {
             musicEnabled = !musicEnabled;
-            document.getElementById('musicIcon').textContent = musicEnabled ? '🎵' : '🎶';
-            document.getElementById('musicControl').classList.toggle('muted', !musicEnabled);
+            updateMuteButtonText();
 
             if (backgroundAudioPlayer) {
                 if (musicEnabled) {
@@ -1414,6 +1316,14 @@
             }
 
             playClickSound();
+            
+            // Close menu after toggling
+            document.getElementById('musicSelector').classList.remove('active');
+        }
+
+        function updateMuteButtonText() {
+            const muteBtn = document.getElementById('muteButtonText');
+            muteBtn.textContent = musicEnabled ? '🔇 إيقاف الموسيقى' : '🔊 تشغيل الموسيقى';
         }
 
         // Close menu when clicking outside
