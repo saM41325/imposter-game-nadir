@@ -732,6 +732,82 @@
             opacity: 0.6;
         }
 
+        .music-selector {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            position: absolute;
+            left: 0;
+            top: -400px;
+            width: 280px;
+            max-height: 350px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1001;
+        }
+
+        .music-selector.active {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .music-selector-title {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #667eea;
+            font-size: 1.1em;
+        }
+
+        .music-option {
+            padding: 12px;
+            margin: 8px 0;
+            background: #f0f0f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-weight: bold;
+            color: #333;
+            font-size: 0.95em;
+        }
+
+        .music-option:hover {
+            background: #667eea;
+            color: white;
+            transform: translateX(-3px);
+        }
+
+        .music-option.active {
+            background: #4facfe;
+            color: white;
+        }
+
+        .music-input-group {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 2px solid #ddd;
+            display: flex;
+            gap: 5px;
+        }
+
+        .music-input-group input {
+            flex: 1;
+            padding: 8px;
+            font-size: 0.85em;
+            margin: 0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .music-input-group button {
+            flex: 0.35;
+            padding: 8px;
+            margin: 0;
+            font-size: 0.85em;
+        }
+
         .volume-control {
             background: white;
             border-radius: 25px;
@@ -821,75 +897,6 @@
             animation: slideIn 0.5s ease-out;
         }
 
-        .music-selector {
-            background: white;
-            border-radius: 15px;
-            padding: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-            position: absolute;
-            left: 0;
-            top: -350px;
-            width: 250px;
-            max-height: 300px;
-            overflow-y: auto;
-            display: none;
-            z-index: 1001;
-        }
-
-        .music-selector.active {
-            display: block;
-        }
-
-        .music-selector-title {
-            text-align: center;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #667eea;
-        }
-
-        .music-option {
-            padding: 10px;
-            margin: 5px 0;
-            background: #f0f0f0;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: center;
-            font-weight: bold;
-            color: #333;
-            font-size: 0.9em;
-        }
-
-        .music-option:hover {
-            background: #667eea;
-            color: white;
-        }
-
-        .music-option.active {
-            background: #4facfe;
-            color: white;
-        }
-
-        .music-input-group {
-            margin-top: 10px;
-            display: flex;
-            gap: 5px;
-        }
-
-        .music-input-group input {
-            flex: 1;
-            padding: 8px;
-            font-size: 0.85em;
-            margin: 0;
-        }
-
-        .music-input-group button {
-            flex: 0.3;
-            padding: 8px;
-            margin: 0;
-            font-size: 0.85em;
-        }
-
         @media (max-width: 480px) {
             .container {
                 padding: 20px;
@@ -940,6 +947,11 @@
                 padding: 10px;
             }
 
+            .music-selector {
+                width: 200px;
+                top: -350px;
+            }
+
             .player-item {
                 flex-direction: column;
                 gap: 10px;
@@ -952,11 +964,6 @@
 
             .room-controls {
                 flex-direction: column;
-            }
-
-            .music-selector {
-                width: 200px;
-                top: -300px;
             }
         }
     </style>
@@ -980,12 +987,9 @@
         
         <!-- Music Selector Menu -->
         <div id="musicSelector" class="music-selector">
-            <div class="music-selector-title">اختر الموسيقى 🎶</div>
+            <div class="music-selector-title">🎶 اختر الموسيقى</div>
             
-            <div class="music-option active" onclick="changeMusic('default')">
-                🎹 الموسيقى الأصلية
-            </div>
-            <div class="music-option" onclick="changeMusic('epic')">
+            <div class="music-option active" onclick="changeMusic('epic')">
                 ⚡ موسيقى حماسية
             </div>
             <div class="music-option" onclick="changeMusic('chill')">
@@ -999,9 +1003,8 @@
                 <input 
                     type="text" 
                     id="musicUrlInput" 
-                    placeholder="رابط الموسيقى..." 
-                    style="font-size: 0.85em;">
-                <button onclick="addCustomMusic()" style="font-size: 0.85em;">إضافة</button>
+                    placeholder="رابط الموسيقى...">
+                <button onclick="addCustomMusic()">إضافة</button>
             </div>
         </div>
 
@@ -1281,14 +1284,13 @@
         let backgroundAudioPlayer = null;
         let musicEnabled = true;
         let soundEnabled = true;
-        let currentMusic = 'default';
+        let currentMusic = 'epic';
 
-        // Music URLs - You can replace these with your own music URLs
+        // Music URLs - Replace with your own music URLs
         const musicLibrary = {
-            default: 'https://res.cloudinary.com/djiukbvoa/video/upload/v1779029694/no_copyright_music_coffee_time_cute_vlog_music_tnkkp3.mp3', // Will use Web Audio API
-            epic: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', // Replace with your epic music URL
-            chill: 'https://res.cloudinary.com/djiukbvoa/video/upload/v1779029694/no_copyright_music_coffee_time_cute_vlog_music_tnkkp3.mp3', // Replace with your chill music URL
-            mystery: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' // Replace with your mystery music URL
+            epic: 'https://res.cloudinary.com/djiukbvoa/video/upload/v1779034937/Intro_Part_1_Monita_s_Theme_-_Nintendo_Land_-_Music_zb4gny.mp3',
+            chill: 'https://res.cloudinary.com/djiukbvoa/video/upload/v1779034937/Intro_Part_1_Monita_s_Theme_-_Nintendo_Land_-_Music_zb4gny.mp3',
+            mystery: 'https://res.cloudinary.com/djiukbvoa/video/upload/v1779029694/no_copyright_music_coffee_time_cute_vlog_music_tnkkp3.mp3'
         };
 
         function updateSfxVolume(value) {
@@ -1297,7 +1299,7 @@
 
         function updateMusicVolume(value) {
             musicVolume = value / 100;
-            if (backgroundAudioPlayer) {
+            if (backgroundAudioPlayer && backgroundAudioPlayer.src) {
                 backgroundAudioPlayer.volume = musicVolume;
             }
         }
@@ -1312,15 +1314,7 @@
             currentMusic = musicKey;
             updateMusicOptions();
 
-            if (musicKey === 'default') {
-                // Use Web Audio API
-                if (backgroundAudioPlayer) {
-                    backgroundAudioPlayer.pause();
-                    backgroundAudioPlayer = null;
-                }
-                startWebAudioMusic();
-            } else if (musicLibrary[musicKey]) {
-                // Use HTML5 Audio with URL
+            if (musicLibrary[musicKey]) {
                 playUrlMusic(musicLibrary[musicKey]);
             }
 
@@ -1331,11 +1325,19 @@
         function updateMusicOptions() {
             document.querySelectorAll('.music-option').forEach(option => {
                 option.classList.remove('active');
-                if (option.textContent.toLowerCase().includes(currentMusic.toLowerCase()) || 
-                    (currentMusic === 'default' && option.textContent.includes('الأصلية'))) {
-                    option.classList.add('active');
-                }
             });
+            
+            const activeOption = Array.from(document.querySelectorAll('.music-option')).find(opt => {
+                return opt.textContent.includes(
+                    currentMusic === 'epic' ? 'حماسية' :
+                    currentMusic === 'chill' ? 'هادئة' :
+                    currentMusic === 'mystery' ? 'غامضة' : ''
+                );
+            });
+            
+            if (activeOption) {
+                activeOption.classList.add('active');
+            }
         }
 
         function addCustomMusic() {
@@ -1368,78 +1370,13 @@
             if (musicEnabled) {
                 backgroundAudioPlayer.play().catch(error => {
                     console.log("Audio play failed:", error);
-                    alert('فشل تشغيل الموسيقى. تأكد من صحة الرابط.');
+                    alert('فشل تشغيل الموسيقى. تأكد من صحة الرابط والحصول على إذن الوصول.');
                 });
             }
-        }
-
-        function startWebAudioMusic() {
-            if (!musicEnabled) return;
-
-            const musicContext = new (window.AudioContext || window.webkitAudioContext)();
-            const backgroundMusicGain = musicContext.createGain();
-            backgroundMusicGain.connect(musicContext.destination);
-            backgroundMusicGain.gain.value = musicVolume * 0.15;
-
-            function playNote(frequency, startTime, duration, type = 'sine') {
-                const oscillator = musicContext.createOscillator();
-                const gainNode = musicContext.createGain();
-                const filter = musicContext.createBiquadFilter();
-
-                oscillator.connect(filter);
-                filter.connect(gainNode);
-                gainNode.connect(backgroundMusicGain);
-
-                oscillator.frequency.value = frequency;
-                oscillator.type = type;
-
-                filter.type = 'lowpass';
-                filter.frequency.value = 1200;
-                filter.Q.value = 1;
-
-                gainNode.gain.setValueAtTime(0, startTime);
-                gainNode.gain.linearRampToValueAtTime(1, startTime + 0.1);
-                gainNode.gain.linearRampToValueAtTime(0.7, startTime + duration - 0.3);
-                gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
-
-                oscillator.start(startTime);
-                oscillator.stop(startTime + duration);
-            }
-
-            function playMusicLoop() {
-                if (!musicEnabled || currentMusic !== 'default') return;
-
-                const now = musicContext.currentTime;
-
-                const melodySequence = [
-                    { notes: [523.25, 659.25, 783.99], duration: 3 },
-                    { notes: [493.88, 587.33, 739.99], duration: 3 },
-                    { notes: [440.00, 554.37, 659.25], duration: 3 },
-                    { notes: [493.88, 587.33, 698.46], duration: 3 }
-                ];
-
-                const bassNotes = [261.63, 246.94, 220.00, 246.94];
-
-                let time = now;
-                melodySequence.forEach((seq, index) => {
-                    seq.notes.forEach(freq => {
-                        playNote(freq, time, seq.duration, 'triangle');
-                    });
-                    playNote(bassNotes[index], time, seq.duration * 0.9, 'sine');
-                    time += seq.duration;
-                });
-
-                const totalDuration = melodySequence.reduce((sum, seq) => sum + seq.duration, 0);
-                setTimeout(playMusicLoop, totalDuration * 1000 - 100);
-            }
-
-            playMusicLoop();
         }
 
         function startBackgroundMusic() {
-            if (currentMusic === 'default') {
-                startWebAudioMusic();
-            } else if (musicLibrary[currentMusic]) {
+            if (currentMusic && musicLibrary[currentMusic]) {
                 playUrlMusic(musicLibrary[currentMusic]);
             }
         }
