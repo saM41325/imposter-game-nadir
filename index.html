@@ -732,6 +732,10 @@
             opacity: 0.6;
         }
 
+        .music-selector-wrapper {
+            position: relative;
+        }
+
         .music-selector {
             background: white;
             border-radius: 15px;
@@ -739,7 +743,7 @@
             box-shadow: 0 5px 20px rgba(0,0,0,0.3);
             position: absolute;
             left: 0;
-            top: -400px;
+            top: 70px;
             width: 280px;
             max-height: 350px;
             overflow-y: auto;
@@ -949,7 +953,7 @@
 
             .music-selector {
                 width: 200px;
-                top: -350px;
+                left: -80px;
             }
 
             .player-item {
@@ -981,30 +985,34 @@
         <div class="sound-control" id="soundControl" onclick="toggleSound()" title="تشغيل/إيقاف المؤثرات الصوتية">
             <span id="soundIcon">🔊</span>
         </div>
-        <div class="sound-control" id="musicControl" onclick="toggleMusicMenu()" title="اختر الموسيقى">
-            <span id="musicIcon">🎵</span>
-        </div>
         
-        <!-- Music Selector Menu -->
-        <div id="musicSelector" class="music-selector">
-            <div class="music-selector-title">🎶 اختر الموسيقى</div>
-            
-            <div class="music-option active" onclick="changeMusic('epic')">
-                ⚡ موسيقى حماسية
-            </div>
-            <div class="music-option" onclick="changeMusic('chill')">
-                😌 موسيقى هادئة
-            </div>
-            <div class="music-option" onclick="changeMusic('mystery')">
-                🕵️ موسيقى غامضة
+        <!-- Music Control Wrapper -->
+        <div class="music-selector-wrapper">
+            <div class="sound-control" id="musicControl" onclick="toggleMusicMenu()" title="تشغيل/إيقاف الموسيقى">
+                <span id="musicIcon">🎵</span>
             </div>
             
-            <div class="music-input-group">
-                <input 
-                    type="text" 
-                    id="musicUrlInput" 
-                    placeholder="رابط الموسيقى...">
-                <button onclick="addCustomMusic()">إضافة</button>
+            <!-- Music Selector Menu -->
+            <div id="musicSelector" class="music-selector">
+                <div class="music-selector-title">🎶 اختر الموسيقى</div>
+                
+                <div class="music-option active" onclick="changeMusic('epic')">
+                    ⚡ موسيقى حماسية
+                </div>
+                <div class="music-option" onclick="changeMusic('chill')">
+                    😌 موسيقى هادئة
+                </div>
+                <div class="music-option" onclick="changeMusic('mystery')">
+                    🕵️ موسيقى غامضة
+                </div>
+                
+                <div class="music-input-group">
+                    <input 
+                        type="text" 
+                        id="musicUrlInput" 
+                        placeholder="رابط الموسيقى...">
+                    <button onclick="addCustomMusic()">إضافة</button>
+                </div>
             </div>
         </div>
 
@@ -1289,8 +1297,8 @@
         // Music URLs - Replace with your own music URLs
         const musicLibrary = {
             epic: 'https://res.cloudinary.com/djiukbvoa/video/upload/v1779034937/Intro_Part_1_Monita_s_Theme_-_Nintendo_Land_-_Music_zb4gny.mp3',
-            chill: 'https://res.cloudinary.com/djiukbvoa/video/upload/v1779034937/Intro_Part_1_Monita_s_Theme_-_Nintendo_Land_-_Music_zb4gny.mp3',
-            mystery: 'https://res.cloudinary.com/djiukbvoa/video/upload/v1779029694/no_copyright_music_coffee_time_cute_vlog_music_tnkkp3.mp3'
+            chill: 'https://res.cloudinary.com/djiukbvoa/video/upload/v1779029694/no_copyright_music_coffee_time_cute_vlog_music_tnkkp3.mp3',
+            mystery: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
         };
 
         function updateSfxVolume(value) {
@@ -1407,6 +1415,17 @@
 
             playClickSound();
         }
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const musicSelector = document.getElementById('musicSelector');
+            const musicControl = document.getElementById('musicControl');
+            const wrapper = document.querySelector('.music-selector-wrapper');
+            
+            if (wrapper && !wrapper.contains(event.target)) {
+                musicSelector.classList.remove('active');
+            }
+        });
 
         document.addEventListener('click', function initMusic() {
             startBackgroundMusic();
