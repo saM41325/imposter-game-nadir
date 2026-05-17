@@ -170,6 +170,12 @@
             transform: translateY(0);
         }
 
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         button.secondary {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         }
@@ -180,6 +186,10 @@
 
         button.warning {
             background: linear-gradient(135deg, #ffa726 0%, #fb8c00 100%);
+        }
+
+        button.danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
         }
 
         button.show-hide-btn {
@@ -246,6 +256,12 @@
         .player-item .name {
             font-weight: bold;
             color: #333;
+            flex: 1;
+        }
+
+        .player-item .player-actions {
+            display: flex;
+            gap: 5px;
         }
 
         .player-item.host {
@@ -255,6 +271,11 @@
 
         .player-item.host .name {
             color: white;
+        }
+
+        .player-item.banned {
+            background: #ffe0e0;
+            opacity: 0.6;
         }
 
         .player-item button {
@@ -464,6 +485,25 @@
             font-family: monospace;
         }
 
+        .room-code-display .room-status {
+            margin-top: 10px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .room-status.open {
+            background: #e0ffe0;
+            color: #2f7d32;
+        }
+
+        .room-status.closed {
+            background: #ffe0e0;
+            color: #d32f2f;
+        }
+
         .waiting-status {
             text-align: center;
             padding: 20px;
@@ -651,17 +691,6 @@
             margin-top: 10px;
         }
 
-        .points-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-            color: white;
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 0.9em;
-            font-weight: bold;
-            margin-right: 5px;
-        }
-
         .confetti {
             position: fixed;
             width: 10px;
@@ -701,6 +730,16 @@
         .sound-control.muted {
             background: #f8f9fa;
             opacity: 0.6;
+        }
+
+        .room-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .room-controls button {
+            flex: 1;
         }
 
         @media (max-width: 480px) {
@@ -746,6 +785,20 @@
                 width: 40px;
                 height: 40px;
                 font-size: 1.2em;
+            }
+
+            .player-item {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .player-item .player-actions {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .room-controls {
+                flex-direction: column;
             }
         }
     </style>
@@ -821,7 +874,15 @@
             <div class="room-code-display">
                 <h3>كود الغرفة:</h3>
                 <div class="code" id="displayRoomCode">000000</div>
+                <div class="room-status open" id="roomStatus">🟢 الغرفة مفتوحة</div>
                 <p style="margin-top: 10px; color: #666;">شارك هذا الكود مع أصدقائك</p>
+            </div>
+
+            <!-- Room Controls (Host Only) -->
+            <div id="roomControlsDiv" style="display: none;">
+                <div class="room-controls">
+                    <button id="toggleRoomBtn" onclick="toggleRoomStatus()" class="warning">🔒 إغلاق الغرفة</button>
+                </div>
             </div>
 
             <!-- Leaderboard -->
@@ -854,6 +915,7 @@
                     <div class="setting-item">
                         <label>عدد الجواسيس:</label>
                         <input type="number" id="onlineImpostorCount" min="1" value="1">
+                        <small style="color: #666; font-size: 0.85em; display: block; margin-top: 5px;">الحد الأقصى: <span id="maxImpostorsDisplay">1</span></small>
                     </div>
                     <div class="setting-item">
                         <label>المؤقت (ثانية):</label>
@@ -941,6 +1003,7 @@
                     <div class="setting-item">
                         <label>عدد الجواسيس:</label>
                         <input type="number" id="impostorCount" min="1" value="1">
+                        <small style="color: #666; font-size: 0.85em; display: block; margin-top: 5px;">الحد الأقصى: <span id="offlineMaxImpostorsDisplay">1</span></small>
                     </div>
                     <div class="setting-item">
                         <label>المؤقت (ثانية):</label>
@@ -1018,7 +1081,6 @@
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         const audioContext = new AudioContext();
 
-        // Sound generator functions
         function playClickSound() {
             if (!soundEnabled) return;
             
@@ -1100,8 +1162,7 @@
         function playWinSound() {
             if (!soundEnabled) return;
             
-            // Play a triumphant melody
-            const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+            const notes = [523.25, 659.25, 783.99, 1046.50];
             const duration = 0.2;
             
             notes.forEach((freq, index) => {
@@ -1126,7 +1187,6 @@
         function playSelectSound() {
             if (!soundEnabled) return;
             
-            // Menu selection sound
             const oscillator1 = audioContext.createOscillator();
             const oscillator2 = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
@@ -1155,7 +1215,6 @@
         let soundEnabled = true;
 
         function createBackgroundMusic() {
-            // Create a simple ambient background music using Web Audio API
             const musicContext = new (window.AudioContext || window.webkitAudioContext)();
             
             function playAmbientNote(frequency, startTime, duration) {
@@ -1188,12 +1247,11 @@
                 const now = musicContext.currentTime;
                 const noteDuration = 2;
                 
-                // Relaxing chord progression: C - Am - F - G
                 const chords = [
-                    [261.63, 329.63, 392.00], // C major
-                    [220.00, 261.63, 329.63], // A minor
-                    [174.61, 220.00, 261.63], // F major
-                    [196.00, 246.94, 293.66]  // G major
+                    [261.63, 329.63, 392.00],
+                    [220.00, 261.63, 329.63],
+                    [174.61, 220.00, 261.63],
+                    [196.00, 246.94, 293.66]
                 ];
                 
                 chords.forEach((chord, chordIndex) => {
@@ -1237,7 +1295,6 @@
             playClickSound();
         }
 
-        // Start background music when user interacts with the page
         document.addEventListener('click', function initMusic() {
             startBackgroundMusic();
             document.removeEventListener('click', initMusic);
@@ -1327,10 +1384,12 @@
         let roomRef = null;
         let playersRef = null;
         let gameRef = null;
+        let bannedPlayersRef = null;
         let hasVoted = false;
         let hasSeenWord = false;
         let hasReadyToVote = false;
         let onlineTimerInterval = null;
+        let isRoomClosed = false;
 
         let players = [];
         let impostors = [];
@@ -1382,6 +1441,7 @@
             hasVoted = false;
             hasSeenWord = false;
             hasReadyToVote = false;
+            isRoomClosed = false;
             
             if (onlineTimerInterval) {
                 clearInterval(onlineTimerInterval);
@@ -1469,6 +1529,51 @@
             });
         }
 
+        // ================== ROOM MANAGEMENT ==================
+        function toggleRoomStatus() {
+            playClickSound();
+            if (!isHost || !roomRef) return;
+
+            isRoomClosed = !isRoomClosed;
+            
+            roomRef.update({
+                isClosed: isRoomClosed
+            });
+
+            const btn = document.getElementById('toggleRoomBtn');
+            const status = document.getElementById('roomStatus');
+            
+            if (isRoomClosed) {
+                btn.textContent = '🔓 فتح الغرفة';
+                btn.className = 'success';
+                status.textContent = '🔴 الغرفة مغلقة';
+                status.className = 'room-status closed';
+            } else {
+                btn.textContent = '🔒 إغلاق الغرفة';
+                btn.className = 'warning';
+                status.textContent = '🟢 الغرفة مفتوحة';
+                status.className = 'room-status open';
+            }
+        }
+
+        function kickPlayer(playerName) {
+            playClickSound();
+            if (!isHost || !playersRef || !bannedPlayersRef) return;
+
+            if (confirm(`هل تريد طرد ${playerName} من الغرفة؟`)) {
+                bannedPlayersRef.child(playerName).set(true);
+                playersRef.child(playerName).remove();
+            }
+        }
+
+        function isPlayerBanned(playerName) {
+            if (!bannedPlayersRef) return Promise.resolve(false);
+            
+            return bannedPlayersRef.child(playerName).once('value').then(snapshot => {
+                return snapshot.exists();
+            });
+        }
+
         // ================== ONLINE FUNCTIONS ==================
         function generateRoomCode() {
             return Math.floor(100000 + Math.random() * 900000).toString();
@@ -1496,10 +1601,12 @@
 
             roomRef = database.ref('rooms/' + currentRoomCode);
             leaderboardRef = roomRef.child('leaderboard');
+            bannedPlayersRef = roomRef.child('bannedPlayers');
 
             roomRef.set({
                 host: currentPlayerName,
                 status: 'waiting',
+                isClosed: false,
                 settings: {
                     category: 'mixed',
                     impostorCount: 1,
@@ -1519,6 +1626,7 @@
                 
                 document.getElementById('displayRoomCode').textContent = currentRoomCode;
                 document.getElementById('hostSettings').style.display = 'block';
+                document.getElementById('roomControlsDiv').style.display = 'block';
                 showScreen('lobbyScreen');
             }).catch(error => {
                 showOnlineError('فشل إنشاء الغرفة: ' + error.message);
@@ -1551,6 +1659,7 @@
 
             roomRef = database.ref('rooms/' + currentRoomCode);
             leaderboardRef = roomRef.child('leaderboard');
+            bannedPlayersRef = roomRef.child('bannedPlayers');
 
             roomRef.once('value').then(snapshot => {
                 if (!snapshot.exists()) {
@@ -1559,6 +1668,12 @@
                 }
 
                 const roomData = snapshot.val();
+                
+                if (roomData.isClosed) {
+                    showOnlineError('الغرفة مغلقة ولا يمكن الانضمام');
+                    return;
+                }
+
                 if (roomData.status !== 'waiting') {
                     showOnlineError('اللعبة قد بدأت بالفعل');
                     return;
@@ -1569,18 +1684,26 @@
                     return;
                 }
 
-                playersRef = roomRef.child('players');
-                playersRef.child(currentPlayerName).set({
-                    name: currentPlayerName,
-                    isHost: false,
-                    joinedAt: firebase.database.ServerValue.TIMESTAMP
-                });
+                isPlayerBanned(currentPlayerName).then(isBanned => {
+                    if (isBanned) {
+                        showOnlineError('تم طردك من هذه الغرفة');
+                        return;
+                    }
 
-                listenToRoom();
-                
-                document.getElementById('displayRoomCode').textContent = currentRoomCode;
-                document.getElementById('hostSettings').style.display = 'none';
-                showScreen('lobbyScreen');
+                    playersRef = roomRef.child('players');
+                    playersRef.child(currentPlayerName).set({
+                        name: currentPlayerName,
+                        isHost: false,
+                        joinedAt: firebase.database.ServerValue.TIMESTAMP
+                    });
+
+                    listenToRoom();
+                    
+                    document.getElementById('displayRoomCode').textContent = currentRoomCode;
+                    document.getElementById('hostSettings').style.display = 'none';
+                    document.getElementById('roomControlsDiv').style.display = 'none';
+                    showScreen('lobbyScreen');
+                });
             }).catch(error => {
                 showOnlineError('فشل الانضمام: ' + error.message);
             });
@@ -1591,7 +1714,14 @@
                 const playersData = snapshot.val() || {};
                 const playersList = Object.values(playersData);
                 
+                if (!playersData[currentPlayerName] && !isHost) {
+                    alert('تم طردك من الغرفة');
+                    leaveRoom();
+                    return;
+                }
+
                 updateOnlinePlayerList(playersList);
+                updateMaxImpostors(playersList.length);
 
                 document.getElementById('playerCount').textContent = playersList.length;
 
@@ -1601,6 +1731,20 @@
                 } else {
                     document.getElementById('startOnlineGameBtn').style.display = 'none';
                     document.getElementById('waitingStatus').style.display = 'block';
+                }
+            });
+
+            roomRef.child('isClosed').on('value', snapshot => {
+                const closed = snapshot.val() || false;
+                if (!isHost) {
+                    const status = document.getElementById('roomStatus');
+                    if (closed) {
+                        status.textContent = '🔴 الغرفة مغلقة';
+                        status.className = 'room-status closed';
+                    } else {
+                        status.textContent = '🟢 الغرفة مفتوحة';
+                        status.className = 'room-status open';
+                    }
                 }
             });
 
@@ -1617,6 +1761,23 @@
             });
         }
 
+        function updateMaxImpostors(playerCount) {
+            const maxImpostors = Math.max(1, playerCount - 1);
+            const impostorInput = document.getElementById('onlineImpostorCount');
+            
+            if (impostorInput) {
+                impostorInput.max = maxImpostors;
+                const display = document.getElementById('maxImpostorsDisplay');
+                if (display) {
+                    display.textContent = maxImpostors;
+                }
+                
+                if (parseInt(impostorInput.value) > maxImpostors) {
+                    impostorInput.value = maxImpostors;
+                }
+            }
+        }
+
         function updateOnlinePlayerList(playersList) {
             const list = document.getElementById('onlinePlayerList');
             list.innerHTML = '';
@@ -1624,8 +1785,19 @@
             playersList.forEach(player => {
                 const item = document.createElement('div');
                 item.className = player.isHost ? 'player-item host' : 'player-item';
+                
+                let actionButtons = '';
+                if (isHost && !player.isHost) {
+                    actionButtons = `
+                        <div class="player-actions">
+                            <button onclick="kickPlayer('${player.name}')" class="danger" style="font-size: 0.85em; padding: 6px 12px;">طرد ❌</button>
+                        </div>
+                    `;
+                }
+                
                 item.innerHTML = `
                     <span class="name">${player.name}${player.isHost ? ' 👑' : ''}</span>
+                    ${actionButtons}
                 `;
                 list.appendChild(item);
             });
@@ -1649,8 +1821,9 @@
                 const timerDuration = parseInt(document.getElementById('onlineTimerDuration').value);
                 const clueEnabled = document.getElementById('onlineClueEnabled').checked;
 
-                if (impostorCount >= playersList.length) {
-                    showOnlineError('عدد الجواسيس يجب أن يكون أقل من عدد اللاعبين');
+                const maxImpostors = playersList.length - 1;
+                if (impostorCount >= playersList.length || impostorCount > maxImpostors) {
+                    showOnlineError(`عدد الجواسيس يجب أن يكون أقل من ${maxImpostors + 1}`);
                     return;
                 }
 
@@ -2149,6 +2322,7 @@
             if (gameRef) gameRef.off();
             if (roomRef) roomRef.off();
             if (leaderboardRef) leaderboardRef.off();
+            if (bannedPlayersRef) bannedPlayersRef.off();
 
             if (onlineTimerInterval) {
                 clearInterval(onlineTimerInterval);
@@ -2162,9 +2336,11 @@
             playersRef = null;
             gameRef = null;
             leaderboardRef = null;
+            bannedPlayersRef = null;
             hasVoted = false;
             hasSeenWord = false;
             hasReadyToVote = false;
+            isRoomClosed = false;
 
             backToMode();
         }
@@ -2190,6 +2366,7 @@
             input.value = '';
             errorDiv.innerHTML = '';
             updatePlayerList();
+            updateOfflineMaxImpostors();
         }
 
         function showError(message) {
@@ -2218,6 +2395,24 @@
             playClickSound();
             players.splice(index, 1);
             updatePlayerList();
+            updateOfflineMaxImpostors();
+        }
+
+        function updateOfflineMaxImpostors() {
+            const maxImpostors = Math.max(1, players.length - 1);
+            const impostorInput = document.getElementById('impostorCount');
+            
+            if (impostorInput) {
+                impostorInput.max = maxImpostors;
+                const display = document.getElementById('offlineMaxImpostorsDisplay');
+                if (display) {
+                    display.textContent = maxImpostors;
+                }
+                
+                if (parseInt(impostorInput.value) > maxImpostors) {
+                    impostorInput.value = maxImpostors;
+                }
+            }
         }
 
         function startOfflineGame() {
@@ -2228,8 +2423,10 @@
             }
 
             const impostorCount = parseInt(document.getElementById('impostorCount').value);
-            if (impostorCount >= players.length) {
-                showError('عدد الجواسيس يجب أن يكون أقل من عدد اللاعبين');
+            const maxImpostors = players.length - 1;
+            
+            if (impostorCount >= players.length || impostorCount > maxImpostors) {
+                showError(`عدد الجواسيس يجب أن يكون أقل من ${maxImpostors + 1}`);
                 return;
             }
 
