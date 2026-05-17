@@ -778,6 +778,72 @@
             animation: slideIn 0.5s ease-out;
         }
 
+        .custom-words-section {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .custom-words-section h3 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .words-display {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 15px 0;
+        }
+
+        .word-tag {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 8px 15px;
+            margin: 5px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            position: relative;
+        }
+
+        .word-tag .remove-word {
+            margin-right: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .share-code-display {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .share-code-display .code {
+            font-family: monospace;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+            letter-spacing: 3px;
+            background: #f0f0f0;
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: inline-block;
+            margin: 10px 0;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
         @media (max-width: 480px) {
             .container {
                 padding: 20px;
@@ -836,6 +902,10 @@
             .room-controls {
                 flex-direction: column;
             }
+
+            .button-group {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -864,6 +934,7 @@
 
         <div id="modeScreen" class="screen active">
             <h2 style="text-align: center; margin-bottom: 30px; color: #333;">اختر وضع اللعب</h2>
+            
             <div class="mode-selector">
                 <div class="mode-card" onclick="selectMode('offline')">
                     <div class="icon">📱</div>
@@ -876,6 +947,55 @@
                     <p>العب مع أصدقائك عبر الإنترنت</p>
                 </div>
             </div>
+
+            <button onclick="showCustomWordsManager()" class="warning">📝 إدارة الكلمات المخصصة</button>
+        </div>
+
+        <!-- Custom Words Manager Screen -->
+        <div id="customWordsScreen" class="screen">
+            <h2 style="text-align: center; margin-bottom: 20px; color: #333;">📝 الكلمات المخصصة</h2>
+            
+            <div class="custom-words-section">
+                <h3>كلماتي المخصصة (<span id="customWordsCount">0</span>)</h3>
+                
+                <div class="input-group">
+                    <label>أضف كلمة جديدة:</label>
+                    <input type="text" id="customWordInput" placeholder="اكتب كلمة...">
+                    <button onclick="addCustomWord()">إضافة ➕</button>
+                </div>
+
+                <div class="words-display" id="customWordsDisplay">
+                    <p style="text-align: center; color: #999;">لا توجد كلمات بعد</p>
+                </div>
+
+                <div class="button-group">
+                    <button onclick="clearAllCustomWords()" class="danger">حذف الكل 🗑️</button>
+                    <button onclick="showShareCode()" class="success">مشاركة القائمة 🔗</button>
+                </div>
+            </div>
+
+            <div class="custom-words-section">
+                <h3>استيراد كلمات من كود</h3>
+                
+                <div class="input-group">
+                    <label>أدخل كود القائمة:</label>
+                    <input type="text" id="importCodeInput" placeholder="الصق الكود هنا...">
+                    <button onclick="importWordsFromCode()" class="success">استيراد 📥</button>
+                </div>
+            </div>
+
+            <div id="shareCodeDisplay" style="display: none;">
+                <div class="share-code-display">
+                    <h3>كود المشاركة:</h3>
+                    <div class="code" id="shareCodeText">XXX-XXX-XXX</div>
+                    <p style="color: #666; margin-top: 10px;">شارك هذا الكود مع أصدقائك لنقل قائمة الكلمات</p>
+                    <button onclick="copyShareCode()" class="success">نسخ الكود 📋</button>
+                </div>
+            </div>
+
+            <div id="customWordsAlert"></div>
+
+            <button onclick="backToMode()" class="secondary">رجوع</button>
         </div>
 
         <div id="onlineRoomScreen" class="screen">
@@ -959,6 +1079,7 @@
                         <option value="insects">حشرات</option>
                         <option value="clothes">ملابس</option>
                         <option value="furniture">أثاث</option>
+                        <option value="custom">كلمات مخصصة 📝</option>
                     </select>
                 </div>
 
@@ -1038,6 +1159,7 @@
                     <option value="insects">حشرات</option>
                     <option value="clothes">ملابس</option>
                     <option value="furniture">أثاث</option>
+                    <option value="custom">كلمات مخصصة 📝</option>
                 </select>
             </div>
 
@@ -1126,6 +1248,199 @@
         let backgroundAudioPlayer = null;
         let musicEnabled = true;
         let soundEnabled = true;
+
+        // LocalStorage Keys
+        const STORAGE_KEYS = {
+            CUSTOM_WORDS: 'spyGame_customWords',
+            PLAYER_NAME: 'spyGame_playerName'
+        };
+
+        // Custom Words Management
+        let customWords = [];
+
+        function loadCustomWords() {
+            const saved = localStorage.getItem(STORAGE_KEYS.CUSTOM_WORDS);
+            if (saved) {
+                try {
+                    customWords = JSON.parse(saved);
+                } catch (e) {
+                    customWords = [];
+                }
+            }
+            updateCustomWordsDisplay();
+        }
+
+        function saveCustomWords() {
+            localStorage.setItem(STORAGE_KEYS.CUSTOM_WORDS, JSON.stringify(customWords));
+            updateCustomWordsDisplay();
+        }
+
+        function addCustomWord() {
+            const input = document.getElementById('customWordInput');
+            const word = input.value.trim();
+            
+            if (!word) {
+                showCustomWordsAlert('الرجاء إدخال كلمة', 'error');
+                return;
+            }
+            
+            if (customWords.includes(word)) {
+                showCustomWordsAlert('هذه الكلمة موجودة بالفعل', 'error');
+                return;
+            }
+            
+            customWords.push(word);
+            saveCustomWords();
+            input.value = '';
+            showCustomWordsAlert(`تمت إضافة "${word}" بنجاح!`, 'success');
+            playClickSound();
+        }
+
+        function removeCustomWord(word) {
+            customWords = customWords.filter(w => w !== word);
+            saveCustomWords();
+            playClickSound();
+        }
+
+        function clearAllCustomWords() {
+            if (customWords.length === 0) {
+                showCustomWordsAlert('لا توجد كلمات لحذفها', 'info');
+                return;
+            }
+            
+            if (confirm('هل تريد حذف جميع الكلمات المخصصة؟')) {
+                customWords = [];
+                saveCustomWords();
+                showCustomWordsAlert('تم حذف جميع الكلمات', 'success');
+                playClickSound();
+            }
+        }
+
+        function updateCustomWordsDisplay() {
+            const display = document.getElementById('customWordsDisplay');
+            const count = document.getElementById('customWordsCount');
+            
+            count.textContent = customWords.length;
+            
+            if (customWords.length === 0) {
+                display.innerHTML = '<p style="text-align: center; color: #999;">لا توجد كلمات بعد</p>';
+                return;
+            }
+            
+            let html = '';
+            customWords.forEach(word => {
+                html += `
+                    <span class="word-tag">
+                        <span class="remove-word" onclick="removeCustomWord('${word}')">✖</span>
+                        ${word}
+                    </span>
+                `;
+            });
+            
+            display.innerHTML = html;
+        }
+
+        function generateShareCode() {
+            if (customWords.length === 0) {
+                showCustomWordsAlert('لا توجد كلمات للمشاركة', 'error');
+                return null;
+            }
+            
+            const data = {
+                words: customWords,
+                timestamp: Date.now()
+            };
+            
+            const jsonStr = JSON.stringify(data);
+            const encoded = btoa(encodeURIComponent(jsonStr));
+            
+            return encoded;
+        }
+
+        function showShareCode() {
+            playClickSound();
+            const code = generateShareCode();
+            
+            if (!code) return;
+            
+            document.getElementById('shareCodeText').textContent = code;
+            document.getElementById('shareCodeDisplay').style.display = 'block';
+            
+            showCustomWordsAlert('تم إنشاء كود المشاركة!', 'success');
+        }
+
+        function copyShareCode() {
+            playClickSound();
+            const codeText = document.getElementById('shareCodeText').textContent;
+            
+            navigator.clipboard.writeText(codeText).then(() => {
+                showCustomWordsAlert('تم نسخ الكود!', 'success');
+            }).catch(() => {
+                showCustomWordsAlert('فشل نسخ الكود', 'error');
+            });
+        }
+
+        function importWordsFromCode() {
+            playClickSound();
+            const input = document.getElementById('importCodeInput');
+            const code = input.value.trim();
+            
+            if (!code) {
+                showCustomWordsAlert('الرجاء إدخال كود', 'error');
+                return;
+            }
+            
+            try {
+                const decoded = decodeURIComponent(atob(code));
+                const data = JSON.parse(decoded);
+                
+                if (!data.words || !Array.isArray(data.words)) {
+                    throw new Error('Invalid format');
+                }
+                
+                const newWords = data.words.filter(w => !customWords.includes(w));
+                
+                if (newWords.length === 0) {
+                    showCustomWordsAlert('جميع الكلمات موجودة بالفعل', 'info');
+                    return;
+                }
+                
+                customWords = [...customWords, ...newWords];
+                saveCustomWords();
+                
+                input.value = '';
+                showCustomWordsAlert(`تم استيراد ${newWords.length} كلمة جديدة!`, 'success');
+                
+            } catch (e) {
+                showCustomWordsAlert('كود غير صالح', 'error');
+            }
+        }
+
+        function showCustomWordsAlert(message, type = 'info') {
+            const alertDiv = document.getElementById('customWordsAlert');
+            alertDiv.innerHTML = `<div class="alert ${type}">${message}</div>`;
+            setTimeout(() => {
+                alertDiv.innerHTML = '';
+            }, 3000);
+        }
+
+        function showCustomWordsManager() {
+            playSelectSound();
+            loadCustomWords();
+            showScreen('customWordsScreen');
+        }
+
+        // Player Name Management
+        function loadPlayerName() {
+            const saved = localStorage.getItem(STORAGE_KEYS.PLAYER_NAME);
+            if (saved) {
+                document.getElementById('playerName').value = saved;
+            }
+        }
+
+        function savePlayerName(name) {
+            localStorage.setItem(STORAGE_KEYS.PLAYER_NAME, name);
+        }
 
         function startBackgroundMusic() {
             if (!backgroundAudioPlayer) {
@@ -1322,7 +1637,8 @@
             actions: ["يمشي", "يركض", "يقفز", "يسبح", "يطير", "يزحف", "يتسلق", "ينام", "يستيقظ", "يأكل", "يشرب", "يطبخ", "يغسل", "ينظف", "يكنس", "يمسح", "يرتب", "يطوي", "يكوي", "يخيط"],
             insects: ["نملة", "نحلة", "ذبابة", "بعوضة", "صرصور", "جندب", "جرادة", "فراشة", "عثة", "دبور", "زنبور", "يعسوب", "خنفساء", "دعسوقة", "سوسة", "قمل", "برغوث", "بق", "قراد", "عنكبوت"],
             clothes: ["قميص", "بنطلون", "فستان", "تنورة", "جاكيت", "معطف", "سترة", "عباءة", "ثوب", "قفطان", "جلباب", "بدلة", "كنزة", "تيشيرت", "بلوزة", "بيجامة", "ملابس داخلية", "حمالة صدر", "سروال", "شورت"],
-            furniture: ["كرسي", "طاولة", "سرير", "خزانة", "دولاب", "رف", "مكتبة", "صوفا", "كنبة", "أريكة", "كرسي هزاز", "كرسي بذراعين", "بوف", "طاولة قهوة", "طاولة طعام", "طاولة مكتب", "طاولة تلفاز", "طاولة جانبية", "كومودينو", "تسريحة"]
+            furniture: ["كرسي", "طاولة", "سرير", "خزانة", "دولاب", "رف", "مكتبة", "صوفا", "كنبة", "أريكة", "كرسي هزاز", "كرسي بذراعين", "بوف", "طاولة قهوة", "طاولة طعام", "طاولة مكتب", "طاولة تلفاز", "طاولة جانبية", "كومودينو", "تسريحة"],
+            custom: [] // Will be loaded from localStorage
         };
 
         // Game Variables
@@ -1385,6 +1701,7 @@
             if (mode === 'offline') {
                 showScreen('offlineSetupScreen');
             } else {
+                loadPlayerName();
                 showScreen('onlineRoomScreen');
             }
         }
@@ -1528,7 +1845,6 @@
                     return;
                 }
                 
-                // Show all players except the current host
                 const playersList = Object.keys(playersData).filter(name => name !== currentHost);
                 
                 if (playersList.length === 0) {
@@ -1687,6 +2003,9 @@
                 showOnlineError('الرجاء إدخال اسمك');
                 return;
             }
+            
+            savePlayerName(name);
+            
             currentPlayerName = name;
             currentRoomCode = generateRoomCode();
             isHost = true;
@@ -1740,6 +2059,9 @@
                 showOnlineError('كود الغرفة يجب أن يكون 6 أرقام');
                 return;
             }
+            
+            savePlayerName(name);
+            
             currentPlayerName = name;
             currentRoomCode = code;
             isHost = false;
@@ -1916,16 +2238,27 @@
                     showOnlineError(`عدد الجواسيس يجب أن يكون أقل من ${maxImpostors + 1}`);
                     return;
                 }
+                
                 let wordList;
-                if (category === 'mixed') {
+                if (category === 'custom') {
+                    loadCustomWords();
+                    if (customWords.length === 0) {
+                        showOnlineError('لا توجد كلمات مخصصة. أضف كلمات أولاً!');
+                        return;
+                    }
+                    wordList = customWords;
+                } else if (category === 'mixed') {
                     const allWords = [];
                     Object.values(words).forEach(catWords => {
-                        allWords.push(...catWords);
+                        if (Array.isArray(catWords) && catWords.length > 0) {
+                            allWords.push(...catWords);
+                        }
                     });
                     wordList = allWords;
                 } else {
                     wordList = words[category];
                 }
+                
                 const selectedWord = wordList[Math.floor(Math.random() * wordList.length)];
                 const hint = getHint(selectedWord);
                 const shuffledPlayers = [...playersList].sort(() => Math.random() - 0.5);
@@ -2334,33 +2667,24 @@
             
             if (playersRef) {
                 if (wasHost) {
-                    // Transfer host before leaving
                     playersRef.once('value').then(snapshot => {
                         const playersData = snapshot.val() || {};
                         const remainingPlayers = Object.keys(playersData).filter(name => name !== currentPlayerName);
                         
                         if (remainingPlayers.length > 0) {
-                            // Choose new host (first remaining player)
                             const newHost = remainingPlayers[0];
-                            
-                            // Update all players
                             playersRef.child(newHost).update({ isHost: true });
                             playersRef.child(currentPlayerName).remove();
-                            
-                            // Update room host
                             roomRef.update({ host: newHost });
                         } else {
-                            // No players left, remove room
                             roomRef.remove();
                         }
                     });
                 } else {
-                    // Regular player leaving
                     playersRef.child(currentPlayerName).remove();
                 }
             }
             
-            // Clean up listeners
             if (playersRef) playersRef.off();
             if (gameRef) gameRef.off();
             if (roomRef) roomRef.off();
@@ -2372,7 +2696,6 @@
                 onlineTimerInterval = null;
             }
             
-            // Reset state
             currentRoomCode = null;
             currentPlayerName = null;
             isHost = false;
@@ -2470,16 +2793,27 @@
             }
             clueEnabled = document.getElementById('clueEnabled').checked;
             const category = document.getElementById('categorySelect').value;
+            
             let wordList;
-            if (category === 'mixed') {
+            if (category === 'custom') {
+                loadCustomWords();
+                if (customWords.length === 0) {
+                    showError('لا توجد كلمات مخصصة. أضف كلمات أولاً!');
+                    return;
+                }
+                wordList = customWords;
+            } else if (category === 'mixed') {
                 const allWords = [];
                 Object.values(words).forEach(catWords => {
-                    allWords.push(...catWords);
+                    if (Array.isArray(catWords) && catWords.length > 0) {
+                        allWords.push(...catWords);
+                    }
                 });
                 wordList = allWords;
             } else {
                 wordList = words[category];
             }
+            
             currentWord = wordList[Math.floor(Math.random() * wordList.length)];
             currentHint = getHint(currentWord);
             const shuffledPlayers = [...players].sort(() => Math.random() - 0.5);
@@ -2709,10 +3043,23 @@
             document.getElementById(screenId).classList.add('active');
         }
 
+        // Event Listeners
         document.getElementById('playerNameInput')?.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 addPlayer();
             }
+        });
+
+        document.getElementById('customWordInput')?.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addCustomWord();
+            }
+        });
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            loadCustomWords();
+            loadPlayerName();
         });
 
         window.addEventListener('beforeunload', () => {
