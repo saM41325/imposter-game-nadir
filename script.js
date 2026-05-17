@@ -931,13 +931,35 @@ function listenToRoom() {
     
     checkHostVotes();
     
-    gameRef = roomRef.child('game');
-    gameRef.on('value', snapshot => {
-        const gameData = snapshot.val();
-        if (gameData) {
-            handleGameStateChange(gameData);
+// Listen to room status changes
+roomRef.child('status').on('value', snapshot => {
+    const status = snapshot.val();
+    if (status === 'waiting') {
+        // Reset all game states when room goes back to waiting
+        hasVoted = false;
+        hasSeenWord = false;
+        hasReadyToVote = false;
+        
+        if (onlineTimerInterval) {
+            clearInterval(onlineTimerInterval);
+            onlineTimerInterval = null;
         }
-    });
+        
+        // If currently in a game screen, return to lobby
+        const currentScreen = document.querySelector('.screen.active');
+        if (currentScreen && ['onlineGameScreen', 'onlineVotingScreen', 'onlineResultsScreen'].includes(currentScreen.id)) {
+            showScreen('lobbyScreen');
+      			  }
+  	 	 }
+	});
+
+	gameRef = roomRef.child('game');
+	gameRef.on('value', snapshot => {
+   	 const gameData = snapshot.val();
+   	 if (gameData) {
+        handleGameStateChange(gameData);
+  	  	}
+	});
 }
 
 function updateMaxImpostors(playerCount) {
@@ -1043,17 +1065,38 @@ function startOnlineGame() {
 
 function handleGameStateChange(gameData) {
     if (!gameData) return;
-    switch (gameData.status) {
-        case 'showing_words':
-            showOnlineWord(gameData);
-            break;
-        case 'voting':
-            showOnlineVoting(gameData);
-            break;
-        case 'results':
-            showOnlineResults(gameData);
-            break;
-    }
+    
+    // Check if room is back to waiting status - return to lobby
+    roomRef.child('status').once('value').then(snapshot => {
+        const roomStatus = snapshot.val();
+        if (roomStatus === 'waiting') {
+            // Reset states and show lobby
+            hasVoted = false;
+            hasSeenWord = false;
+            hasReadyToVote = false;
+            
+            if (onlineTimerInterval) {
+                clearInterval(onlineTimerInterval);
+                onlineTimerInterval = null;
+            }
+            
+            showScreen('lobbyScreen');
+            return;
+        }
+        
+        // Continue with normal game state handling
+        switch (gameData.status) {
+            case 'showing_words':
+                showOnlineWord(gameData);
+                break;
+            case 'voting':
+                showOnlineVoting(gameData);
+                break;
+            case 'results':
+                showOnlineResults(gameData);
+                break;
+        }
+    });
 }
 
 function showOnlineWord(gameData) {
@@ -1403,18 +1446,45 @@ function showOnlineResults(gameData) {
 
 function backToLobby() {
     playClickSound();
+    
+    // Reset all player states
     hasVoted = false;
     hasSeenWord = false;
     hasReadyToVote = false;
     hasVotedForHost = false;
+    
+    // Clear timer
     if (onlineTimerInterval) {
         clearInterval(onlineTimerInterval);
         onlineTimerInterval = null;
     }
-    if (isHost) {
-        gameRef.remove();
-        roomRef.update({ status: 'waiting' });
+    
+    // Clear timer display
+    const timerDisplay = document.getElementById('onlineTimerDisplay');
+    if (timerDisplay) {
+        timerDisplay.style.display = 'none';
+        timerDisplay.textContent = '';
+        timerDisplay.classList.remove('warning');
     }
+    
+    // Clear all game containers
+    document.getElementById('onlineWordDisplay').innerHTML = '';
+    document.getElementById('onlineShowHideButtonContainer').innerHTML = '';
+    document.getElementById('onlineReadyVoteContainer').innerHTML = '';
+    document.getElementById('onlineVoteButtons').innerHTML = '';
+    document.getElementById('onlineVoteWaiting').style.display = 'none';
+    
+    // Host: Remove game data and reset room status
+    if (isHost) {
+        gameRef.remove().then(() => {
+            roomRef.update({ status: 'waiting' });
+        });
+    }
+    
+    // Update leaderboard
+    updateLeaderboard();
+    
+    // Show lobby screen
     showScreen('lobbyScreen');
 }
 
@@ -1443,12 +1513,16 @@ function leaveRoom() {
         }
     }
     
-    if (playersRef) playersRef.off();
-    if (gameRef) gameRef.off();
-    if (roomRef) roomRef.off();
-    if (leaderboardRef) leaderboardRef.off();
-    if (bannedPlayersRef) bannedPlayersRef.off();
-    if (hostVotesRef) hostVotesRef.off();
+   	 if (playersRef) playersRef.off();
+	if (gameRef) gameRef.off();
+	if (leaderboardRef) leaderboardRef.off();
+	if (bannedPlayersRef) bannedPlayersRef.off();
+	if (hostVotesRef) hostVotesRef.off();
+	if (roomRef) {
+   		 roomRef.child('status').off();
+   		 roomRef.child('isClosed').off();
+    		roomRef.off();
+		}
     if (onlineTimerInterval) {
         clearInterval(onlineTimerInterval);
         onlineTimerInterval = null;
