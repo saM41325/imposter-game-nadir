@@ -1,8 +1,3 @@
-إليك الكود المحدث مع إجراء التعديلات المطلوبة. تم تحسين نظام "المضيف" (Host) ليتم نقله تلقائياً إلى لاعب آخر في حال خروج المضيف (سواء بالضغط على زر المغادرة أو إغلاق المتصفح فجأة)، وتم تعديل قائمة التصويت بحيث لا تظهر اسم المضيف الحالي، وتظهر اسم اللاعب نفسه ليتمكن من التصويت لنفسه.
-
-قم باستبدال الكود السابق بهذا الكود:
-
-```html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -707,7 +702,7 @@
         .sound-controls {
             position: fixed;
             top: 20px;
-            right: 20px; 
+            right: 20px;
             display: flex;
             flex-direction: column;
             gap: 10px;
@@ -747,7 +742,7 @@
             padding: 15px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.3);
             position: absolute;
-            right: 0; 
+            right: 0;
             top: 70px;
             width: 250px;
             max-height: 350px;
@@ -785,7 +780,7 @@
         .music-option:hover {
             background: #667eea;
             color: white;
-            transform: translateX(-3px);
+            transform: translateX(3px);
         }
 
         .music-option.active {
@@ -793,16 +788,16 @@
             color: white;
         }
 
-        .music-option.toggle-btn {
-            background: #ffe0e0;
-            color: #d32f2f;
-            border: 1px solid #ffb3b3;
+        .music-option.mute {
+            background: #ff6b6b;
+            color: white;
             margin-top: 15px;
+            border-top: 2px solid #ddd;
+            padding-top: 15px;
         }
 
-        .music-option.toggle-btn:hover {
-            background: #d32f2f;
-            color: white;
+        .music-option.mute:hover {
+            background: #ee5a6f;
         }
 
         .room-controls {
@@ -886,7 +881,7 @@
 
             .sound-controls {
                 top: 10px;
-                right: 10px; 
+                right: 10px;
                 gap: 5px;
             }
 
@@ -898,7 +893,7 @@
 
             .music-selector {
                 width: 200px;
-                right: 0; 
+                right: -80px;
             }
 
             .player-item {
@@ -919,7 +914,11 @@
 </head>
 <body>
     <!-- Background Audio Player -->
-    <audio id="backgroundAudioPlayer" loop style="display: none;"></audio>
+    <audio 
+        id="backgroundAudioPlayer" 
+        loop 
+        style="display: none;">
+    </audio>
 
     <!-- Sound Controls -->
     <div class="sound-controls">
@@ -946,10 +945,9 @@
                 <div class="music-option" onclick="changeMusic('mystery')">
                     🕵️ موسيقى غامضة
                 </div>
-
-                <!-- Mute Music Button -->
-                <div class="music-option toggle-btn" id="toggleMusicMenuBtn" onclick="toggleMusic()">
-                    🔇 إيقاف الموسيقى
+                
+                <div class="music-option mute" onclick="toggleMusic()">
+                    <span id="muteButtonText">🔇 إيقاف الموسيقى</span>
                 </div>
             </div>
         </div>
@@ -1217,13 +1215,14 @@
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         const audioContext = new AudioContext();
 
-        let sfxVolume = 0.7; 
-        let musicVolume = 0.3; 
+        let sfxVolume = 0.7;
+        let musicVolume = 0.3;
         let backgroundAudioPlayer = null;
         let musicEnabled = true;
         let soundEnabled = true;
         let currentMusic = 'epic';
 
+        // Music URLs - Replace with your own music URLs
         const musicLibrary = {
             epic: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
             chill: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
@@ -1242,18 +1241,24 @@
 
             if (musicLibrary[musicKey]) {
                 playUrlMusic(musicLibrary[musicKey]);
+                
+                // Enable music if it was muted
+                if (!musicEnabled) {
+                    musicEnabled = true;
+                    updateMuteButtonText();
+                }
             }
+
+            // Close selector
             document.getElementById('musicSelector').classList.remove('active');
         }
 
         function updateMusicOptions() {
-            document.querySelectorAll('.music-option').forEach(option => {
-                if(!option.classList.contains('toggle-btn')){
-                    option.classList.remove('active');
-                }
+            document.querySelectorAll('.music-option:not(.mute)').forEach(option => {
+                option.classList.remove('active');
             });
             
-            const activeOption = Array.from(document.querySelectorAll('.music-option')).find(opt => {
+            const activeOption = Array.from(document.querySelectorAll('.music-option:not(.mute)')).find(opt => {
                 return opt.textContent.includes(
                     currentMusic === 'epic' ? 'حماسية' :
                     currentMusic === 'chill' ? 'هادئة' :
@@ -1291,21 +1296,14 @@
             soundEnabled = !soundEnabled;
             document.getElementById('soundIcon').textContent = soundEnabled ? '🔊' : '🔇';
             document.getElementById('soundControl').classList.toggle('muted', !soundEnabled);
-            if (soundEnabled) playClickSound();
+            if (soundEnabled) {
+                playClickSound();
+            }
         }
 
         function toggleMusic() {
             musicEnabled = !musicEnabled;
-            document.getElementById('musicIcon').textContent = musicEnabled ? '🎵' : '🎶';
-            document.getElementById('musicControl').classList.toggle('muted', !musicEnabled);
-            
-            const toggleBtn = document.getElementById('toggleMusicMenuBtn');
-            if(toggleBtn) {
-                toggleBtn.innerHTML = musicEnabled ? '🔇 إيقاف الموسيقى' : '🔊 تشغيل الموسيقى';
-                toggleBtn.style.background = musicEnabled ? '#ffe0e0' : '#e0ffe0';
-                toggleBtn.style.color = musicEnabled ? '#d32f2f' : '#2f7d32';
-                toggleBtn.style.borderColor = musicEnabled ? '#ffb3b3' : '#a3ebb1';
-            }
+            updateMuteButtonText();
 
             if (backgroundAudioPlayer) {
                 if (musicEnabled) {
@@ -1318,11 +1316,22 @@
             }
 
             playClickSound();
+            
+            // Close menu after toggling
+            document.getElementById('musicSelector').classList.remove('active');
         }
 
+        function updateMuteButtonText() {
+            const muteBtn = document.getElementById('muteButtonText');
+            muteBtn.textContent = musicEnabled ? '🔇 إيقاف الموسيقى' : '🔊 تشغيل الموسيقى';
+        }
+
+        // Close menu when clicking outside
         document.addEventListener('click', function(event) {
             const musicSelector = document.getElementById('musicSelector');
+            const musicControl = document.getElementById('musicControl');
             const wrapper = document.querySelector('.music-selector-wrapper');
+            
             if (wrapper && !wrapper.contains(event.target)) {
                 musicSelector.classList.remove('active');
             }
@@ -1465,6 +1474,7 @@
         try {
             firebaseApp = firebase.initializeApp(firebaseConfig);
             database = firebase.database();
+            console.log("Firebase initialized successfully");
         } catch (error) {
             console.error("Firebase initialization error:", error);
         }
@@ -1483,6 +1493,7 @@
             furniture: ["كرسي", "طاولة", "سرير", "خزانة", "دولاب", "رف", "مكتبة", "صوفا", "كنبة", "أريكة", "كرسي هزاز", "كرسي بذراعين", "بوف", "طاولة قهوة", "طاولة طعام", "طاولة مكتب", "طاولة تلفاز", "طاولة جانبية", "كومودينو", "تسريحة"]
         };
 
+        // Game Variables
         const POINTS = {
             IMPOSTOR_WIN: 10,
             IMPOSTOR_CAUGHT: -5,
@@ -1520,6 +1531,7 @@
         let wordVisible = false;
         let currentHostName = null;
 
+        // Helper Functions
         function createConfetti() {
             const colors = ['#ffd700', '#ff6b6b', '#4facfe', '#43e97b', '#f093fb'];
             for (let i = 0; i < 50; i++) {
@@ -1547,7 +1559,9 @@
 
         function backToMode() {
             playClickSound();
-            if (roomRef) leaveRoom();
+            if (roomRef) {
+                leaveRoom();
+            }
             currentRoomCode = null;
             currentPlayerName = null;
             isHost = false;
@@ -1677,12 +1691,12 @@
                 const playersData = snapshot.val() || {};
                 const currentHost = Object.keys(playersData).find(name => playersData[name].isHost);
                 
-                if (!currentHost || currentHost === currentPlayerName) {
+                if (!currentHost) {
                     document.getElementById('hostVoteSection').style.display = 'none';
                     return;
                 }
                 
-                // استبعاد المضيف الحالي من قائمة التصويت (السماح للمستخدم بالتصويت لنفسه)
+                // Show all players except the current host
                 const playersList = Object.keys(playersData).filter(name => name !== currentHost);
                 
                 if (playersList.length === 0) {
@@ -1694,14 +1708,13 @@
                 const voteButtons = document.getElementById('hostVoteButtons');
                 voteButtons.innerHTML = '';
                 
-                const eligibleVoters = Object.keys(playersData).length - 1;
-                const requiredVotes = eligibleVoters < 3 ? 2 : Math.floor(eligibleVoters / 2) + 1;
+                const totalPlayers = Object.keys(playersData).length;
+                const requiredVotes = totalPlayers < 4 ? 2 : Math.ceil((totalPlayers - 1) / 2);
                 
                 playersList.forEach(playerName => {
                     const btn = document.createElement('button');
                     btn.className = 'vote-btn';
-                    // إضافة كلمة (أنت) بجوار اسم اللاعب نفسه
-                    btn.textContent = playerName === currentPlayerName ? `${playerName} (أنت)` : playerName;
+                    btn.textContent = playerName;
                     btn.style.width = 'auto';
                     btn.style.padding = '10px 15px';
                     btn.onclick = () => voteForHost(playerName);
@@ -1733,14 +1746,13 @@
                 playersRef.once('value').then(playerSnapshot => {
                     const playersData = playerSnapshot.val() || {};
                     const totalPlayers = Object.keys(playersData).length;
-                    const eligibleVoters = totalPlayers - 1; 
                     const votedPlayers = Object.keys(votes).length;
-                    const requiredVotes = eligibleVoters < 3 ? 2 : Math.floor(eligibleVoters / 2) + 1;
+                    const requiredVotes = totalPlayers < 4 ? 2 : Math.ceil((totalPlayers - 1) / 2);
                     
-                    let statusText = `<strong>التصويت: ${votedPlayers}/${eligibleVoters} | المطلوب: ${requiredVotes}</strong>`;
+                    let statusText = `<strong>التصويت: ${votedPlayers}/${totalPlayers - 1} | المطلوب: ${requiredVotes}</strong>`;
                     
                     const voteDetails = Object.entries(voteCounts).map(([player, count]) => {
-                        return `${player === currentPlayerName ? player + ' (أنت)' : player}: ${count} 🗳️`;
+                        return `${player}: ${count} 🗳️`;
                     }).join(' | ');
                     
                     if (voteDetails) {
@@ -1769,8 +1781,7 @@
                 playersRef.once('value').then(playerSnapshot => {
                     const playersData = playerSnapshot.val() || {};
                     const totalPlayers = Object.keys(playersData).length;
-                    const eligibleVoters = totalPlayers - 1; 
-                    const requiredVotes = eligibleVoters < 3 ? 2 : Math.floor(eligibleVoters / 2) + 1;
+                    const requiredVotes = totalPlayers < 4 ? 2 : Math.ceil((totalPlayers - 1) / 2);
                     
                     Object.entries(voteCounts).forEach(([player, count]) => {
                         if (count >= requiredVotes && playersData[player]) {
@@ -1792,6 +1803,24 @@
                 });
                 
                 roomRef.update({ host: newHostName });
+                currentHostName = newHostName;
+                
+                if (isHost && newHostName !== currentPlayerName) {
+                    isHost = false;
+                    document.getElementById('hostSettings').style.display = 'none';
+                    document.getElementById('roomControlsDiv').style.display = 'none';
+                    showHostChangeNotification(newHostName);
+                } else if (!isHost && newHostName === currentPlayerName) {
+                    isHost = true;
+                    document.getElementById('hostSettings').style.display = 'block';
+                    document.getElementById('roomControlsDiv').style.display = 'block';
+                    showHostChangeNotification(newHostName);
+                }
+                
+                if (hostVotesRef) {
+                    hostVotesRef.remove();
+                    hasVotedForHost = false;
+                }
             });
         }
 
@@ -1799,7 +1828,7 @@
             const notificationDiv = document.getElementById('hostChangeNotification');
             notificationDiv.innerHTML = `
                 <div class="host-change-notification">
-                    👑 ${newHostName === currentPlayerName ? 'أنت' : newHostName} أصبح المضيف الجديد! 👑
+                    👑 ${newHostName} أصبح المضيف الجديد! 👑
                 </div>
             `;
             setTimeout(() => {
@@ -1852,9 +1881,6 @@
                     isHost: true,
                     joinedAt: firebase.database.ServerValue.TIMESTAMP
                 });
-                // إزالة اللاعب من قاعدة البيانات تلقائياً إذا أغلق المتصفح
-                playersRef.child(currentPlayerName).onDisconnect().remove();
-
                 listenToRoom();
                 document.getElementById('displayRoomCode').textContent = currentRoomCode;
                 document.getElementById('hostSettings').style.display = 'block';
@@ -1889,7 +1915,6 @@
             leaderboardRef = roomRef.child('leaderboard');
             bannedPlayersRef = roomRef.child('bannedPlayers');
             hostVotesRef = roomRef.child('hostVotes');
-            
             roomRef.once('value').then(snapshot => {
                 if (!snapshot.exists()) {
                     showOnlineError('الغرفة غير موجودة');
@@ -1920,9 +1945,6 @@
                         isHost: false,
                         joinedAt: firebase.database.ServerValue.TIMESTAMP
                     });
-                    // إزالة اللاعب من قاعدة البيانات تلقائياً إذا أغلق المتصفح
-                    playersRef.child(currentPlayerName).onDisconnect().remove();
-
                     listenToRoom();
                     document.getElementById('displayRoomCode').textContent = currentRoomCode;
                     document.getElementById('hostSettings').style.display = 'none';
@@ -1939,50 +1961,29 @@
                 const playersData = snapshot.val() || {};
                 const playersList = Object.values(playersData);
                 
-                // إذا تم طردي أو قمت بالخروج
                 if (!playersData[currentPlayerName]) {
                     if (!isHost) {
-                        alert('تم خروجك أو طردك من الغرفة');
+                        alert('تم طردك من الغرفة');
                         leaveRoom();
                         return;
                     }
                 }
                 
-                let newHost = Object.keys(playersData).find(name => playersData[name].isHost);
-                
-                // === منطق النقل التلقائي للمضيف (عندما يغادر المضيف فجأة) ===
-                if (!newHost && Object.keys(playersData).length > 0) {
-                    // اختيار أول لاعب في الترتيب الأبجدي ليكون المضيف
-                    const firstPlayer = Object.keys(playersData).sort()[0];
-                    if (currentPlayerName === firstPlayer) {
-                        playersRef.child(currentPlayerName).update({ isHost: true });
-                        roomRef.update({ host: currentPlayerName });
+                const newHost = Object.keys(playersData).find(name => playersData[name].isHost);
+                if (newHost) {
+                    currentHostName = newHost;
+                    if (currentPlayerName === newHost && !isHost) {
                         isHost = true;
-                        newHost = currentPlayerName;
-                        
                         document.getElementById('hostSettings').style.display = 'block';
                         document.getElementById('roomControlsDiv').style.display = 'block';
-                    } else {
-                        newHost = firstPlayer;
-                    }
-                }
-                
-                // تتبع وتحديث حالة المضيف الجديد إذا تغير
-                if (newHost && newHost !== currentHostName) {
-                    if (currentPlayerName !== newHost && isHost) {
+                    } else if (currentPlayerName !== newHost && isHost) {
                         isHost = false;
                         document.getElementById('hostSettings').style.display = 'none';
                         document.getElementById('roomControlsDiv').style.display = 'none';
+                        showHostChangeNotification(newHost);
                     }
-                    showHostChangeNotification(newHost);
-                    currentHostName = newHost;
-                    
-                    if(hostVotesRef && isHost) {
-                        hostVotesRef.remove();
-                    }
-                    hasVotedForHost = false;
                 }
-
+                
                 updateOnlinePlayerList(playersList);
                 updateMaxImpostors(playersList.length);
                 document.getElementById('playerCount').textContent = playersList.length;
@@ -2057,7 +2058,7 @@
                     `;
                 }
                 item.innerHTML = `
-                    <span class="name">${player.name}${player.isHost ? ' 👑' : ''} ${player.name === currentPlayerName ? '(أنت)' : ''}</span>
+                    <span class="name">${player.name}${player.isHost ? ' 👑' : ''}</span>
                     ${actionButtons}
                 `;
                 list.appendChild(item);
@@ -2306,7 +2307,7 @@
                     playersList.forEach(playerName => {
                         const btn = document.createElement('button');
                         btn.className = 'vote-btn';
-                        btn.textContent = playerName === currentPlayerName ? `${playerName} (أنت)` : playerName;
+                        btn.textContent = playerName;
                         btn.onclick = () => voteOnline(playerName, btn);
                         voteButtons.appendChild(btn);
                     });
@@ -2497,24 +2498,37 @@
         function leaveRoom() {
             if (!currentRoomCode || !currentPlayerName) return;
             
-            // إيقاف ميزة إزالة اللاعب عند الخروج من المتصفح لأننا سنحذفه فوراً
-            if (playersRef) playersRef.child(currentPlayerName).onDisconnect().cancel();
-
+            const wasHost = isHost;
+            
             if (playersRef) {
-                playersRef.child(currentPlayerName).remove();
+                if (wasHost) {
+                    // Transfer host before leaving
+                    playersRef.once('value').then(snapshot => {
+                        const playersData = snapshot.val() || {};
+                        const remainingPlayers = Object.keys(playersData).filter(name => name !== currentPlayerName);
+                        
+                        if (remainingPlayers.length > 0) {
+                            // Choose new host (first remaining player)
+                            const newHost = remainingPlayers[0];
+                            
+                            // Update all players
+                            playersRef.child(newHost).update({ isHost: true });
+                            playersRef.child(currentPlayerName).remove();
+                            
+                            // Update room host
+                            roomRef.update({ host: newHost });
+                        } else {
+                            // No players left, remove room
+                            roomRef.remove();
+                        }
+                    });
+                } else {
+                    // Regular player leaving
+                    playersRef.child(currentPlayerName).remove();
+                }
             }
-
-            // إذا كان المضيف هو من خرج وكان هو آخر شخص، قم بحذف الغرفة
-            if (isHost && roomRef) {
-                playersRef.once('value').then(snapshot => {
-                    const playersData = snapshot.val() || {};
-                    const remainingPlayers = Object.keys(playersData).filter(name => name !== currentPlayerName);
-                    if (remainingPlayers.length === 0) {
-                        roomRef.remove();
-                    }
-                });
-            }
-
+            
+            // Clean up listeners
             if (playersRef) playersRef.off();
             if (gameRef) gameRef.off();
             if (roomRef) roomRef.off();
@@ -2526,6 +2540,7 @@
                 onlineTimerInterval = null;
             }
             
+            // Reset state
             currentRoomCode = null;
             currentPlayerName = null;
             isHost = false;
@@ -2541,6 +2556,7 @@
             hasReadyToVote = false;
             hasVotedForHost = false;
             isRoomClosed = false;
+            
             backToMode();
         }
 
@@ -2875,4 +2891,3 @@
     </script>
 </body>
 </html>
-```
