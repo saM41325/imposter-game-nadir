@@ -809,6 +809,17 @@
             color: #333;
         }
 
+        .host-change-notification {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: bold;
+            animation: slideIn 0.5s ease-out;
+        }
+
         @media (max-width: 480px) {
             .container {
                 padding: 20px;
@@ -945,6 +956,8 @@
         </div>
 
         <div id="lobbyScreen" class="screen">
+            <div id="hostChangeNotification"></div>
+
             <div class="room-code-display">
                 <h3>كود الغرفة:</h3>
                 <div class="code" id="displayRoomCode">000000</div>
@@ -959,7 +972,10 @@
             </div>
 
             <div id="hostVoteSection" class="host-vote-section" style="display: none;">
-                <h4>🗳️ التصويت على المضيف</h4>
+                <h4>🗳️ التصويت على المضيف الجديد</h4>
+                <p style="text-align: center; font-size: 0.9em; color: #764ba2; margin-bottom: 10px;">
+                    اختر من يكون المضيف الجديد
+                </p>
                 <div class="vote-buttons" id="hostVoteButtons"></div>
                 <div id="hostVoteStatus" class="host-vote-status"></div>
             </div>
@@ -1445,6 +1461,7 @@
         let firstPlayer = "";
         let clueEnabled = true;
         let wordVisible = false;
+        let currentHostName = null;
 
         function createConfetti() {
             const colors = ['#ffd700', '#ff6b6b', '#4facfe', '#43e97b', '#f093fb'];
@@ -1605,12 +1622,14 @@
                 const playersData = snapshot.val() || {};
                 const currentHost = Object.keys(playersData).find(name => playersData[name].isHost);
                 
+                // Only show voting if current player is not the host
                 if (!currentHost || currentHost === currentPlayerName) {
                     document.getElementById('hostVoteSection').style.display = 'none';
                     return;
                 }
                 
-                const playersList = Object.keys(playersData).filter(name => name !== currentPlayerName && !playersData[name].isHost);
+                // Get all players except the current player
+                const playersList = Object.keys(playersData).filter(name => name !== currentPlayerName);
                 
                 if (playersList.length === 0) {
                     document.getElementById('hostVoteSection').style.display = 'none';
@@ -1620,6 +1639,10 @@
                 document.getElementById('hostVoteSection').style.display = 'block';
                 const voteButtons = document.getElementById('hostVoteButtons');
                 voteButtons.innerHTML = '';
+                
+                // Determine voting threshold based on player count
+                const totalPlayers = Object.keys(playersData).length;
+                const requiredVotes = totalPlayers < 4 ? 2 : Math.ceil((totalPlayers - 1) / 2);
                 
                 playersList.forEach(playerName => {
                     const btn = document.createElement('button');
@@ -1631,6 +1654,13 @@
                     btn.disabled = hasVotedForHost;
                     voteButtons.appendChild(btn);
                 });
+                
+                // Update display with threshold info
+                const section = document.getElementById('hostVoteSection');
+                const infoP = section.querySelector('p');
+                if (infoP) {
+                    infoP.textContent = `اختر من يكون المضيف الجديد (${requiredVotes} أصوات مطلوبة)`;
+                }
                 
                 updateHostVoteDisplay();
             });
@@ -1649,10 +1679,11 @@
                 
                 playersRef.once('value').then(playerSnapshot => {
                     const playersData = playerSnapshot.val() || {};
-                    const totalPlayers = Object.keys(playersData).length - 1;
+                    const totalPlayers = Object.keys(playersData).length;
                     const votedPlayers = Object.keys(votes).length;
+                    const requiredVotes = totalPlayers < 4 ? 2 : Math.ceil((totalPlayers - 1) / 2);
                     
-                    let statusText = `<strong>التصويت: ${votedPlayers}/${totalPlayers}</strong>`;
+                    let statusText = `<strong>التصويت: ${votedPlayers}/${totalPlayers - 1} | المطلوب: ${requiredVotes}</strong>`;
                     
                     const voteDetails = Object.entries(voteCounts).map(([player, count]) => {
                         return `${player}: ${count} 🗳️`;
@@ -1684,10 +1715,10 @@
                 playersRef.once('value').then(playerSnapshot => {
                     const playersData = playerSnapshot.val() || {};
                     const totalPlayers = Object.keys(playersData).length;
-                    const majority = Math.ceil((totalPlayers - 1) / 2);
+                    const requiredVotes = totalPlayers < 4 ? 2 : Math.ceil((totalPlayers - 1) / 2);
                     
                     Object.entries(voteCounts).forEach(([player, count]) => {
-                        if (count >= majority && playersData[player]) {
+                        if (count >= requiredVotes && playersData[player]) {
                             changeHost(player);
                         }
                     });
@@ -1696,7 +1727,7 @@
         }
 
         function changeHost(newHostName) {
-            if (!isHost || !roomRef || !playersRef) return;
+            if (!roomRef || !playersRef) return;
             
             playersRef.once('value').then(snapshot => {
                 const playersData = snapshot.val() || {};
@@ -1706,11 +1737,35 @@
                 });
                 
                 roomRef.update({ host: newHostName });
+                currentHostName = newHostName;
+                
+                if (isHost && newHostName !== currentPlayerName) {
+                    // I was the host but now I'm not
+                    isHost = false;
+                    document.getElementById('hostSettings').style.display = 'none';
+                    document.getElementById('roomControlsDiv').style.display = 'none';
+                    
+                    // Show notification
+                    showHostChangeNotification(newHostName);
+                }
                 
                 if (hostVotesRef) {
                     hostVotesRef.remove();
+                    hasVotedForHost = false;
                 }
             });
+        }
+
+        function showHostChangeNotification(newHostName) {
+            const notificationDiv = document.getElementById('hostChangeNotification');
+            notificationDiv.innerHTML = `
+                <div class="host-change-notification">
+                    👑 ${newHostName} أصبح المضيف الجديد! 👑
+                </div>
+            `;
+            setTimeout(() => {
+                notificationDiv.innerHTML = '';
+            }, 3000);
         }
 
         function generateRoomCode() {
@@ -1735,6 +1790,7 @@
             currentPlayerName = name;
             currentRoomCode = generateRoomCode();
             isHost = true;
+            currentHostName = currentPlayerName;
             roomRef = database.ref('rooms/' + currentRoomCode);
             leaderboardRef = roomRef.child('leaderboard');
             bannedPlayersRef = roomRef.child('bannedPlayers');
@@ -1797,6 +1853,7 @@
                     return;
                 }
                 const roomData = snapshot.val();
+                currentHostName = roomData.host;
                 if (roomData.isClosed) {
                     showOnlineError('الغرفة مغلقة ولا يمكن الانضمام');
                     return;
@@ -1836,24 +1893,26 @@
                 const playersData = snapshot.val() || {};
                 const playersList = Object.values(playersData);
                 
+                // Check if current player was removed
                 if (!playersData[currentPlayerName]) {
                     if (!isHost) {
                         alert('تم طردك من الغرفة');
                         leaveRoom();
                         return;
-                    } else {
-                        const newHost = Object.keys(playersData).find(name => name !== currentPlayerName);
-                        if (newHost) {
-                            changeHost(newHost);
-                            isHost = false;
-                        }
                     }
                 }
                 
-                if (playersData[currentPlayerName] && playersData[currentPlayerName].isHost !== isHost) {
-                    isHost = playersData[currentPlayerName].isHost;
-                    document.getElementById('hostSettings').style.display = isHost ? 'block' : 'none';
-                    document.getElementById('roomControlsDiv').style.display = isHost ? 'block' : 'none';
+                // Check for host changes
+                const newHost = Object.keys(playersData).find(name => playersData[name].isHost);
+                if (newHost) {
+                    currentHostName = newHost;
+                    if (currentPlayerName !== newHost && isHost) {
+                        // I was host but no longer am
+                        isHost = false;
+                        document.getElementById('hostSettings').style.display = 'none';
+                        document.getElementById('roomControlsDiv').style.display = 'none';
+                        showHostChangeNotification(newHost);
+                    }
                 }
                 
                 updateOnlinePlayerList(playersList);
@@ -2378,10 +2437,12 @@
                     const remainingPlayers = Object.keys(playersData).filter(name => name !== currentPlayerName);
                     
                     if (remainingPlayers.length > 0) {
+                        // Auto assign first remaining player as host
                         const newHost = remainingPlayers[0];
                         playersRef.child(newHost).update({ isHost: true });
                         roomRef.update({ host: newHost });
                     } else {
+                        // No players left, remove room
                         roomRef.remove();
                     }
                 });
@@ -2399,6 +2460,7 @@
             currentRoomCode = null;
             currentPlayerName = null;
             isHost = false;
+            currentHostName = null;
             roomRef = null;
             playersRef = null;
             gameRef = null;
