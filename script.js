@@ -931,35 +931,35 @@ function listenToRoom() {
     
     checkHostVotes();
     
-// Listen to room status changes
-roomRef.child('status').on('value', snapshot => {
-    const status = snapshot.val();
-    if (status === 'waiting') {
-        // Reset all game states when room goes back to waiting
-        hasVoted = false;
-        hasSeenWord = false;
-        hasReadyToVote = false;
-        
-        if (onlineTimerInterval) {
-            clearInterval(onlineTimerInterval);
-            onlineTimerInterval = null;
+    // Listen to room status changes
+    roomRef.child('status').on('value', snapshot => {
+        const status = snapshot.val();
+        if (status === 'waiting') {
+            // Reset all game states when room goes back to waiting
+            hasVoted = false;
+            hasSeenWord = false;
+            hasReadyToVote = false;
+            
+            if (onlineTimerInterval) {
+                clearInterval(onlineTimerInterval);
+                onlineTimerInterval = null;
+            }
+            
+            // If currently in a game screen, return to lobby
+            const currentScreen = document.querySelector('.screen.active');
+            if (currentScreen && ['onlineGameScreen', 'onlineVotingScreen', 'onlineResultsScreen'].includes(currentScreen.id)) {
+                showScreen('lobbyScreen');
+            }
         }
-        
-        // If currently in a game screen, return to lobby
-        const currentScreen = document.querySelector('.screen.active');
-        if (currentScreen && ['onlineGameScreen', 'onlineVotingScreen', 'onlineResultsScreen'].includes(currentScreen.id)) {
-            showScreen('lobbyScreen');
-      			  }
-  	 	 }
-	});
+    });
 
-	gameRef = roomRef.child('game');
-	gameRef.on('value', snapshot => {
-   	 const gameData = snapshot.val();
-   	 if (gameData) {
-        handleGameStateChange(gameData);
-  	  	}
-	});
+    gameRef = roomRef.child('game');
+    gameRef.on('value', snapshot => {
+        const gameData = snapshot.val();
+        if (gameData) {
+            handleGameStateChange(gameData);
+        }
+    });
 }
 
 function updateMaxImpostors(playerCount) {
@@ -1011,7 +1011,7 @@ function startOnlineGame() {
         }
         const category = document.getElementById('onlineCategorySelect').value;
         const impostorCount = parseInt(document.getElementById('onlineImpostorCount').value);
- 	const timerDuration = parseFloat(document.getElementById('onlineTimerDuration').value) * 60; 
+        const timerDuration = parseFloat(document.getElementById('onlineTimerDuration').value) * 60; // Convert minutes to seconds
         const clueEnabled = document.getElementById('onlineClueEnabled').checked;
         const maxImpostors = playersList.length - 1;
         if (impostorCount >= playersList.length || impostorCount > maxImpostors) {
@@ -1043,6 +1043,10 @@ function startOnlineGame() {
         const hint = getHint(selectedWord);
         const shuffledPlayers = [...playersList].sort(() => Math.random() - 0.5);
         const selectedImpostors = shuffledPlayers.slice(0, impostorCount);
+        
+        // Select random first player
+        const firstPlayer = playersList[Math.floor(Math.random() * playersList.length)];
+        
         const gameState = {
             status: 'showing_words',
             word: selectedWord,
@@ -1053,6 +1057,7 @@ function startOnlineGame() {
             }, {}),
             clueEnabled: clueEnabled,
             timerDuration: timerDuration,
+            firstPlayer: firstPlayer,
             playersSeen: {},
             readyToVote: {},
             votes: {},
@@ -1188,6 +1193,37 @@ function setReadyToVote() {
     `;
 }
 
+function showFirstPlayerAnnouncement(firstPlayerName) {
+    const readyVoteContainer = document.getElementById('onlineReadyVoteContainer');
+    
+    // Play a special sound
+    playSelectSound();
+    
+    // Create announcement HTML
+    const isCurrentPlayer = firstPlayerName === currentPlayerName;
+    const backgroundColor = isCurrentPlayer ? 'linear-gradient(135deg, #ffd700 0%, #ffed4e 100%)' : 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)';
+    const textColor = isCurrentPlayer ? '#333' : '#667eea';
+    
+    readyVoteContainer.innerHTML = `
+        <div class="alert success" style="
+            background: ${backgroundColor};
+            color: ${textColor};
+            font-size: 1.2em;
+            padding: 20px;
+            margin: 20px 0;
+            animation: pulse 2s ease-in-out 3;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        ">
+            ${isCurrentPlayer ? '🎯 أنت من سيبدأ اللعبة! 🎯' : `🎯 ${firstPlayerName} سيبدأ اللعبة 🎯`}
+        </div>
+    `;
+    
+    // Clear the announcement after timer starts
+    setTimeout(() => {
+        readyVoteContainer.innerHTML = '';
+    }, 3000);
+}
+
 function checkAllPlayersSeen(gameData) {
     if (!gameData.playersSeen) return;
     playersRef.once('value').then(snapshot => {
@@ -1195,10 +1231,15 @@ function checkAllPlayersSeen(gameData) {
         const playersList = Object.keys(playersData);
         const seenList = Object.keys(gameData.playersSeen || {});
         if (seenList.length === playersList.length && !gameData.timerEndTime) {
+            // Show first player announcement
+            if (gameData.firstPlayer) {
+                showFirstPlayerAnnouncement(gameData.firstPlayer);
+            }
+            
             if (isHost) {
                 setTimeout(() => {
                     startOnlineTimer(gameData.timerDuration);
-                }, 2000);
+                }, 3000); // Increased delay to show announcement
             }
         }
     });
@@ -1230,10 +1271,28 @@ function startOnlineTimer(duration) {
 
 function startOnlineTimerDisplay(timerEndTime) {
     const timerDisplay = document.getElementById('onlineTimerDisplay');
+    const readyVoteContainer = document.getElementById('onlineReadyVoteContainer');
+    
     timerDisplay.style.display = 'block';
     if (onlineTimerInterval) {
         clearInterval(onlineTimerInterval);
     }
+    
+    // Show ready to vote button after a short delay
+    setTimeout(() => {
+        if (!hasReadyToVote) {
+            readyVoteContainer.innerHTML = `
+                <button class="warning" onclick="setReadyToVote()">
+                    جاهز للتصويت 🗳️
+                </button>
+            `;
+        } else {
+            readyVoteContainer.innerHTML = `
+                <div class="alert success">✅ أنت جاهز للتصويت! في انتظار اللاعبين الآخرين...</div>
+            `;
+        }
+    }, 3500);
+    
     let lastSecond = -1;
     onlineTimerInterval = setInterval(() => {
         const remaining = Math.max(0, Math.floor((timerEndTime - Date.now()) / 1000));
@@ -1396,9 +1455,15 @@ function showOnlineResults(gameData) {
             </div>
         `;
     }
-    document.getElementById('onlineWordReveal').innerHTML = `
-        <div class="word-display"><h2>الكلمة كانت: ${gameData.word}</h2></div>
-    `;
+    
+    // Show word and first player
+    let wordRevealHTML = `<div class="word-display"><h2>الكلمة كانت: ${gameData.word}</h2>`;
+    if (gameData.firstPlayer) {
+        wordRevealHTML += `<p style="margin-top: 10px; font-size: 1.1em;">🎯 اللاعب الأول كان: <strong>${gameData.firstPlayer}</strong></p>`;
+    }
+    wordRevealHTML += `</div>`;
+    document.getElementById('onlineWordReveal').innerHTML = wordRevealHTML;
+    
     const voteCounts = {};
     Object.values(gameData.votes || {}).forEach(votedFor => {
         voteCounts[votedFor] = (voteCounts[votedFor] || 0) + 1;
@@ -1513,16 +1578,16 @@ function leaveRoom() {
         }
     }
     
-   	 if (playersRef) playersRef.off();
-	if (gameRef) gameRef.off();
-	if (leaderboardRef) leaderboardRef.off();
-	if (bannedPlayersRef) bannedPlayersRef.off();
-	if (hostVotesRef) hostVotesRef.off();
-	if (roomRef) {
-   		 roomRef.child('status').off();
-   		 roomRef.child('isClosed').off();
-    		roomRef.off();
-		}
+    if (playersRef) playersRef.off();
+    if (gameRef) gameRef.off();
+    if (leaderboardRef) leaderboardRef.off();
+    if (bannedPlayersRef) bannedPlayersRef.off();
+    if (hostVotesRef) hostVotesRef.off();
+    if (roomRef) {
+        roomRef.child('status').off();
+        roomRef.child('isClosed').off();
+        roomRef.off();
+    }
     if (onlineTimerInterval) {
         clearInterval(onlineTimerInterval);
         onlineTimerInterval = null;
@@ -1754,7 +1819,7 @@ function startGamePhase() {
     const alert = document.getElementById('firstPlayerAlert');
     alert.innerHTML = `<span style="display: inline-block; background: #ffd700; color: #333; padding: 8px 20px; border-radius: 20px; font-size: 0.9em; margin-right: 10px; box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);">🎯 يبدأ</span> ${firstPlayer}`;
     alert.style.display = 'block';
-    const duration = parseFloat(document.getElementById('timerDuration').value) * 60; 
+    const duration = parseFloat(document.getElementById('timerDuration').value) * 60; // Convert minutes to seconds
     if (duration > 0) {
         startTimer(duration);
     }
