@@ -732,74 +732,6 @@
             opacity: 0.6;
         }
 
-        .music-selector-wrapper {
-            position: relative;
-        }
-
-        .music-selector {
-            background: white;
-            border-radius: 15px;
-            padding: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-            position: absolute;
-            right: 0;
-            top: 70px;
-            width: 250px;
-            max-height: 350px;
-            overflow-y: auto;
-            display: none;
-            z-index: 1001;
-        }
-
-        .music-selector.active {
-            display: block;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        .music-selector-title {
-            text-align: center;
-            font-weight: bold;
-            margin-bottom: 15px;
-            color: #667eea;
-            font-size: 1.1em;
-        }
-
-        .music-option {
-            padding: 12px;
-            margin: 8px 0;
-            background: #f0f0f0;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: center;
-            font-weight: bold;
-            color: #333;
-            font-size: 0.95em;
-        }
-
-        .music-option:hover {
-            background: #667eea;
-            color: white;
-            transform: translateX(3px);
-        }
-
-        .music-option.active {
-            background: #4facfe;
-            color: white;
-        }
-
-        .music-option.mute {
-            background: #ff6b6b;
-            color: white;
-            margin-top: 15px;
-            border-top: 2px solid #ddd;
-            padding-top: 15px;
-        }
-
-        .music-option.mute:hover {
-            background: #ee5a6f;
-        }
-
         .room-controls {
             display: flex;
             gap: 10px;
@@ -891,11 +823,6 @@
                 font-size: 1.2em;
             }
 
-            .music-selector {
-                width: 200px;
-                right: -80px;
-            }
-
             .player-item {
                 flex-direction: column;
                 gap: 10px;
@@ -917,7 +844,8 @@
     <audio 
         id="backgroundAudioPlayer" 
         loop 
-        style="display: none;">
+        style="display: none;"
+        src="https://res.cloudinary.com/djiukbvoa/video/upload/v1779042254/Investigation_Music_Background_Suspenseful_Tension_Criminal_Background_Music_Royalty_Free_srcmg6.mp3">
     </audio>
 
     <!-- Sound Controls -->
@@ -926,30 +854,8 @@
             <span id="soundIcon">🔊</span>
         </div>
         
-        <!-- Music Control Wrapper -->
-        <div class="music-selector-wrapper">
-            <div class="sound-control" id="musicControl" onclick="toggleMusicMenu()" title="اختيار الموسيقى">
-                <span id="musicIcon">🎵</span>
-            </div>
-            
-            <!-- Music Selector Menu -->
-            <div id="musicSelector" class="music-selector">
-                <div class="music-selector-title">🎶 اختر الموسيقى</div>
-                
-                <div class="music-option active" onclick="changeMusic('epic')">
-                    ⚡ موسيقى حماسية
-                </div>
-                <div class="music-option" onclick="changeMusic('chill')">
-                    😌 موسيقى هادئة
-                </div>
-                <div class="music-option" onclick="changeMusic('mystery')">
-                    🕵️ موسيقى غامضة
-                </div>
-                
-                <div class="music-option mute" onclick="toggleMusic()">
-                    <span id="muteButtonText">🔇 إيقاف الموسيقى</span>
-                </div>
-            </div>
+        <div class="sound-control" id="musicControl" onclick="toggleMusic()" title="تشغيل/إيقاف الموسيقى">
+            <span id="musicIcon">🎵</span>
         </div>
     </div>
 
@@ -1220,75 +1126,18 @@
         let backgroundAudioPlayer = null;
         let musicEnabled = true;
         let soundEnabled = true;
-        let currentMusic = 'epic';
 
-        // Music URLs - Replace with your own music URLs
-        const musicLibrary = {
-            epic: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-            chill: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-            mystery: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
-        };
-
-        function toggleMusicMenu() {
-            const selector = document.getElementById('musicSelector');
-            selector.classList.toggle('active');
-            playClickSound();
-        }
-
-        function changeMusic(musicKey) {
-            currentMusic = musicKey;
-            updateMusicOptions();
-
-            if (musicLibrary[musicKey]) {
-                playUrlMusic(musicLibrary[musicKey]);
-                
-                // Enable music if it was muted
-                if (!musicEnabled) {
-                    musicEnabled = true;
-                    updateMuteButtonText();
-                }
-            }
-
-            // Close selector
-            document.getElementById('musicSelector').classList.remove('active');
-        }
-
-        function updateMusicOptions() {
-            document.querySelectorAll('.music-option:not(.mute)').forEach(option => {
-                option.classList.remove('active');
-            });
-            
-            const activeOption = Array.from(document.querySelectorAll('.music-option:not(.mute)')).find(opt => {
-                return opt.textContent.includes(
-                    currentMusic === 'epic' ? 'حماسية' :
-                    currentMusic === 'chill' ? 'هادئة' :
-                    currentMusic === 'mystery' ? 'غامضة' : ''
-                );
-            });
-            
-            if (activeOption) {
-                activeOption.classList.add('active');
-            }
-        }
-
-        function playUrlMusic(url) {
+        function startBackgroundMusic() {
             if (!backgroundAudioPlayer) {
                 backgroundAudioPlayer = document.getElementById('backgroundAudioPlayer');
             }
 
-            backgroundAudioPlayer.src = url;
             backgroundAudioPlayer.volume = musicVolume;
 
             if (musicEnabled) {
                 backgroundAudioPlayer.play().catch(error => {
                     console.log("Audio play failed:", error);
                 });
-            }
-        }
-
-        function startBackgroundMusic() {
-            if (currentMusic && musicLibrary[currentMusic]) {
-                playUrlMusic(musicLibrary[currentMusic]);
             }
         }
 
@@ -1303,7 +1152,8 @@
 
         function toggleMusic() {
             musicEnabled = !musicEnabled;
-            updateMuteButtonText();
+            document.getElementById('musicIcon').textContent = musicEnabled ? '🎵' : '🎶';
+            document.getElementById('musicControl').classList.toggle('muted', !musicEnabled);
 
             if (backgroundAudioPlayer) {
                 if (musicEnabled) {
@@ -1316,27 +1166,9 @@
             }
 
             playClickSound();
-            
-            // Close menu after toggling
-            document.getElementById('musicSelector').classList.remove('active');
         }
 
-        function updateMuteButtonText() {
-            const muteBtn = document.getElementById('muteButtonText');
-            muteBtn.textContent = musicEnabled ? '🔇 إيقاف الموسيقى' : '🔊 تشغيل الموسيقى';
-        }
-
-        // Close menu when clicking outside
-        document.addEventListener('click', function(event) {
-            const musicSelector = document.getElementById('musicSelector');
-            const musicControl = document.getElementById('musicControl');
-            const wrapper = document.querySelector('.music-selector-wrapper');
-            
-            if (wrapper && !wrapper.contains(event.target)) {
-                musicSelector.classList.remove('active');
-            }
-        });
-
+        // Auto-start music on first user interaction
         document.addEventListener('click', function initMusic() {
             startBackgroundMusic();
             document.removeEventListener('click', initMusic);
