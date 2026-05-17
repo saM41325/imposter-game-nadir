@@ -720,6 +720,7 @@
             cursor: pointer;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             transition: all 0.3s;
+            font-size: 1.5em;
         }
 
         .sound-control:hover {
@@ -820,6 +821,75 @@
             animation: slideIn 0.5s ease-out;
         }
 
+        .music-selector {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            position: absolute;
+            left: 0;
+            top: -350px;
+            width: 250px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1001;
+        }
+
+        .music-selector.active {
+            display: block;
+        }
+
+        .music-selector-title {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        .music-option {
+            padding: 10px;
+            margin: 5px 0;
+            background: #f0f0f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-weight: bold;
+            color: #333;
+            font-size: 0.9em;
+        }
+
+        .music-option:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .music-option.active {
+            background: #4facfe;
+            color: white;
+        }
+
+        .music-input-group {
+            margin-top: 10px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .music-input-group input {
+            flex: 1;
+            padding: 8px;
+            font-size: 0.85em;
+            margin: 0;
+        }
+
+        .music-input-group button {
+            flex: 0.3;
+            padding: 8px;
+            margin: 0;
+            font-size: 0.85em;
+        }
+
         @media (max-width: 480px) {
             .container {
                 padding: 20px;
@@ -883,17 +953,59 @@
             .room-controls {
                 flex-direction: column;
             }
+
+            .music-selector {
+                width: 200px;
+                top: -300px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Background Audio Player -->
+    <audio 
+        id="backgroundAudioPlayer" 
+        loop 
+        style="display: none;">
+    </audio>
+
+    <!-- Sound Controls -->
     <div class="sound-controls">
         <div class="sound-control" id="soundControl" onclick="toggleSound()" title="تشغيل/إيقاف المؤثرات الصوتية">
             <span id="soundIcon">🔊</span>
         </div>
-        <div class="sound-control" id="musicControl" onclick="toggleMusic()" title="تشغيل/إيقاف الموسيقى">
+        <div class="sound-control" id="musicControl" onclick="toggleMusicMenu()" title="اختر الموسيقى">
             <span id="musicIcon">🎵</span>
         </div>
+        
+        <!-- Music Selector Menu -->
+        <div id="musicSelector" class="music-selector">
+            <div class="music-selector-title">اختر الموسيقى 🎶</div>
+            
+            <div class="music-option active" onclick="changeMusic('default')">
+                🎹 الموسيقى الأصلية
+            </div>
+            <div class="music-option" onclick="changeMusic('epic')">
+                ⚡ موسيقى حماسية
+            </div>
+            <div class="music-option" onclick="changeMusic('chill')">
+                😌 موسيقى هادئة
+            </div>
+            <div class="music-option" onclick="changeMusic('mystery')">
+                🕵️ موسيقى غامضة
+            </div>
+            
+            <div class="music-input-group">
+                <input 
+                    type="text" 
+                    id="musicUrlInput" 
+                    placeholder="رابط الموسيقى..." 
+                    style="font-size: 0.85em;">
+                <button onclick="addCustomMusic()" style="font-size: 0.85em;">إضافة</button>
+            </div>
+        </div>
+
+        <!-- Volume Control -->
         <div class="volume-control">
             <label>الأصوات 🔊</label>
             <input type="range" min="0" max="100" value="70" class="volume-slider" id="sfxVolume" oninput="updateSfxVolume(this.value)">
@@ -1166,6 +1278,18 @@
 
         let sfxVolume = 0.7;
         let musicVolume = 0.3;
+        let backgroundAudioPlayer = null;
+        let musicEnabled = true;
+        let soundEnabled = true;
+        let currentMusic = 'default';
+
+        // Music URLs - You can replace these with your own music URLs
+        const musicLibrary = {
+            default: null, // Will use Web Audio API
+            epic: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', // Replace with your epic music URL
+            chill: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', // Replace with your chill music URL
+            mystery: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' // Replace with your mystery music URL
+        };
 
         function updateSfxVolume(value) {
             sfxVolume = value / 100;
@@ -1173,11 +1297,186 @@
 
         function updateMusicVolume(value) {
             musicVolume = value / 100;
-            if (backgroundMusicGain) {
-                backgroundMusicGain.gain.value = musicVolume * 0.15;
+            if (backgroundAudioPlayer) {
+                backgroundAudioPlayer.volume = musicVolume;
             }
         }
 
+        function toggleMusicMenu() {
+            const selector = document.getElementById('musicSelector');
+            selector.classList.toggle('active');
+            playClickSound();
+        }
+
+        function changeMusic(musicKey) {
+            currentMusic = musicKey;
+            updateMusicOptions();
+
+            if (musicKey === 'default') {
+                // Use Web Audio API
+                if (backgroundAudioPlayer) {
+                    backgroundAudioPlayer.pause();
+                    backgroundAudioPlayer = null;
+                }
+                startWebAudioMusic();
+            } else if (musicLibrary[musicKey]) {
+                // Use HTML5 Audio with URL
+                playUrlMusic(musicLibrary[musicKey]);
+            }
+
+            // Close selector
+            document.getElementById('musicSelector').classList.remove('active');
+        }
+
+        function updateMusicOptions() {
+            document.querySelectorAll('.music-option').forEach(option => {
+                option.classList.remove('active');
+                if (option.textContent.toLowerCase().includes(currentMusic.toLowerCase()) || 
+                    (currentMusic === 'default' && option.textContent.includes('الأصلية'))) {
+                    option.classList.add('active');
+                }
+            });
+        }
+
+        function addCustomMusic() {
+            const urlInput = document.getElementById('musicUrlInput');
+            const url = urlInput.value.trim();
+            
+            if (!url) {
+                alert('الرجاء إدخال رابط الموسيقى');
+                return;
+            }
+
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                alert('الرجاء التأكد من أن الرابط يبدأ بـ http:// أو https://');
+                return;
+            }
+
+            playUrlMusic(url);
+            urlInput.value = '';
+            document.getElementById('musicSelector').classList.remove('active');
+        }
+
+        function playUrlMusic(url) {
+            if (!backgroundAudioPlayer) {
+                backgroundAudioPlayer = document.getElementById('backgroundAudioPlayer');
+            }
+
+            backgroundAudioPlayer.src = url;
+            backgroundAudioPlayer.volume = musicVolume;
+
+            if (musicEnabled) {
+                backgroundAudioPlayer.play().catch(error => {
+                    console.log("Audio play failed:", error);
+                    alert('فشل تشغيل الموسيقى. تأكد من صحة الرابط.');
+                });
+            }
+        }
+
+        function startWebAudioMusic() {
+            if (!musicEnabled) return;
+
+            const musicContext = new (window.AudioContext || window.webkitAudioContext)();
+            const backgroundMusicGain = musicContext.createGain();
+            backgroundMusicGain.connect(musicContext.destination);
+            backgroundMusicGain.gain.value = musicVolume * 0.15;
+
+            function playNote(frequency, startTime, duration, type = 'sine') {
+                const oscillator = musicContext.createOscillator();
+                const gainNode = musicContext.createGain();
+                const filter = musicContext.createBiquadFilter();
+
+                oscillator.connect(filter);
+                filter.connect(gainNode);
+                gainNode.connect(backgroundMusicGain);
+
+                oscillator.frequency.value = frequency;
+                oscillator.type = type;
+
+                filter.type = 'lowpass';
+                filter.frequency.value = 1200;
+                filter.Q.value = 1;
+
+                gainNode.gain.setValueAtTime(0, startTime);
+                gainNode.gain.linearRampToValueAtTime(1, startTime + 0.1);
+                gainNode.gain.linearRampToValueAtTime(0.7, startTime + duration - 0.3);
+                gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
+
+                oscillator.start(startTime);
+                oscillator.stop(startTime + duration);
+            }
+
+            function playMusicLoop() {
+                if (!musicEnabled || currentMusic !== 'default') return;
+
+                const now = musicContext.currentTime;
+
+                const melodySequence = [
+                    { notes: [523.25, 659.25, 783.99], duration: 3 },
+                    { notes: [493.88, 587.33, 739.99], duration: 3 },
+                    { notes: [440.00, 554.37, 659.25], duration: 3 },
+                    { notes: [493.88, 587.33, 698.46], duration: 3 }
+                ];
+
+                const bassNotes = [261.63, 246.94, 220.00, 246.94];
+
+                let time = now;
+                melodySequence.forEach((seq, index) => {
+                    seq.notes.forEach(freq => {
+                        playNote(freq, time, seq.duration, 'triangle');
+                    });
+                    playNote(bassNotes[index], time, seq.duration * 0.9, 'sine');
+                    time += seq.duration;
+                });
+
+                const totalDuration = melodySequence.reduce((sum, seq) => sum + seq.duration, 0);
+                setTimeout(playMusicLoop, totalDuration * 1000 - 100);
+            }
+
+            playMusicLoop();
+        }
+
+        function startBackgroundMusic() {
+            if (currentMusic === 'default') {
+                startWebAudioMusic();
+            } else if (musicLibrary[currentMusic]) {
+                playUrlMusic(musicLibrary[currentMusic]);
+            }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundIcon').textContent = soundEnabled ? '🔊' : '🔇';
+            document.getElementById('soundControl').classList.toggle('muted', !soundEnabled);
+            if (soundEnabled) {
+                playClickSound();
+            }
+        }
+
+        function toggleMusic() {
+            musicEnabled = !musicEnabled;
+            document.getElementById('musicIcon').textContent = musicEnabled ? '🎵' : '🎶';
+            document.getElementById('musicControl').classList.toggle('muted', !musicEnabled);
+
+            if (backgroundAudioPlayer) {
+                if (musicEnabled) {
+                    backgroundAudioPlayer.play();
+                } else {
+                    backgroundAudioPlayer.pause();
+                }
+            } else if (musicEnabled) {
+                startBackgroundMusic();
+            }
+
+            playClickSound();
+        }
+
+        document.addEventListener('click', function initMusic() {
+            startBackgroundMusic();
+            document.removeEventListener('click', initMusic);
+        }, { once: true });
+
+        // Sound Effects
         function playClickSound() {
             if (!soundEnabled) return;
             const oscillator = audioContext.createOscillator();
@@ -1294,106 +1593,7 @@
             oscillator2.stop(audioContext.currentTime + 0.15);
         }
 
-        let backgroundMusic = null;
-        let backgroundMusicGain = null;
-        let musicEnabled = true;
-        let soundEnabled = true;
-
-        function createBackgroundMusic() {
-            const musicContext = new (window.AudioContext || window.webkitAudioContext)();
-            backgroundMusicGain = musicContext.createGain();
-            backgroundMusicGain.connect(musicContext.destination);
-            backgroundMusicGain.gain.value = musicVolume * 0.15;
-
-            function playNote(frequency, startTime, duration, type = 'sine') {
-                const oscillator = musicContext.createOscillator();
-                const gainNode = musicContext.createGain();
-                const filter = musicContext.createBiquadFilter();
-                
-                oscillator.connect(filter);
-                filter.connect(gainNode);
-                gainNode.connect(backgroundMusicGain);
-                
-                oscillator.frequency.value = frequency;
-                oscillator.type = type;
-                
-                filter.type = 'lowpass';
-                filter.frequency.value = 1200;
-                filter.Q.value = 1;
-                
-                gainNode.gain.setValueAtTime(0, startTime);
-                gainNode.gain.linearRampToValueAtTime(1, startTime + 0.1);
-                gainNode.gain.linearRampToValueAtTime(0.7, startTime + duration - 0.3);
-                gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
-                
-                oscillator.start(startTime);
-                oscillator.stop(startTime + duration);
-            }
-
-            function playMusicLoop() {
-                if (!musicEnabled) return;
-                
-                const now = musicContext.currentTime;
-                const beatDuration = 0.8;
-                
-                const melodySequence = [
-                    { notes: [523.25, 659.25, 783.99], duration: 3 },
-                    { notes: [493.88, 587.33, 739.99], duration: 3 },
-                    { notes: [440.00, 554.37, 659.25], duration: 3 },
-                    { notes: [493.88, 587.33, 698.46], duration: 3 }
-                ];
-                
-                const bassNotes = [261.63, 246.94, 220.00, 246.94];
-                
-                let time = now;
-                melodySequence.forEach((seq, index) => {
-                    seq.notes.forEach(freq => {
-                        playNote(freq, time, seq.duration, 'triangle');
-                    });
-                    playNote(bassNotes[index], time, seq.duration * 0.9, 'sine');
-                    time += seq.duration;
-                });
-                
-                const totalDuration = melodySequence.reduce((sum, seq) => sum + seq.duration, 0);
-                setTimeout(playMusicLoop, totalDuration * 1000 - 100);
-            }
-            
-            backgroundMusic = { context: musicContext, play: playMusicLoop };
-        }
-
-        function startBackgroundMusic() {
-            if (!backgroundMusic) {
-                createBackgroundMusic();
-            }
-            if (musicEnabled) {
-                backgroundMusic.play();
-            }
-        }
-
-        function toggleSound() {
-            soundEnabled = !soundEnabled;
-            document.getElementById('soundIcon').textContent = soundEnabled ? '🔊' : '🔇';
-            document.getElementById('soundControl').classList.toggle('muted', !soundEnabled);
-            if (soundEnabled) {
-                playClickSound();
-            }
-        }
-
-        function toggleMusic() {
-            musicEnabled = !musicEnabled;
-            document.getElementById('musicIcon').textContent = musicEnabled ? '🎵' : '🎶';
-            document.getElementById('musicControl').classList.toggle('muted', !musicEnabled);
-            if (musicEnabled) {
-                startBackgroundMusic();
-            }
-            playClickSound();
-        }
-
-        document.addEventListener('click', function initMusic() {
-            startBackgroundMusic();
-            document.removeEventListener('click', initMusic);
-        }, { once: true });
-
+        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDnezIJxk9gQr--qOGLpDVB6PNaLF-DW_8",
             authDomain: "imposter-dfa43.firebaseapp.com",
@@ -1413,6 +1613,7 @@
             console.error("Firebase initialization error:", error);
         }
 
+        // Word Database
         const words = {
             places: ["مسجد", "مدرسة", "مستشفى", "مطار", "محطة قطار", "ملعب", "حديقة", "شاطئ", "جبل", "صحراء", "مكتبة", "متحف", "سوق", "مول", "مطعم", "مقهى", "فندق", "سينما", "مسرح", "حديقة حيوان"],
             jobs: ["طبيب", "معلم", "مهندس", "محامي", "طيار", "شرطي", "رجل إطفاء", "طباخ", "نادل", "سائق", "كهربائي", "سباك", "نجار", "حداد", "بناء", "رسام", "مصور", "صحفي", "كاتب", "مؤلف"],
@@ -1426,6 +1627,7 @@
             furniture: ["كرسي", "طاولة", "سرير", "خزانة", "دولاب", "رف", "مكتبة", "صوفا", "كنبة", "أريكة", "كرسي هزاز", "كرسي بذراعين", "بوف", "طاولة قهوة", "طاولة طعام", "طاولة مكتب", "طاولة تلفاز", "طاولة جانبية", "كومودينو", "تسريحة"]
         };
 
+        // Game Variables
         const POINTS = {
             IMPOSTOR_WIN: 10,
             IMPOSTOR_CAUGHT: -5,
@@ -1463,6 +1665,7 @@
         let wordVisible = false;
         let currentHostName = null;
 
+        // Helper Functions
         function createConfetti() {
             const colors = ['#ffd700', '#ff6b6b', '#4facfe', '#43e97b', '#f093fb'];
             for (let i = 0; i < 50; i++) {
@@ -1622,13 +1825,11 @@
                 const playersData = snapshot.val() || {};
                 const currentHost = Object.keys(playersData).find(name => playersData[name].isHost);
                 
-                // Only show voting if current player is not the host
                 if (!currentHost || currentHost === currentPlayerName) {
                     document.getElementById('hostVoteSection').style.display = 'none';
                     return;
                 }
                 
-                // Get all players except the current player
                 const playersList = Object.keys(playersData).filter(name => name !== currentPlayerName);
                 
                 if (playersList.length === 0) {
@@ -1640,7 +1841,6 @@
                 const voteButtons = document.getElementById('hostVoteButtons');
                 voteButtons.innerHTML = '';
                 
-                // Determine voting threshold based on player count
                 const totalPlayers = Object.keys(playersData).length;
                 const requiredVotes = totalPlayers < 4 ? 2 : Math.ceil((totalPlayers - 1) / 2);
                 
@@ -1655,7 +1855,6 @@
                     voteButtons.appendChild(btn);
                 });
                 
-                // Update display with threshold info
                 const section = document.getElementById('hostVoteSection');
                 const infoP = section.querySelector('p');
                 if (infoP) {
@@ -1740,12 +1939,9 @@
                 currentHostName = newHostName;
                 
                 if (isHost && newHostName !== currentPlayerName) {
-                    // I was the host but now I'm not
                     isHost = false;
                     document.getElementById('hostSettings').style.display = 'none';
                     document.getElementById('roomControlsDiv').style.display = 'none';
-                    
-                    // Show notification
                     showHostChangeNotification(newHostName);
                 }
                 
@@ -1893,7 +2089,6 @@
                 const playersData = snapshot.val() || {};
                 const playersList = Object.values(playersData);
                 
-                // Check if current player was removed
                 if (!playersData[currentPlayerName]) {
                     if (!isHost) {
                         alert('تم طردك من الغرفة');
@@ -1902,12 +2097,10 @@
                     }
                 }
                 
-                // Check for host changes
                 const newHost = Object.keys(playersData).find(name => playersData[name].isHost);
                 if (newHost) {
                     currentHostName = newHost;
                     if (currentPlayerName !== newHost && isHost) {
-                        // I was host but no longer am
                         isHost = false;
                         document.getElementById('hostSettings').style.display = 'none';
                         document.getElementById('roomControlsDiv').style.display = 'none';
@@ -2437,12 +2630,10 @@
                     const remainingPlayers = Object.keys(playersData).filter(name => name !== currentPlayerName);
                     
                     if (remainingPlayers.length > 0) {
-                        // Auto assign first remaining player as host
                         const newHost = remainingPlayers[0];
                         playersRef.child(newHost).update({ isHost: true });
                         roomRef.update({ host: newHost });
                     } else {
-                        // No players left, remove room
                         roomRef.remove();
                     }
                 });
