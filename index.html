@@ -1,372 +1,2439 @@
+Here's the complete single HTML file ready to use:
+
+```html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Spy Game Ultimate</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة الجاسوس</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            direction: rtl;
+        }
 
-<style>
-body{
-    font-family:Segoe UI;
-    background:linear-gradient(135deg,#667eea,#764ba2);
-    color:white;
-    text-align:center;
-}
-.container{
-    max-width:700px;
-    margin:auto;
-    background:white;
-    color:black;
-    padding:20px;
-    border-radius:20px;
-}
-button{
-    padding:10px 15px;
-    margin:5px;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-    background:#667eea;
-    color:white;
-}
-.player-item{
-    background:#f1f1f1;
-    padding:10px;
-    margin:5px 0;
-    border-radius:10px;
-    display:flex;
-    justify-content:space-between;
-}
-.timer{
-    font-size:2em;
-    margin:15px;
-}
-.hidden{display:none;}
-</style>
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        @keyframes blurReveal {
+            from {
+                filter: blur(20px);
+                opacity: 0;
+            }
+            to {
+                filter: blur(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes confetti {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(1000px) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes trophy-bounce {
+            0%, 100% {
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                transform: translateY(-20px) scale(1.1);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        button.secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        button.success {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        button.warning {
+            background: linear-gradient(135deg, #ffa726 0%, #fb8c00 100%);
+        }
+
+        button.danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+        }
+
+        button.show-hide-btn {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            margin-top: 20px;
+            font-size: 1.3em;
+            padding: 20px;
+        }
+
+        .mode-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .mode-card {
+            padding: 30px;
+            border: 3px solid #667eea;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .mode-card:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .mode-card .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .mode-card h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .mode-card p {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .player-list {
+            margin: 20px 0;
+        }
+
+        .player-item {
+            background: #f8f9fa;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .player-item .name {
+            font-weight: bold;
+            color: #333;
+            flex: 1;
+        }
+
+        .player-item .player-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .player-item.host {
+            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            color: white;
+        }
+
+        .player-item.host .name {
+            color: white;
+        }
+
+        .player-item.banned {
+            background: #ffe0e0;
+            opacity: 0.6;
+        }
+
+        .player-item button {
+            width: auto;
+            padding: 8px 15px;
+            margin: 0;
+            font-size: 0.9em;
+        }
+
+        .word-display {
+            text-align: center;
+            margin: 30px 0;
+            padding: 40px;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            height: 250px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: background 0.3s ease;
+        }
+
+        .word-display h2 {
+            font-size: 2.5em;
+            color: #333;
+            margin: 0;
+        }
+
+        .word-display .hint {
+            font-size: 1.2em;
+            color: #666;
+            margin-top: 15px;
+        }
+
+        .word-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            padding: 20px;
+        }
+
+        .word-hidden {
+            filter: blur(20px);
+            user-select: none;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .word-visible {
+            animation: blurReveal 0.5s ease-out forwards;
+            opacity: 1;
+        }
+
+        .hidden-placeholder {
+            font-size: 3em;
+            color: #999;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .impostor-display {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+        }
+
+        .impostor-display h2 {
+            color: white;
+        }
+
+        .impostor-display .hint {
+            color: #ffe0e0;
+        }
+
+        .impostor-display-no-hint {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+        }
+
+        .impostor-display-no-hint h2 {
+            color: white;
+        }
+
+        .impostor-display-no-hint p {
+            color: white;
+        }
+
+        .impostor-revealed {
+            animation: pulse 2s infinite;
+        }
+
+        .timer {
+            text-align: center;
+            font-size: 3em;
+            font-weight: bold;
+            color: #667eea;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+
+        .timer.warning {
+            color: #f5576c;
+            animation: pulse 1s infinite;
+        }
+
+        .voting-section {
+            margin: 20px 0;
+        }
+
+        .vote-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .vote-btn {
+            padding: 15px 10px;
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .vote-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .vote-btn.voted {
+            background: #4facfe;
+            border-color: #4facfe;
+            color: white;
+        }
+
+        .vote-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .vote-results {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .vote-result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .alert {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .alert.error {
+            background: #ffe0e0;
+            color: #d32f2f;
+            animation: shake 0.5s;
+        }
+
+        .alert.success {
+            background: #e0ffe0;
+            color: #2f7d32;
+        }
+
+        .alert.info {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .room-code-display {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .room-code-display h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .room-code-display .code {
+            font-size: 3em;
+            font-weight: bold;
+            color: #667eea;
+            letter-spacing: 10px;
+            font-family: monospace;
+        }
+
+        .room-code-display .room-status {
+            margin-top: 10px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .room-status.open {
+            background: #e0ffe0;
+            color: #2f7d32;
+        }
+
+        .room-status.closed {
+            background: #ffe0e0;
+            color: #d32f2f;
+        }
+
+        .waiting-status {
+            text-align: center;
+            padding: 20px;
+            background: #fff3e0;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .setting-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .setting-item label {
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .setting-item input {
+            margin-top: 5px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            transform: scale(1.5);
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .settings-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .settings-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .eye-icon {
+            font-size: 1.5em;
+            margin-left: 10px;
+        }
+
+        .leaderboard {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: white;
+        }
+
+        .leaderboard h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .leaderboard-item {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .leaderboard-item:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-5px);
+        }
+
+        .leaderboard-item.rank-1 {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #333;
+            font-weight: bold;
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .leaderboard-item.rank-2 {
+            background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
+            color: #333;
+            font-weight: bold;
+        }
+
+        .leaderboard-item.rank-3 {
+            background: linear-gradient(135deg, #cd7f32 0%, #e6a57e 100%);
+            color: #333;
+            font-weight: bold;
+        }
+
+        .leaderboard-rank {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-left: 15px;
+        }
+
+        .leaderboard-name {
+            flex: 1;
+            margin: 0 15px;
+            font-size: 1.1em;
+        }
+
+        .leaderboard-points {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .winner-announcement {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            border-radius: 15px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .winner-announcement h2 {
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 15px;
+            animation: trophy-bounce 2s infinite;
+        }
+
+        .winner-announcement .winner-name {
+            font-size: 2em;
+            font-weight: bold;
+            color: #764ba2;
+            margin: 10px 0;
+        }
+
+        .winner-announcement .points-earned {
+            font-size: 1.5em;
+            color: #667eea;
+            margin-top: 10px;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #f0f;
+            position: absolute;
+            animation: confetti 3s linear;
+        }
+
+        .sound-controls {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .sound-control {
+            background: white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+
+        .sound-control:hover {
+            transform: scale(1.1);
+        }
+
+        .sound-control.muted {
+            background: #f8f9fa;
+            opacity: 0.6;
+        }
+
+        .room-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .room-controls button {
+            flex: 1;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .mode-selector {
+                grid-template-columns: 1fr;
+            }
+
+            .word-display {
+                height: 200px;
+            }
+
+            .word-display h2 {
+                font-size: 1.8em;
+            }
+
+            .timer {
+                font-size: 2em;
+            }
+
+            .winner-announcement h2 {
+                font-size: 1.8em;
+            }
+
+            .winner-announcement .winner-name {
+                font-size: 1.5em;
+            }
+
+            .sound-controls {
+                top: 10px;
+                left: 10px;
+                gap: 5px;
+            }
+
+            .sound-control {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2em;
+            }
+
+            .player-item {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .player-item .player-actions {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .room-controls {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body>
+    <div class="sound-controls">
+        <div class="sound-control" id="soundControl" onclick="toggleSound()" title="تشغيل/إيقاف المؤثرات الصوتية">
+            <span id="soundIcon">🔊</span>
+        </div>
+        <div class="sound-control" id="musicControl" onclick="toggleMusic()" title="تشغيل/إيقاف الموسيقى">
+            <span id="musicIcon">🎵</span>
+        </div>
+    </div>
 
-<div class="container">
+    <div class="container">
+        <h1>🕵️ لعبة الجاسوس 🕵️</h1>
 
-<h1>🕵️ Spy Game</h1>
+        <div id="modeScreen" class="screen active">
+            <h2 style="text-align: center; margin-bottom: 30px; color: #333;">اختر وضع اللعب</h2>
+            <div class="mode-selector">
+                <div class="mode-card" onclick="selectMode('offline')">
+                    <div class="icon">📱</div>
+                    <h3>وضع أوفلاين</h3>
+                    <p>العب مع أصدقائك على نفس الجهاز</p>
+                </div>
+                <div class="mode-card" onclick="selectMode('online')">
+                    <div class="icon">🌐</div>
+                    <h3>وضع أونلاين</h3>
+                    <p>العب مع أصدقائك عبر الإنترنت</p>
+                </div>
+            </div>
+        </div>
 
-<div id="setup">
-<input id="name" placeholder="اسمك">
-<button onclick="createRoom()">إنشاء غرفة</button>
-<input id="roomCode" placeholder="كود">
-<button onclick="joinRoom()">انضم</button>
-<div id="error"></div>
-</div>
+        <div id="onlineRoomScreen" class="screen">
+            <h2 style="text-align: center; margin-bottom: 30px; color: #333;">وضع أونلاين</h2>
+            
+            <div class="input-group">
+                <label>اسمك:</label>
+                <input type="text" id="playerName" placeholder="أدخل اسمك">
+            </div>
 
-<div id="lobby" class="hidden">
-<h2>كود الغرفة: <span id="roomDisplay"></span></h2>
+            <div class="mode-selector">
+                <div class="mode-card" onclick="createRoom()">
+                    <div class="icon">➕</div>
+                    <h3>إنشاء غرفة</h3>
+                    <p>أنشئ غرفة جديدة</p>
+                </div>
+                <div class="mode-card" onclick="showJoinRoom()">
+                    <div class="icon">🚪</div>
+                    <h3>الانضمام لغرفة</h3>
+                    <p>انضم لغرفة موجودة</p>
+                </div>
+            </div>
 
-<button id="lockBtn" onclick="toggleLock()">🔒 إغلاق الغرفة</button>
+            <div id="joinRoomDiv" style="display: none; margin-top: 20px;">
+                <div class="input-group">
+                    <label>كود الغرفة (6 أرقام):</label>
+                    <input type="text" id="roomCode" placeholder="000000" maxlength="6" pattern="[0-9]{6}">
+                </div>
+                <button onclick="joinRoom()" class="success">انضم</button>
+            </div>
 
-<h3>اللاعبون</h3>
-<div id="players"></div>
+            <div id="onlineError"></div>
 
-<h3>🏆 Leaderboard</h3>
-<div id="leaderboard"></div>
+            <button onclick="backToMode()" class="secondary">رجوع</button>
+        </div>
 
-عدد الجواسيس:
-<input type="number" id="impostorCount" value="1" min="1">
+        <div id="lobbyScreen" class="screen">
+            <div class="room-code-display">
+                <h3>كود الغرفة:</h3>
+                <div class="code" id="displayRoomCode">000000</div>
+                <div class="room-status open" id="roomStatus">🟢 الغرفة مفتوحة</div>
+                <p style="margin-top: 10px; color: #666;">شارك هذا الكود مع أصدقائك</p>
+            </div>
 
-<br>
-<button onclick="startGame()">ابدأ</button>
-</div>
+            <div id="roomControlsDiv" style="display: none;">
+                <div class="room-controls">
+                    <button id="toggleRoomBtn" onclick="toggleRoomStatus()" class="warning">🔒 إغلاق الغرفة</button>
+                </div>
+            </div>
 
-<div id="game" class="hidden">
-<div class="timer" id="timer"></div>
-<h2 id="word"></h2>
-<button onclick="readyVote()">🗳️ الانتقال للتصويت</button>
-</div>
+            <div id="lobbyLeaderboard" class="leaderboard">
+                <h3>🏆 لوحة المتصدرين 🏆</h3>
+                <div id="leaderboardList"></div>
+            </div>
 
-<div id="voting" class="hidden">
-<h2>صوّت</h2>
-<div id="voteButtons"></div>
-</div>
+            <div class="settings-section" id="hostSettings" style="display: none;">
+                <h3>⚙️ إعدادات اللعبة</h3>
+                
+                <div class="input-group">
+                    <label>اختر الفئة:</label>
+                    <select id="onlineCategorySelect">
+                        <option value="mixed">مختلط (جميع الفئات)</option>
+                        <option value="places">أماكن</option>
+                        <option value="jobs">مهن</option>
+                        <option value="items">أشياء</option>
+                        <option value="animals">حيوانات</option>
+                        <option value="food">طعام</option>
+                        <option value="countries">دول</option>
+                        <option value="actions">أفعال</option>
+                        <option value="insects">حشرات</option>
+                        <option value="clothes">ملابس</option>
+                        <option value="furniture">أثاث</option>
+                    </select>
+                </div>
 
-<div id="results" class="hidden">
-<h2>النتائج</h2>
-<div id="resultContent"></div>
-<button onclick="backLobby()">عودة</button>
-</div>
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <label>عدد الجواسيس:</label>
+                        <input type="number" id="onlineImpostorCount" min="1" value="1">
+                        <small style="color: #666; font-size: 0.85em; display: block; margin-top: 5px;">الحد الأقصى: <span id="maxImpostorsDisplay">1</span></small>
+                    </div>
+                    <div class="setting-item">
+                        <label>المؤقت (ثانية):</label>
+                        <input type="number" id="onlineTimerDuration" min="0" value="180">
+                    </div>
+                </div>
 
-</div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="onlineClueEnabled" checked>
+                    <label for="onlineClueEnabled">إعطاء تلميح للجاسوس</label>
+                </div>
+            </div>
 
-<!-- Sounds -->
-<audio id="clickSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3?filename=mouse-click-153941.mp3"></audio>
-<audio id="menuSound" src="https://cdn.pixabay.com/download/audio/2022/03/10/audio_5f9c6f3c9e.mp3?filename=interface-click-124467.mp3"></audio>
-<audio id="winSound" src="https://cdn.pixabay.com/download/audio/2022/10/16/audio_946f96db0a.mp3?filename=success-fanfare-trumpets-6185.mp3"></audio>
-<audio id="bgMusic" loop src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=relaxing-145038.mp3"></audio>
+            <h3 style="margin: 20px 0; text-align: center;">اللاعبون (<span id="playerCount">0</span>)</h3>
+            <div class="player-list" id="onlinePlayerList"></div>
 
-<script>
+            <div class="waiting-status" id="waitingStatus">
+                <div class="spinner"></div>
+                <p>في انتظار اللاعبين... (الحد الأدنى: 3 لاعبين)</p>
+            </div>
 
-const firebaseConfig={
-apiKey:"YOUR_KEY",
-authDomain:"YOUR_DOMAIN",
-databaseURL:"YOUR_DB",
-projectId:"YOUR_ID",
-storageBucket:"YOUR_BUCKET",
-messagingSenderId:"YOUR_MSG",
-appId:"YOUR_APP"
-};
+            <button id="startOnlineGameBtn" onclick="startOnlineGame()" class="success" style="display: none;">ابدأ اللعبة</button>
+            <button onclick="leaveRoom()" class="secondary">مغادرة الغرفة</button>
+        </div>
 
-firebase.initializeApp(firebaseConfig);
-const db=firebase.database();
+        <div id="onlineGameScreen" class="screen">
+            <div id="onlineTimerDisplay" class="timer" style="display: none;"></div>
+            <div id="onlineWordDisplay"></div>
+            <div id="onlineShowHideButtonContainer"></div>
+            <div id="onlineReadyVoteContainer"></div>
+        </div>
 
-let roomCode=null;
-let name=null;
-let isHost=false;
+        <div id="onlineVotingScreen" class="screen">
+            <h2 style="text-align: center; margin-bottom: 20px; color: #667eea;">⏱️ وقت التصويت!</h2>
+            <h3 style="text-align: center; margin-bottom: 20px;">صوت على الجاسوس</h3>
+            
+            <div class="vote-buttons" id="onlineVoteButtons"></div>
+            
+            <div id="onlineVoteWaiting" class="waiting-status" style="display: none;">
+                <div class="spinner"></div>
+                <p>في انتظار تصويت اللاعبين...</p>
+            </div>
+        </div>
 
-function play(id,v=0.3){
-let s=document.getElementById(id);
-s.volume=v;
-s.currentTime=0;
-s.play();
-}
+        <div id="onlineResultsScreen" class="screen">
+            <h2 style="text-align: center; color: #667eea; margin-bottom: 30px;">🎯 النتائج</h2>
+            
+            <div id="onlineWinnerAnnouncement"></div>
+            <div id="onlineWordReveal"></div>
+            <div id="onlineVoteResultsDiv"></div>
+            <div id="onlineImpostorReveal"></div>
+            <div id="onlinePointsDistribution"></div>
+            
+            <button onclick="backToLobby()" class="success">العودة للوبي</button>
+        </div>
 
-document.addEventListener("click",e=>{
-if(e.target.tagName==="BUTTON")play("clickSound",0.2);
-});
+        <div id="offlineSetupScreen" class="screen">
+            <div class="input-group">
+                <label>اختر الفئة:</label>
+                <select id="categorySelect">
+                    <option value="mixed">مختلط (جميع الفئات)</option>
+                    <option value="places">أماكن</option>
+                    <option value="jobs">مهن</option>
+                    <option value="items">أشياء</option>
+                    <option value="animals">حيوانات</option>
+                    <option value="food">طعام</option>
+                    <option value="countries">دول</option>
+                    <option value="actions">أفعال</option>
+                    <option value="insects">حشرات</option>
+                    <option value="clothes">ملابس</option>
+                    <option value="furniture">أثاث</option>
+                </select>
+            </div>
 
-function createRoom(){
-name=document.getElementById("name").value;
-if(!name)return;
-roomCode=Math.floor(100000+Math.random()*900000);
-isHost=true;
+            <div class="settings-section">
+                <h3>⚙️ إعدادات اللعبة</h3>
+                
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <label>عدد الجواسيس:</label>
+                        <input type="number" id="impostorCount" min="1" value="1">
+                        <small style="color: #666; font-size: 0.85em; display: block; margin-top: 5px;">الحد الأقصى: <span id="offlineMaxImpostorsDisplay">1</span></small>
+                    </div>
+                    <div class="setting-item">
+                        <label>المؤقت (ثانية):</label>
+                        <input type="number" id="timerDuration" min="0" value="180">
+                    </div>
+                </div>
 
-db.ref("rooms/"+roomCode).set({
-locked:false,
-scores:{[name]:0},
-players:{[name]:true}
-});
+                <div class="checkbox-group">
+                    <input type="checkbox" id="votingEnabled">
+                    <label for="votingEnabled">تفعيل نظام التصويت</label>
+                </div>
 
-enterLobby();
-}
+                <div class="checkbox-group">
+                    <input type="checkbox" id="clueEnabled" checked>
+                    <label for="clueEnabled">إعطاء تلميح للجاسوس</label>
+                </div>
+            </div>
 
-function joinRoom(){
-name=document.getElementById("name").value;
-roomCode=document.getElementById("roomCode").value;
-if(!name||!roomCode)return;
+            <div class="input-group">
+                <label>أضف لاعب:</label>
+                <input type="text" id="playerNameInput" placeholder="اسم اللاعب">
+                <button onclick="addPlayer()">إضافة لاعب</button>
+            </div>
 
-db.ref("rooms/"+roomCode).once("value").then(snap=>{
-if(!snap.exists())return alert("لا يوجد");
-let data=snap.val();
-if(data.locked)return alert("الغرفة مغلقة");
-if(data.banned&&data.banned[name])return alert("محظور");
+            <div id="errorMessage"></div>
 
-db.ref("rooms/"+roomCode+"/players/"+name).set(true);
-db.ref("rooms/"+roomCode+"/scores/"+name).once("value")
-.then(s=>{if(!s.exists())db.ref("rooms/"+roomCode+"/scores/"+name).set(0);});
+            <div class="player-list" id="playerList"></div>
 
-enterLobby();
-});
-}
+            <button onclick="startOfflineGame()" class="success">ابدأ اللعبة</button>
+            <button onclick="backToMode()" class="secondary">رجوع</button>
+        </div>
 
-function enterLobby(){
-document.getElementById("setup").classList.add("hidden");
-document.getElementById("lobby").classList.remove("hidden");
-document.getElementById("roomDisplay").textContent=roomCode;
-document.getElementById("bgMusic").volume=0.15;
-document.getElementById("bgMusic").play();
+        <div id="wordScreen" class="screen">
+            <div style="text-align: center; font-size: 1.8em; color: #667eea; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 10px; font-weight: bold;" id="currentPlayerName"></div>
+            
+            <div id="wordDisplay"></div>
 
-listenLobby();
-}
+            <div id="showHideButtonContainer"></div>
 
-function listenLobby(){
-db.ref("rooms/"+roomCode+"/players").on("value",snap=>{
-let players=snap.val()||{};
-let html="";
-Object.keys(players).forEach(p=>{
-html+=`<div class="player-item">${p}
-${isHost&&p!==name?
-`<span>
-<button onclick="kick('${p}')">Kick</button>
-<button onclick="ban('${p}')">Ban</button>
-</span>`:""}
-</div>`;
-});
-document.getElementById("players").innerHTML=html;
+            <button onclick="nextPlayer()" class="success">اللاعب التالي</button>
+        </div>
 
-let count=Object.keys(players).length;
-document.getElementById("impostorCount").max=Math.max(1,count-2);
-});
-updateLeaderboard();
-}
+        <div id="gameScreen" class="screen">
+            <div id="timerDisplay" class="timer"></div>
 
-function updateLeaderboard(){
-db.ref("rooms/"+roomCode+"/scores").on("value",snap=>{
-let scores=snap.val()||{};
-let sorted=Object.entries(scores).sort((a,b)=>b[1]-a[1]);
-let html="";
-sorted.forEach((s,i)=>{
-html+=`<div>#${i+1} ${s[0]} ⭐ ${s[1]}</div>`;
-});
-document.getElementById("leaderboard").innerHTML=html;
-});
-}
+            <div class="alert success" id="firstPlayerAlert" style="display: none;"></div>
 
-function kick(p){
-db.ref("rooms/"+roomCode+"/players/"+p).remove();
-}
+            <div id="votingSection" class="voting-section" style="display: none;">
+                <h3 style="text-align: center; margin-bottom: 15px;">صوت على الجاسوس</h3>
+                <div class="vote-buttons" id="voteButtons"></div>
+                <button onclick="showVoteResults()" class="secondary" style="margin-top: 15px;">عرض النتائج</button>
+            </div>
 
-function ban(p){
-db.ref("rooms/"+roomCode+"/banned/"+p).set(true);
-kick(p);
-}
+            <div id="voteResults" class="vote-results" style="display: none;"></div>
 
-function toggleLock(){
-db.ref("rooms/"+roomCode+"/locked").once("value")
-.then(s=>{
-let locked=s.val();
-db.ref("rooms/"+roomCode+"/locked").set(!locked);
-document.getElementById("lockBtn").textContent=
-locked?"🔒 إغلاق الغرفة":"🔓 فتح الغرفة";
-});
-}
+            <button onclick="revealImpostors()">كشف الجواسيس</button>
+            <button onclick="resetGame()" class="secondary">جولة جديدة</button>
+        </div>
 
-function startGame(){
-let count=parseInt(document.getElementById("impostorCount").value);
-db.ref("rooms/"+roomCode+"/players").once("value").then(snap=>{
-let players=Object.keys(snap.val());
-if(count>=players.length-1)return alert("عدد غير صحيح");
+        <div id="resultsScreen" class="screen">
+            <div id="impostorReveal"></div>
+            <button onclick="resetGame()" class="success">لعب مرة أخرى</button>
+        </div>
+    </div>
 
-let word="مدرسة";
-let shuffled=[...players].sort(()=>Math.random()-0.5);
-let impostors=shuffled.slice(0,count);
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
-db.ref("rooms/"+roomCode+"/game").set({
-word,
-impostors,
-ready:{},
-votes:{},
-state:"word"
-});
-});
-}
+    <script>
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const audioContext = new AudioContext();
 
-db.ref("rooms/"+roomCode+"/game").on("value",snap=>{
-if(!snap.exists())return;
-let data=snap.val();
+        function playClickSound() {
+            if (!soundEnabled) return;
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            oscillator.frequency.value = 800;
+            oscillator.type = 'sine';
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.1);
+        }
 
-if(data.state==="word"){
-document.getElementById("lobby").classList.add("hidden");
-document.getElementById("game").classList.remove("hidden");
-document.getElementById("word").textContent=
-data.impostors.includes(name)?"🕵️ أنت الجاسوس":data.word;
-startTimer(60);
-}
+        function playRevealSound() {
+            if (!soundEnabled) return;
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.3);
+            oscillator.type = 'triangle';
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.3);
+        }
 
-if(data.state==="vote"){
-showVoting();
-}
+        function playTimerSound() {
+            if (!soundEnabled) return;
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            oscillator.frequency.value = 1000;
+            oscillator.type = 'square';
+            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.15);
+        }
 
-if(data.state==="results"){
-showResults(data);
-}
-});
+        function playVoteSound() {
+            if (!soundEnabled) return;
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.2);
+            oscillator.type = 'sine';
+            gainNode.gain.setValueAtTime(0.25, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.2);
+        }
 
-function startTimer(t){
-let timer=document.getElementById("timer");
-let int=setInterval(()=>{
-timer.textContent=t;
-if(t<=5)play("menuSound",0.2);
-if(t===0){clearInterval(int);readyVote();}
-t--;
-},1000);
-}
+        function playWinSound() {
+            if (!soundEnabled) return;
+            const notes = [523.25, 659.25, 783.99, 1046.50];
+            const duration = 0.2;
+            notes.forEach((freq, index) => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                oscillator.frequency.value = freq;
+                oscillator.type = 'sine';
+                const startTime = audioContext.currentTime + (index * duration);
+                gainNode.gain.setValueAtTime(0.3, startTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+                oscillator.start(startTime);
+                oscillator.stop(startTime + duration);
+            });
+        }
 
-function readyVote(){
-db.ref("rooms/"+roomCode+"/game/ready/"+name).set(true);
-db.ref("rooms/"+roomCode+"/game/ready").once("value")
-.then(s=>{
-db.ref("rooms/"+roomCode+"/players").once("value")
-.then(ps=>{
-if(Object.keys(s.val()).length===Object.keys(ps.val()).length){
-db.ref("rooms/"+roomCode+"/game/state").set("vote");
-}
-});
-});
-}
+        function playSelectSound() {
+            if (!soundEnabled) return;
+            const oscillator1 = audioContext.createOscillator();
+            const oscillator2 = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            oscillator1.connect(gainNode);
+            oscillator2.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            oscillator1.frequency.value = 600;
+            oscillator2.frequency.value = 900;
+            oscillator1.type = 'sine';
+            oscillator2.type = 'sine';
+            gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+            oscillator1.start(audioContext.currentTime);
+            oscillator2.start(audioContext.currentTime);
+            oscillator1.stop(audioContext.currentTime + 0.15);
+            oscillator2.stop(audioContext.currentTime + 0.15);
+        }
 
-function showVoting(){
-document.getElementById("game").classList.add("hidden");
-document.getElementById("voting").classList.remove("hidden");
+        let backgroundMusic = null;
+        let musicEnabled = true;
+        let soundEnabled = true;
 
-db.ref("rooms/"+roomCode+"/players").once("value")
-.then(s=>{
-let players=Object.keys(s.val());
-let html="";
-players.forEach(p=>{
-html+=`<button onclick="vote('${p}')">${p}</button>`;
-});
-document.getElementById("voteButtons").innerHTML=html;
-});
-}
+        function createBackgroundMusic() {
+            const musicContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            function playAmbientNote(frequency, startTime, duration) {
+                const oscillator = musicContext.createOscillator();
+                const gainNode = musicContext.createGain();
+                const filter = musicContext.createBiquadFilter();
+                oscillator.connect(filter);
+                filter.connect(gainNode);
+                gainNode.connect(musicContext.destination);
+                oscillator.frequency.value = frequency;
+                oscillator.type = 'sine';
+                filter.type = 'lowpass';
+                filter.frequency.value = 800;
+                gainNode.gain.setValueAtTime(0, startTime);
+                gainNode.gain.linearRampToValueAtTime(0.05, startTime + 0.5);
+                gainNode.gain.linearRampToValueAtTime(0.05, startTime + duration - 0.5);
+                gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
+                oscillator.start(startTime);
+                oscillator.stop(startTime + duration);
+            }
+            
+            function playMusicLoop() {
+                if (!musicEnabled) return;
+                const now = musicContext.currentTime;
+                const noteDuration = 2;
+                const chords = [
+                    [261.63, 329.63, 392.00],
+                    [220.00, 261.63, 329.63],
+                    [174.61, 220.00, 261.63],
+                    [196.00, 246.94, 293.66]
+                ];
+                chords.forEach((chord, chordIndex) => {
+                    chord.forEach(frequency => {
+                        playAmbientNote(frequency, now + (chordIndex * noteDuration), noteDuration);
+                    });
+                });
+                setTimeout(playMusicLoop, (chords.length * noteDuration * 1000) - 100);
+            }
+            
+            backgroundMusic = { context: musicContext, play: playMusicLoop };
+        }
 
-function vote(p){
-db.ref("rooms/"+roomCode+"/game/votes/"+name).set(p);
-db.ref("rooms/"+roomCode+"/game/votes").once("value")
-.then(s=>{
-db.ref("rooms/"+roomCode+"/players").once("value")
-.then(ps=>{
-if(Object.keys(s.val()).length===Object.keys(ps.val()).length){
-db.ref("rooms/"+roomCode+"/game/state").set("results");
-}
-});
-});
-}
+        function startBackgroundMusic() {
+            if (!backgroundMusic) {
+                createBackgroundMusic();
+            }
+            if (musicEnabled) {
+                backgroundMusic.play();
+            }
+        }
 
-function showResults(data){
-play("menuSound",0.5);
-document.getElementById("voting").classList.add("hidden");
-document.getElementById("results").classList.remove("hidden");
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundIcon').textContent = soundEnabled ? '🔊' : '🔇';
+            document.getElementById('soundControl').classList.toggle('muted', !soundEnabled);
+            if (soundEnabled) {
+                playClickSound();
+            }
+        }
 
-let votes=data.votes||{};
-let counts={};
-Object.values(votes).forEach(v=>counts[v]=(counts[v]||0)+1);
-let sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
-let eliminated=sorted[0]?sorted[0][0]:null;
+        function toggleMusic() {
+            musicEnabled = !musicEnabled;
+            document.getElementById('musicIcon').textContent = musicEnabled ? '🎵' : '🎶';
+            document.getElementById('musicControl').classList.toggle('muted', !musicEnabled);
+            if (musicEnabled) {
+                startBackgroundMusic();
+            }
+            playClickSound();
+        }
 
-let caught=data.impostors.includes(eliminated);
+        document.addEventListener('click', function initMusic() {
+            startBackgroundMusic();
+            document.removeEventListener('click', initMusic);
+        }, { once: true });
 
-let html=`<p>الكلمة: ${data.word}</p>`;
-html+=`<p>المُقصى: ${eliminated||"لا أحد"}</p>`;
+        const firebaseConfig = {
+            apiKey: "AIzaSyDnezIJxk9gQr--qOGLpDVB6PNaLF-DW_8",
+            authDomain: "imposter-dfa43.firebaseapp.com",
+            databaseURL: "https://imposter-dfa43-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "imposter-dfa43",
+            storageBucket: "imposter-dfa43.appspot.com",
+            messagingSenderId: "840856200109",
+            appId: "1:840856200109:web:6e11bd3f0cbfad9094b724"
+        };
 
-if(caught){html+="✅ تم كشف الجاسوس";}else{html+="❌ لم يتم كشفه";}
+        let firebaseApp, database;
+        try {
+            firebaseApp = firebase.initializeApp(firebaseConfig);
+            database = firebase.database();
+            console.log("Firebase initialized successfully");
+        } catch (error) {
+            console.error("Firebase initialization error:", error);
+        }
 
-document.getElementById("resultContent").innerHTML=html;
+        const words = {
+            places: ["مسجد", "مدرسة", "مستشفى", "مطار", "محطة قطار", "ملعب", "حديقة", "شاطئ", "جبل", "صحراء", "مكتبة", "متحف", "سوق", "مول", "مطعم", "مقهى", "فندق", "سينما", "مسرح", "حديقة حيوان"],
+            jobs: ["طبيب", "معلم", "مهندس", "محامي", "طيار", "شرطي", "رجل إطفاء", "طباخ", "نادل", "سائق", "كهربائي", "سباك", "نجار", "حداد", "بناء", "رسام", "مصور", "صحفي", "كاتب", "مؤلف"],
+            items: ["هاتف", "حاسوب", "تلفاز", "ثلاجة", "فرن", "مكيف", "مروحة", "ساعة", "كاميرا", "مفتاح", "قلم", "كتاب", "دفتر", "حقيبة", "محفظة", "نظارة", "مرآة", "فرشاة", "مشط", "صابون"],
+            animals: ["أسد", "نمر", "فهد", "ذئب", "ثعلب", "دب", "قرد", "فيل", "زرافة", "حصان", "حمار", "جمل", "بقرة", "خروف", "ماعز", "خنزير", "كلب", "قطة", "أرنب", "فأر"],
+            food: ["أرز", "خبز", "معكرونة", "بطاطس", "طماطم", "خيار", "خس", "جزر", "بصل", "ثوم", "فلفل", "باذنجان", "كوسا", "فاصوليا", "بازلاء", "ذرة", "قرع", "ملفوف", "قرنبيط", "بروكلي"],
+            countries: ["مصر", "السعودية", "الإمارات", "الكويت", "قطر", "البحرين", "عمان", "اليمن", "العراق", "سوريا", "لبنان", "الأردن", "فلسطين", "ليبيا", "تونس", "الجزائر", "المغرب", "موريتانيا", "السودان", "الصومال"],
+            actions: ["يمشي", "يركض", "يقفز", "يسبح", "يطير", "يزحف", "يتسلق", "ينام", "يستيقظ", "يأكل", "يشرب", "يطبخ", "يغسل", "ينظف", "يكنس", "يمسح", "يرتب", "يطوي", "يكوي", "يخيط"],
+            insects: ["نملة", "نحلة", "ذبابة", "بعوضة", "صرصور", "جندب", "جرادة", "فراشة", "عثة", "دبور", "زنبور", "يعسوب", "خنفساء", "دعسوقة", "سوسة", "قمل", "برغوث", "بق", "قراد", "عنكبوت"],
+            clothes: ["قميص", "بنطلون", "فستان", "تنورة", "جاكيت", "معطف", "سترة", "عباءة", "ثوب", "قفطان", "جلباب", "بدلة", "كنزة", "تيشيرت", "بلوزة", "بيجامة", "ملابس داخلية", "حمالة صدر", "سروال", "شورت"],
+            furniture: ["كرسي", "طاولة", "سرير", "خزانة", "دولاب", "رف", "مكتبة", "صوفا", "كنبة", "أريكة", "كرسي هزاز", "كرسي بذراعين", "بوف", "طاولة قهوة", "طاولة طعام", "طاولة مكتب", "طاولة تلفاز", "طاولة جانبية", "كومودينو", "تسريحة"]
+        };
 
-updatePoints(data,caught);
+        const POINTS = {
+            IMPOSTOR_WIN: 10,
+            IMPOSTOR_CAUGHT: -5,
+            CITIZEN_WIN: 5,
+            CITIZEN_LOSS: -3,
+            CORRECT_VOTE: 3,
+            WRONG_VOTE: -1
+        };
 
-play("winSound",0.6);
-}
+        let leaderboardRef = null;
+        let gameMode = 'offline';
+        let currentRoomCode = null;
+        let currentPlayerName = null;
+        let isHost = false;
+        let roomRef = null;
+        let playersRef = null;
+        let gameRef = null;
+        let bannedPlayersRef = null;
+        let hasVoted = false;
+        let hasSeenWord = false;
+        let hasReadyToVote = false;
+        let onlineTimerInterval = null;
+        let isRoomClosed = false;
+        let players = [];
+        let impostors = [];
+        let currentWord = "";
+        let currentHint = "";
+        let currentPlayerIndex = 0;
+        let timerInterval = null;
+        let votes = {};
+        let firstPlayer = "";
+        let clueEnabled = true;
+        let wordVisible = false;
 
-function updatePoints(data,caught){
-db.ref("rooms/"+roomCode+"/scores").once("value")
-.then(s=>{
-let scores=s.val();
-Object.keys(scores).forEach(p=>{
-let pts=0;
-if(data.impostors.includes(p)){
-if(!caught)pts+=20;
-}else{
-if(caught)pts+=10;
-}
-db.ref("rooms/"+roomCode+"/scores/"+p).set(scores[p]+pts);
-});
-});
-}
+        function createConfetti() {
+            const colors = ['#ffd700', '#ff6b6b', '#4facfe', '#43e97b', '#f093fb'];
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 3 + 's';
+                    document.body.appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 30);
+            }
+        }
 
-function backLobby(){
-location.reload();
-}
+        function selectMode(mode) {
+            playSelectSound();
+            gameMode = mode;
+            if (mode === 'offline') {
+                showScreen('offlineSetupScreen');
+            } else {
+                showScreen('onlineRoomScreen');
+            }
+        }
 
-</script>
+        function backToMode() {
+            playClickSound();
+            if (roomRef) {
+                leaveRoom();
+            }
+            currentRoomCode = null;
+            currentPlayerName = null;
+            isHost = false;
+            hasVoted = false;
+            hasSeenWord = false;
+            hasReadyToVote = false;
+            isRoomClosed = false;
+            if (onlineTimerInterval) {
+                clearInterval(onlineTimerInterval);
+                onlineTimerInterval = null;
+            }
+            showScreen('modeScreen');
+        }
+
+        function updateLeaderboard() {
+            if (!leaderboardRef) return;
+            leaderboardRef.once('value').then(snapshot => {
+                const leaderboardData = snapshot.val() || {};
+                const leaderboardArray = Object.entries(leaderboardData).map(([name, data]) => ({
+                    name,
+                    points: data.points || 0,
+                    wins: data.wins || 0,
+                    games: data.games || 0
+                }));
+                leaderboardArray.sort((a, b) => b.points - a.points);
+                const leaderboardList = document.getElementById('leaderboardList');
+                if (!leaderboardList) return;
+                leaderboardList.innerHTML = '';
+                if (leaderboardArray.length === 0) {
+                    leaderboardList.innerHTML = '<p style="text-align: center; color: rgba(255,255,255,0.7);">لا توجد بيانات بعد</p>';
+                    return;
+                }
+                leaderboardArray.forEach((player, index) => {
+                    const rank = index + 1;
+                    const item = document.createElement('div');
+                    item.className = `leaderboard-item ${rank <= 3 ? 'rank-' + rank : ''}`;
+                    const rankEmoji = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank;
+                    item.innerHTML = `
+                        <div class="leaderboard-rank">${rankEmoji}</div>
+                        <div class="leaderboard-name">${player.name}</div>
+                        <div class="leaderboard-points">${player.points} نقطة</div>
+                    `;
+                    leaderboardList.appendChild(item);
+                });
+            });
+        }
+
+        function updatePlayerPoints(playerName, pointsToAdd, reason) {
+            if (!leaderboardRef) return;
+            const playerRef = leaderboardRef.child(playerName);
+            playerRef.transaction(currentData => {
+                if (currentData === null) {
+                    return { points: pointsToAdd, wins: 0, games: 1 };
+                }
+                return {
+                    points: (currentData.points || 0) + pointsToAdd,
+                    wins: currentData.wins || 0,
+                    games: (currentData.games || 0) + 1
+                };
+            });
+        }
+
+        function incrementWins(playerName) {
+            if (!leaderboardRef) return;
+            const playerRef = leaderboardRef.child(playerName);
+            playerRef.transaction(currentData => {
+                if (currentData === null) {
+                    return { points: 0, wins: 1, games: 1 };
+                }
+                return {
+                    points: currentData.points || 0,
+                    wins: (currentData.wins || 0) + 1,
+                    games: currentData.games || 0
+                };
+            });
+        }
+
+        function toggleRoomStatus() {
+            playClickSound();
+            if (!isHost || !roomRef) return;
+            isRoomClosed = !isRoomClosed;
+            roomRef.update({ isClosed: isRoomClosed });
+            const btn = document.getElementById('toggleRoomBtn');
+            const status = document.getElementById('roomStatus');
+            if (isRoomClosed) {
+                btn.textContent = '🔓 فتح الغرفة';
+                btn.className = 'success';
+                status.textContent = '🔴 الغرفة مغلقة';
+                status.className = 'room-status closed';
+            } else {
+                btn.textContent = '🔒 إغلاق الغرفة';
+                btn.className = 'warning';
+                status.textContent = '🟢 الغرفة مفتوحة';
+                status.className = 'room-status open';
+            }
+        }
+
+        function kickPlayer(playerName) {
+            playClickSound();
+            if (!isHost || !playersRef || !bannedPlayersRef) return;
+            if (confirm(`هل تريد طرد ${playerName} من الغرفة؟`)) {
+                bannedPlayersRef.child(playerName).set(true);
+                playersRef.child(playerName).remove();
+            }
+        }
+
+        function isPlayerBanned(playerName) {
+            if (!bannedPlayersRef) return Promise.resolve(false);
+            return bannedPlayersRef.child(playerName).once('value').then(snapshot => {
+                return snapshot.exists();
+            });
+        }
+
+        function generateRoomCode() {
+            return Math.floor(100000 + Math.random() * 900000).toString();
+        }
+
+        function showOnlineError(message) {
+            const errorDiv = document.getElementById('onlineError');
+            errorDiv.innerHTML = `<div class="alert error">${message}</div>`;
+            setTimeout(() => {
+                errorDiv.innerHTML = '';
+            }, 3000);
+        }
+
+        function createRoom() {
+            playClickSound();
+            const name = document.getElementById('playerName').value.trim();
+            if (!name) {
+                showOnlineError('الرجاء إدخال اسمك');
+                return;
+            }
+            currentPlayerName = name;
+            currentRoomCode = generateRoomCode();
+            isHost = true;
+            roomRef = database.ref('rooms/' + currentRoomCode);
+            leaderboardRef = roomRef.child('leaderboard');
+            bannedPlayersRef = roomRef.child('bannedPlayers');
+            roomRef.set({
+                host: currentPlayerName,
+                status: 'waiting',
+                isClosed: false,
+                settings: {
+                    category: 'mixed',
+                    impostorCount: 1,
+                    timerDuration: 180,
+                    clueEnabled: true
+                },
+                createdAt: firebase.database.ServerValue.TIMESTAMP
+            }).then(() => {
+                playersRef = roomRef.child('players');
+                playersRef.child(currentPlayerName).set({
+                    name: currentPlayerName,
+                    isHost: true,
+                    joinedAt: firebase.database.ServerValue.TIMESTAMP
+                });
+                listenToRoom();
+                document.getElementById('displayRoomCode').textContent = currentRoomCode;
+                document.getElementById('hostSettings').style.display = 'block';
+                document.getElementById('roomControlsDiv').style.display = 'block';
+                showScreen('lobbyScreen');
+            }).catch(error => {
+                showOnlineError('فشل إنشاء الغرفة: ' + error.message);
+            });
+        }
+
+        function showJoinRoom() {
+            playClickSound();
+            document.getElementById('joinRoomDiv').style.display = 'block';
+        }
+
+        function joinRoom() {
+            playClickSound();
+            const name = document.getElementById('playerName').value.trim();
+            const code = document.getElementById('roomCode').value.trim();
+            if (!name) {
+                showOnlineError('الرجاء إدخال اسمك');
+                return;
+            }
+            if (code.length !== 6 || !/^\d+$/.test(code)) {
+                showOnlineError('كود الغرفة يجب أن يكون 6 أرقام');
+                return;
+            }
+            currentPlayerName = name;
+            currentRoomCode = code;
+            isHost = false;
+            roomRef = database.ref('rooms/' + currentRoomCode);
+            leaderboardRef = roomRef.child('leaderboard');
+            bannedPlayersRef = roomRef.child('bannedPlayers');
+            roomRef.once('value').then(snapshot => {
+                if (!snapshot.exists()) {
+                    showOnlineError('الغرفة غير موجودة');
+                    return;
+                }
+                const roomData = snapshot.val();
+                if (roomData.isClosed) {
+                    showOnlineError('الغرفة مغلقة ولا يمكن الانضمام');
+                    return;
+                }
+                if (roomData.status !== 'waiting') {
+                    showOnlineError('اللعبة قد بدأت بالفعل');
+                    return;
+                }
+                if (roomData.players && roomData.players[currentPlayerName]) {
+                    showOnlineError('هذا الاسم مستخدم بالفعل');
+                    return;
+                }
+                isPlayerBanned(currentPlayerName).then(isBanned => {
+                    if (isBanned) {
+                        showOnlineError('تم طردك من هذه الغرفة');
+                        return;
+                    }
+                    playersRef = roomRef.child('players');
+                    playersRef.child(currentPlayerName).set({
+                        name: currentPlayerName,
+                        isHost: false,
+                        joinedAt: firebase.database.ServerValue.TIMESTAMP
+                    });
+                    listenToRoom();
+                    document.getElementById('displayRoomCode').textContent = currentRoomCode;
+                    document.getElementById('hostSettings').style.display = 'none';
+                    document.getElementById('roomControlsDiv').style.display = 'none';
+                    showScreen('lobbyScreen');
+                });
+            }).catch(error => {
+                showOnlineError('فشل الانضمام: ' + error.message);
+            });
+        }
+
+        function listenToRoom() {
+            playersRef.on('value', snapshot => {
+                const playersData = snapshot.val() || {};
+                const playersList = Object.values(playersData);
+                if (!playersData[currentPlayerName] && !isHost) {
+                    alert('تم طردك من الغرفة');
+                    leaveRoom();
+                    return;
+                }
+                updateOnlinePlayerList(playersList);
+                updateMaxImpostors(playersList.length);
+                document.getElementById('playerCount').textContent = playersList.length;
+                if (isHost && playersList.length >= 3) {
+                    document.getElementById('startOnlineGameBtn').style.display = 'block';
+                    document.getElementById('waitingStatus').style.display = 'none';
+                } else {
+                    document.getElementById('startOnlineGameBtn').style.display = 'none';
+                    document.getElementById('waitingStatus').style.display = 'block';
+                }
+            });
+            roomRef.child('isClosed').on('value', snapshot => {
+                const closed = snapshot.val() || false;
+                if (!isHost) {
+                    const status = document.getElementById('roomStatus');
+                    if (closed) {
+                        status.textContent = '🔴 الغرفة مغلقة';
+                        status.className = 'room-status closed';
+                    } else {
+                        status.textContent = '🟢 الغرفة مفتوحة';
+                        status.className = 'room-status open';
+                    }
+                }
+            });
+            leaderboardRef.on('value', () => {
+                updateLeaderboard();
+            });
+            gameRef = roomRef.child('game');
+            gameRef.on('value', snapshot => {
+                const gameData = snapshot.val();
+                if (gameData) {
+                    handleGameStateChange(gameData);
+                }
+            });
+        }
+
+        function updateMaxImpostors(playerCount) {
+            const maxImpostors = Math.max(1, playerCount - 1);
+            const impostorInput = document.getElementById('onlineImpostorCount');
+            if (impostorInput) {
+                impostorInput.max = maxImpostors;
+                const display = document.getElementById('maxImpostorsDisplay');
+                if (display) {
+                    display.textContent = maxImpostors;
+                }
+                if (parseInt(impostorInput.value) > maxImpostors) {
+                    impostorInput.value = maxImpostors;
+                }
+            }
+        }
+
+        function updateOnlinePlayerList(playersList) {
+            const list = document.getElementById('onlinePlayerList');
+            list.innerHTML = '';
+            playersList.forEach(player => {
+                const item = document.createElement('div');
+                item.className = player.isHost ? 'player-item host' : 'player-item';
+                let actionButtons = '';
+                if (isHost && !player.isHost) {
+                    actionButtons = `
+                        <div class="player-actions">
+                            <button onclick="kickPlayer('${player.name}')" class="danger" style="font-size: 0.85em; padding: 6px 12px;">طرد ❌</button>
+                        </div>
+                    `;
+                }
+                item.innerHTML = `
+                    <span class="name">${player.name}${player.isHost ? ' 👑' : ''}</span>
+                    ${actionButtons}
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function startOnlineGame() {
+            playSelectSound();
+            if (!isHost) return;
+            playersRef.once('value').then(snapshot => {
+                const playersData = snapshot.val() || {};
+                const playersList = Object.keys(playersData);
+                if (playersList.length < 3) {
+                    showOnlineError('يجب وجود 3 لاعبين على الأقل');
+                    return;
+                }
+                const category = document.getElementById('onlineCategorySelect').value;
+                const impostorCount = parseInt(document.getElementById('onlineImpostorCount').value);
+                const timerDuration = parseInt(document.getElementById('onlineTimerDuration').value);
+                const clueEnabled = document.getElementById('onlineClueEnabled').checked;
+                const maxImpostors = playersList.length - 1;
+                if (impostorCount >= playersList.length || impostorCount > maxImpostors) {
+                    showOnlineError(`عدد الجواسيس يجب أن يكون أقل من ${maxImpostors + 1}`);
+                    return;
+                }
+                let wordList;
+                if (category === 'mixed') {
+                    const allWords = [];
+                    Object.values(words).forEach(catWords => {
+                        allWords.push(...catWords);
+                    });
+                    wordList = allWords;
+                } else {
+                    wordList = words[category];
+                }
+                const selectedWord = wordList[Math.floor(Math.random() * wordList.length)];
+                const hint = getHint(selectedWord);
+                const shuffledPlayers = [...playersList].sort(() => Math.random() - 0.5);
+                const selectedImpostors = shuffledPlayers.slice(0, impostorCount);
+                const gameState = {
+                    status: 'showing_words',
+                    word: selectedWord,
+                    hint: hint,
+                    impostors: selectedImpostors.reduce((obj, name) => {
+                        obj[name] = true;
+                        return obj;
+                    }, {}),
+                    clueEnabled: clueEnabled,
+                    timerDuration: timerDuration,
+                    playersSeen: {},
+                    readyToVote: {},
+                    votes: {},
+                    startedAt: firebase.database.ServerValue.TIMESTAMP
+                };
+                roomRef.update({ status: 'playing' });
+                gameRef.set(gameState);
+            });
+        }
+
+        function handleGameStateChange(gameData) {
+            if (!gameData) return;
+            switch (gameData.status) {
+                case 'showing_words':
+                    showOnlineWord(gameData);
+                    break;
+                case 'voting':
+                    showOnlineVoting(gameData);
+                    break;
+                case 'results':
+                    showOnlineResults(gameData);
+                    break;
+            }
+        }
+
+        function showOnlineWord(gameData) {
+            showScreen('onlineGameScreen');
+            const isImpostor = gameData.impostors && gameData.impostors[currentPlayerName];
+            const wordDisplay = document.getElementById('onlineWordDisplay');
+            const buttonContainer = document.getElementById('onlineShowHideButtonContainer');
+            const readyVoteContainer = document.getElementById('onlineReadyVoteContainer');
+            if (!hasSeenWord) {
+                if (isImpostor) {
+                    if (gameData.clueEnabled) {
+                        wordDisplay.innerHTML = `
+                            <div id="onlineWordCard" class="word-display">
+                                <div id="onlineActualWord" class="word-content word-hidden">
+                                    <h2>🕵️ أنت الجاسوس!</h2>
+                                    <div class="hint">تلميح: ${gameData.hint}</div>
+                                </div>
+                                <div id="onlinePlaceholder" class="hidden-placeholder">🔒</div>
+                            </div>
+                        `;
+                    } else {
+                        wordDisplay.innerHTML = `
+                            <div id="onlineWordCard" class="word-display">
+                                <div id="onlineActualWord" class="word-content word-hidden">
+                                    <h2>🕵️ أنت الجاسوس!</h2>
+                                    <p style="margin-top: 15px; font-size: 1.1em;">لا يوجد تلميح</p>
+                                </div>
+                                <div id="onlinePlaceholder" class="hidden-placeholder">🔒</div>
+                            </div>
+                        `;
+                    }
+                } else {
+                    wordDisplay.innerHTML = `
+                        <div id="onlineWordCard" class="word-display">
+                            <div id="onlineActualWord" class="word-content word-hidden">
+                                <h2>${gameData.word}</h2>
+                            </div>
+                            <div id="onlinePlaceholder" class="hidden-placeholder">🔒</div>
+                        </div>
+                    `;
+                }
+                buttonContainer.innerHTML = `
+                    <button id="onlineToggleWordBtn" class="show-hide-btn" onclick="toggleOnlineWordVisibility()">
+                        <span class="eye-icon">👁️</span> إظهار الدور
+                    </button>
+                `;
+            }
+            if (gameData.timerEndTime) {
+                startOnlineTimerDisplay(gameData.timerEndTime);
+                if (!hasReadyToVote) {
+                    readyVoteContainer.innerHTML = `
+                        <button class="warning" onclick="setReadyToVote()">
+                            جاهز للتصويت 🗳️
+                        </button>
+                    `;
+                } else {
+                    readyVoteContainer.innerHTML = `
+                        <div class="alert success">✅ أنت جاهز للتصويت! في انتظار اللاعبين الآخرين...</div>
+                    `;
+                }
+            }
+            checkAllPlayersSeen(gameData);
+            checkAllPlayersReady(gameData);
+        }
+
+        function toggleOnlineWordVisibility() {
+            playRevealSound();
+            const wordElement = document.getElementById('onlineActualWord');
+            const placeholderElement = document.getElementById('onlinePlaceholder');
+            const button = document.getElementById('onlineToggleWordBtn');
+            if (!hasSeenWord) {
+                wordElement.classList.remove('word-hidden');
+                wordElement.classList.add('word-visible');
+                placeholderElement.style.display = 'none';
+                button.innerHTML = '<span class="eye-icon">✅</span> شاهدت الدور';
+                button.disabled = true;
+                hasSeenWord = true;
+                gameRef.child('playersSeen').child(currentPlayerName).set(true);
+            }
+        }
+
+        function setReadyToVote() {
+            playClickSound();
+            if (hasReadyToVote) return;
+            hasReadyToVote = true;
+            gameRef.child('readyToVote').child(currentPlayerName).set(true);
+            document.getElementById('onlineReadyVoteContainer').innerHTML = `
+                <div class="alert success">✅ أنت جاهز للتصويت! في انتظار اللاعبين الآخرين...</div>
+            `;
+        }
+
+        function checkAllPlayersSeen(gameData) {
+            if (!gameData.playersSeen) return;
+            playersRef.once('value').then(snapshot => {
+                const playersData = snapshot.val() || {};
+                const playersList = Object.keys(playersData);
+                const seenList = Object.keys(gameData.playersSeen || {});
+                if (seenList.length === playersList.length && !gameData.timerEndTime) {
+                    if (isHost) {
+                        setTimeout(() => {
+                            startOnlineTimer(gameData.timerDuration);
+                        }, 2000);
+                    }
+                }
+            });
+        }
+
+        function checkAllPlayersReady(gameData) {
+            if (!gameData.readyToVote) return;
+            playersRef.once('value').then(snapshot => {
+                const playersData = snapshot.val() || {};
+                const playersList = Object.keys(playersData);
+                const readyList = Object.keys(gameData.readyToVote || {});
+                if (readyList.length === playersList.length) {
+                    if (isHost) {
+                        if (onlineTimerInterval) {
+                            clearInterval(onlineTimerInterval);
+                        }
+                        gameRef.update({ status: 'voting' });
+                    }
+                }
+            });
+        }
+
+        function startOnlineTimer(duration) {
+            const endTime = Date.now() + (duration * 1000);
+            if (isHost) {
+                gameRef.update({ timerEndTime: endTime });
+            }
+        }
+
+        function startOnlineTimerDisplay(timerEndTime) {
+            const timerDisplay = document.getElementById('onlineTimerDisplay');
+            timerDisplay.style.display = 'block';
+            if (onlineTimerInterval) {
+                clearInterval(onlineTimerInterval);
+            }
+            let lastSecond = -1;
+            onlineTimerInterval = setInterval(() => {
+                const remaining = Math.max(0, Math.floor((timerEndTime - Date.now()) / 1000));
+                const minutes = Math.floor(remaining / 60);
+                const seconds = remaining % 60;
+                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                if (remaining <= 30) {
+                    timerDisplay.classList.add('warning');
+                    if (remaining !== lastSecond && remaining <= 10 && remaining > 0) {
+                        playTimerSound();
+                    }
+                } else {
+                    timerDisplay.classList.remove('warning');
+                }
+                lastSecond = remaining;
+                if (remaining <= 0) {
+                    clearInterval(onlineTimerInterval);
+                    timerDisplay.textContent = 'انتهى الوقت!';
+                    if (isHost) {
+                        setTimeout(() => {
+                            gameRef.update({ status: 'voting' });
+                        }, 2000);
+                    }
+                }
+            }, 1000);
+        }
+
+        function showOnlineVoting(gameData) {
+            showScreen('onlineVotingScreen');
+            document.getElementById('onlineVoteWaiting').style.display = 'none';
+            if (!hasVoted) {
+                const voteButtons = document.getElementById('onlineVoteButtons');
+                voteButtons.innerHTML = '';
+                playersRef.once('value').then(snapshot => {
+                    const playersData = snapshot.val() || {};
+                    const playersList = Object.keys(playersData);
+                    playersList.forEach(playerName => {
+                        const btn = document.createElement('button');
+                        btn.className = 'vote-btn';
+                        btn.textContent = playerName;
+                        btn.onclick = () => voteOnline(playerName, btn);
+                        voteButtons.appendChild(btn);
+                    });
+                });
+            } else {
+                document.getElementById('onlineVoteWaiting').style.display = 'block';
+            }
+            checkAllPlayersVoted(gameData);
+        }
+
+        function voteOnline(playerName, btn) {
+            playVoteSound();
+            if (hasVoted) return;
+            gameRef.child('votes').child(currentPlayerName).set(playerName);
+            hasVoted = true;
+            btn.classList.add('voted');
+            Array.from(document.querySelectorAll('.vote-btn')).forEach(b => b.disabled = true);
+            document.getElementById('onlineVoteWaiting').style.display = 'block';
+        }
+
+        function checkAllPlayersVoted(gameData) {
+            if (!gameData.votes) return;
+            playersRef.once('value').then(snapshot => {
+                const playersData = snapshot.val() || {};
+                const playersList = Object.keys(playersData);
+                const votesList = Object.keys(gameData.votes || {});
+                if (votesList.length === playersList.length) {
+                    if (isHost) {
+                        setTimeout(() => {
+                            calculateAndDistributePoints(gameData);
+                        }, 2000);
+                    }
+                }
+            });
+        }
+
+        function calculateAndDistributePoints(gameData) {
+            const votes = gameData.votes || {};
+            const impostors = Object.keys(gameData.impostors || {});
+            const voteCounts = {};
+            Object.values(votes).forEach(votedFor => {
+                voteCounts[votedFor] = (voteCounts[votedFor] || 0) + 1;
+            });
+            let mostVotedPlayer = null;
+            let maxVotes = 0;
+            Object.entries(voteCounts).forEach(([player, count]) => {
+                if (count > maxVotes) {
+                    maxVotes = count;
+                    mostVotedPlayer = player;
+                }
+            });
+            const impostorsCaught = mostVotedPlayer && impostors.includes(mostVotedPlayer);
+            let winner = null;
+            const pointsDistribution = {};
+            playersRef.once('value').then(snapshot => {
+                const playersData = snapshot.val() || {};
+                const playersList = Object.keys(playersData);
+                playersList.forEach(player => {
+                    const isImpostor = impostors.includes(player);
+                    const votedFor = votes[player];
+                    let points = 0;
+                    if (isImpostor) {
+                        if (impostorsCaught) {
+                            points = POINTS.IMPOSTOR_CAUGHT;
+                        } else {
+                            points = POINTS.IMPOSTOR_WIN;
+                            if (!winner) winner = player;
+                        }
+                    } else {
+                        if (impostorsCaught) {
+                            points = POINTS.CITIZEN_WIN;
+                            if (!winner) winner = player;
+                        } else {
+                            points = POINTS.CITIZEN_LOSS;
+                        }
+                    }
+                    if (votedFor && impostors.includes(votedFor)) {
+                        points += POINTS.CORRECT_VOTE;
+                    } else if (votedFor) {
+                        points += POINTS.WRONG_VOTE;
+                    }
+                    pointsDistribution[player] = points;
+                    updatePlayerPoints(player, points, 'game_end');
+                });
+                if (winner) {
+                    incrementWins(winner);
+                }
+                gameRef.update({
+                    status: 'results',
+                    winner: winner,
+                    impostorsCaught: impostorsCaught,
+                    pointsDistribution: pointsDistribution
+                });
+            });
+        }
+
+        function showOnlineResults(gameData) {
+            showScreen('onlineResultsScreen');
+            playWinSound();
+            createConfetti();
+            const winnerDiv = document.getElementById('onlineWinnerAnnouncement');
+            if (gameData.winner) {
+                const isImpostor = gameData.impostors[gameData.winner];
+                const winnerPoints = gameData.pointsDistribution[gameData.winner] || 0;
+                winnerDiv.innerHTML = `
+                    <div class="winner-announcement">
+                        <h2>🏆 الفائز 🏆</h2>
+                        <div class="winner-name">${gameData.winner}</div>
+                        <p style="font-size: 1.2em; color: #333; margin-top: 10px;">
+                            ${isImpostor ? 'الجاسوس فاز! 🕵️' : 'المواطنون فازوا! 👥'}
+                        </p>
+                        <div class="points-earned">+${winnerPoints} نقطة</div>
+                    </div>
+                `;
+            }
+            document.getElementById('onlineWordReveal').innerHTML = `
+                <div class="word-display"><h2>الكلمة كانت: ${gameData.word}</h2></div>
+            `;
+            const voteCounts = {};
+            Object.values(gameData.votes || {}).forEach(votedFor => {
+                voteCounts[votedFor] = (voteCounts[votedFor] || 0) + 1;
+            });
+            const sortedVotes = Object.entries(voteCounts).sort((a, b) => b[1] - a[1]);
+            let voteHtml = '<div class="vote-results"><h3 style="text-align: center; margin-bottom: 15px;">نتائج التصويت</h3>';
+            if (sortedVotes.length > 0) {
+                sortedVotes.forEach(([player, count]) => {
+                    const isImpostor = gameData.impostors[player];
+                    voteHtml += `
+                        <div class="vote-result-item">
+                            <span>${player} ${isImpostor ? '🕵️ (جاسوس)' : ''}</span>
+                            <span>${count} ${count === 1 ? 'صوت' : 'أصوات'}</span>
+                        </div>
+                    `;
+                });
+            } else {
+                voteHtml += '<p style="text-align: center; color: #666;">لم يتم التصويت</p>';
+            }
+            voteHtml += '</div>';
+            document.getElementById('onlineVoteResultsDiv').innerHTML = voteHtml;
+            const impostorsList = Object.keys(gameData.impostors || {});
+            let impostorHtml = '<h3 style="margin: 30px 0 15px; text-align: center;">الجواسيس الحقيقيون:</h3>';
+            impostorsList.forEach(impostor => {
+                impostorHtml += `<div class="word-display impostor-display"><h2>🕵️ ${impostor}</h2></div>`;
+            });
+            document.getElementById('onlineImpostorReveal').innerHTML = impostorHtml;
+            const pointsDistribution = gameData.pointsDistribution || {};
+            let pointsHtml = '<div class="vote-results"><h3 style="text-align: center; margin-bottom: 15px;">توزيع النقاط</h3>';
+            Object.entries(pointsDistribution).forEach(([player, points]) => {
+                const pointsColor = points > 0 ? '#2f7d32' : points < 0 ? '#d32f2f' : '#666';
+                pointsHtml += `
+                    <div class="vote-result-item">
+                        <span>${player}</span>
+                        <span style="color: ${pointsColor}; font-weight: bold;">
+                            ${points > 0 ? '+' : ''}${points} نقطة
+                        </span>
+                    </div>
+                `;
+            });
+            pointsHtml += '</div>';
+            document.getElementById('onlinePointsDistribution').innerHTML = pointsHtml;
+            updateLeaderboard();
+        }
+
+        function backToLobby() {
+            playClickSound();
+            hasVoted = false;
+            hasSeenWord = false;
+            hasReadyToVote = false;
+            if (onlineTimerInterval) {
+                clearInterval(onlineTimerInterval);
+                onlineTimerInterval = null;
+            }
+            if (isHost) {
+                gameRef.remove();
+                roomRef.update({ status: 'waiting' });
+            }
+            showScreen('lobbyScreen');
+        }
+
+        function leaveRoom() {
+            if (!currentRoomCode || !currentPlayerName) return;
+            if (playersRef) {
+                playersRef.child(currentPlayerName).remove();
+            }
+            if (isHost && roomRef) {
+                roomRef.remove();
+            }
+            if (playersRef) playersRef.off();
+            if (gameRef) gameRef.off();
+            if (roomRef) roomRef.off();
+            if (leaderboardRef) leaderboardRef.off();
+            if (bannedPlayersRef) bannedPlayersRef.off();
+            if (onlineTimerInterval) {
+                clearInterval(onlineTimerInterval);
+                onlineTimerInterval = null;
+            }
+            currentRoomCode = null;
+            currentPlayerName = null;
+            isHost = false;
+            roomRef = null;
+            playersRef = null;
+            gameRef = null;
+            leaderboardRef = null;
+            bannedPlayersRef = null;
+            hasVoted = false;
+            hasSeenWord = false;
+            hasReadyToVote = false;
+            isRoomClosed = false;
+            backToMode();
+        }
+
+        function addPlayer() {
+            playClickSound();
+            const input = document.getElementById('playerNameInput');
+            const name = input.value.trim();
+            const errorDiv = document.getElementById('errorMessage');
+            if (!name) {
+                showError('الرجاء إدخال اسم اللاعب');
+                return;
+            }
+            if (players.includes(name)) {
+                showError('هذا الاسم موجود بالفعل');
+                return;
+            }
+            players.push(name);
+            input.value = '';
+            errorDiv.innerHTML = '';
+            updatePlayerList();
+            updateOfflineMaxImpostors();
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.innerHTML = `<div class="alert error">${message}</div>`;
+            setTimeout(() => {
+                errorDiv.innerHTML = '';
+            }, 3000);
+        }
+
+        function updatePlayerList() {
+            const list = document.getElementById('playerList');
+            list.innerHTML = '';
+            players.forEach((player, index) => {
+                const item = document.createElement('div');
+                item.className = 'player-item';
+                item.innerHTML = `
+                    <span class="name">${player}</span>
+                    <button onclick="removePlayer(${index})">حذف</button>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function removePlayer(index) {
+            playClickSound();
+            players.splice(index, 1);
+            updatePlayerList();
+            updateOfflineMaxImpostors();
+        }
+
+        function updateOfflineMaxImpostors() {
+            const maxImpostors = Math.max(1, players.length - 1);
+            const impostorInput = document.getElementById('impostorCount');
+            if (impostorInput) {
+                impostorInput.max = maxImpostors;
+                const display = document.getElementById('offlineMaxImpostorsDisplay');
+                if (display) {
+                    display.textContent = maxImpostors;
+                }
+                if (parseInt(impostorInput.value) > maxImpostors) {
+                    impostorInput.value = maxImpostors;
+                }
+            }
+        }
+
+        function startOfflineGame() {
+            playSelectSound();
+            if (players.length < 3) {
+                showError('يجب إضافة 3 لاعبين على الأقل');
+                return;
+            }
+            const impostorCount = parseInt(document.getElementById('impostorCount').value);
+            const maxImpostors = players.length - 1;
+            if (impostorCount >= players.length || impostorCount > maxImpostors) {
+                showError(`عدد الجواسيس يجب أن يكون أقل من ${maxImpostors + 1}`);
+                return;
+            }
+            clueEnabled = document.getElementById('clueEnabled').checked;
+            const category = document.getElementById('categorySelect').value;
+            let wordList;
+            if (category === 'mixed') {
+                const allWords = [];
+                Object.values(words).forEach(catWords => {
+                    allWords.push(...catWords);
+                });
+                wordList = allWords;
+            } else {
+                wordList = words[category];
+            }
+            currentWord = wordList[Math.floor(Math.random() * wordList.length)];
+            currentHint = getHint(currentWord);
+            const shuffledPlayers = [...players].sort(() => Math.random() - 0.5);
+            impostors = shuffledPlayers.slice(0, impostorCount);
+            currentPlayerIndex = 0;
+            votes = {};
+            wordVisible = false;
+            firstPlayer = players[Math.floor(Math.random() * players.length)];
+            showScreen('wordScreen');
+            showPlayerWord();
+        }
+
+        function getHint(word) {
+            if (word.length <= 2) return word[0] + "*";
+            return word[0] + "*".repeat(word.length - 2) + word[word.length - 1];
+        }
+
+        function toggleWordVisibility() {
+            playRevealSound();
+            wordVisible = !wordVisible;
+            const wordElement = document.getElementById('actualWord');
+            const cardElement = document.getElementById('wordCard');
+            const placeholderElement = document.getElementById('placeholder');
+            const button = document.getElementById('toggleWordBtn');
+            const player = players[currentPlayerIndex];
+            const isImpostor = impostors.includes(player);
+            if (wordVisible) {
+                wordElement.classList.remove('word-hidden');
+                wordElement.classList.add('word-visible');
+                placeholderElement.style.display = 'none';
+                button.innerHTML = '<span class="eye-icon">👁️</span> إخفاء';
+                if (isImpostor) {
+                    if (clueEnabled) {
+                        cardElement.className = 'word-display impostor-display impostor-revealed';
+                    } else {
+                        cardElement.className = 'word-display impostor-display-no-hint impostor-revealed';
+                    }
+                }
+            } else {
+                wordElement.classList.remove('word-visible');
+                wordElement.classList.add('word-hidden');
+                placeholderElement.style.display = 'block';
+                button.innerHTML = '<span class="eye-icon">👁️</span> إظهار الدور';
+                cardElement.className = 'word-display';
+            }
+        }
+
+        function showPlayerWord() {
+            const player = players[currentPlayerIndex];
+            const isImpostor = impostors.includes(player);
+            wordVisible = false;
+            document.getElementById('currentPlayerName').textContent = `🎮 ${player}`;
+            const wordDisplay = document.getElementById('wordDisplay');
+            const buttonContainer = document.getElementById('showHideButtonContainer');
+            if (isImpostor) {
+                if (clueEnabled) {
+                    wordDisplay.innerHTML = `
+                        <div id="wordCard" class="word-display">
+                            <div id="actualWord" class="word-content word-hidden">
+                                <h2>🕵️ أنت الجاسوس!</h2>
+                                <div class="hint">تلميح: ${currentHint}</div>
+                            </div>
+                            <div id="placeholder" class="hidden-placeholder">🔒</div>
+                        </div>
+                    `;
+                } else {
+                    wordDisplay.innerHTML = `
+                        <div id="wordCard" class="word-display">
+                            <div id="actualWord" class="word-content word-hidden">
+                                <h2>🕵️ أنت الجاسوس!</h2>
+                                <p style="margin-top: 15px; font-size: 1.1em;">لا يوجد تلميح</p>
+                            </div>
+                            <div id="placeholder" class="hidden-placeholder">🔒</div>
+                        </div>
+                    `;
+                }
+            } else {
+                wordDisplay.innerHTML = `
+                    <div id="wordCard" class="word-display">
+                        <div id="actualWord" class="word-content word-hidden">
+                            <h2>${currentWord}</h2>
+                        </div>
+                        <div id="placeholder" class="hidden-placeholder">🔒</div>
+                    </div>
+                `;
+            }
+            buttonContainer.innerHTML = `
+                <button id="toggleWordBtn" class="show-hide-btn" onclick="toggleWordVisibility()">
+                    <span class="eye-icon">👁️</span> إظهار الدور
+                </button>
+            `;
+        }
+
+        function nextPlayer() {
+            playClickSound();
+            currentPlayerIndex++;
+            if (currentPlayerIndex >= players.length) {
+                startGamePhase();
+            } else {
+                showPlayerWord();
+            }
+        }
+
+        function startGamePhase() {
+            showScreen('gameScreen');
+            const alert = document.getElementById('firstPlayerAlert');
+            alert.innerHTML = `<span style="display: inline-block; background: #ffd700; color: #333; padding: 8px 20px; border-radius: 20px; font-size: 0.9em; margin-right: 10px; box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);">🎯 يبدأ</span> ${firstPlayer}`;
+            alert.style.display = 'block';
+            const duration = parseInt(document.getElementById('timerDuration').value);
+            if (duration > 0) {
+                startTimer(duration);
+            }
+            if (document.getElementById('votingEnabled').checked) {
+                document.getElementById('votingSection').style.display = 'block';
+                setupVoting();
+            }
+        }
+
+        function startTimer(duration) {
+            let timeLeft = duration;
+            const timerDisplay = document.getElementById('timerDisplay');
+            let lastSecond = -1;
+            function updateTimer() {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                if (timeLeft <= 30) {
+                    timerDisplay.classList.add('warning');
+                    if (timeLeft !== lastSecond && timeLeft <= 10 && timeLeft > 0) {
+                        playTimerSound();
+                    }
+                } else {
+                    timerDisplay.classList.remove('warning');
+                }
+                lastSecond = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timerDisplay.textContent = 'انتهى الوقت!';
+                } else {
+                    timeLeft--;
+                }
+            }
+            updateTimer();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function setupVoting() {
+            const voteButtons = document.getElementById('voteButtons');
+            voteButtons.innerHTML = '';
+            players.forEach(player => {
+                votes[player] = 0;
+                const btn = document.createElement('button');
+                btn.className = 'vote-btn';
+                btn.textContent = player;
+                btn.onclick = () => vote(player, btn);
+                voteButtons.appendChild(btn);
+            });
+        }
+
+        function vote(player, btn) {
+            playVoteSound();
+            votes[player]++;
+            btn.classList.add('voted');
+            btn.textContent = `${player} (${votes[player]})`;
+        }
+
+        function showVoteResults() {
+            playSelectSound();
+            const resultsDiv = document.getElementById('voteResults');
+            const sortedVotes = Object.entries(votes).sort((a, b) => b[1] - a[1]);
+            let html = '<h3 style="text-align: center; margin-bottom: 15px;">نتائج التصويت</h3>';
+            sortedVotes.forEach(([player, count]) => {
+                const isImpostor = impostors.includes(player);
+                html += `
+                    <div class="vote-result-item">
+                        <span>${player} ${isImpostor ? '🕵️' : ''}</span>
+                        <span>${count} ${count === 1 ? 'صوت' : 'أصوات'}</span>
+                    </div>
+                `;
+            });
+            resultsDiv.innerHTML = html;
+            resultsDiv.style.display = 'block';
+        }
+
+        function revealImpostors() {
+            playWinSound();
+            createConfetti();
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            const revealDiv = document.getElementById('impostorReveal');
+            let html = '<h2 style="text-align: center; color: #667eea; margin-bottom: 30px;">🎯 النتائج</h2>';
+            html += `<div class="word-display"><h2>الكلمة كانت: ${currentWord}</h2></div>`;
+            html += '<h3 style="margin: 30px 0 15px; text-align: center;">الجواسيس:</h3>';
+            impostors.forEach(impostor => {
+                html += `<div class="word-display impostor-display"><h2>🕵️ ${impostor}</h2></div>`;
+            });
+            html += '<h3 style="margin: 30px 0 15px; text-align: center;">اللاعبون العاديون:</h3>';
+            const normalPlayers = players.filter(p => !impostors.includes(p));
+            normalPlayers.forEach(player => {
+                html += `<div class="word-display"><h2>✅ ${player}</h2></div>`;
+            });
+            revealDiv.innerHTML = html;
+            showScreen('resultsScreen');
+        }
+
+        function resetGame() {
+            playClickSound();
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            impostors = [];
+            currentWord = "";
+            currentHint = "";
+            currentPlayerIndex = 0;
+            votes = {};
+            firstPlayer = "";
+            wordVisible = false;
+            document.getElementById('voteResults').style.display = 'none';
+            showScreen('offlineSetupScreen');
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        document.getElementById('playerNameInput')?.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addPlayer();
+            }
+        });
+
+        window.addEventListener('beforeunload', () => {
+            if (currentRoomCode && currentPlayerName) {
+                leaveRoom();
+            }
+        });
+    </script>
 </body>
 </html>
+```
+
+This is the complete, ready-to-use HTML file! Just save it as `spy-game.html` and open it in any modern web browser. All features are included in this single file.
