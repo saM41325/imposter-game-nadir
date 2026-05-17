@@ -77,6 +77,26 @@
             }
         }
 
+        @keyframes confetti {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(1000px) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes trophy-bounce {
+            0%, 100% {
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                transform: translateY(-20px) scale(1.1);
+            }
+        }
+
         h1 {
             text-align: center;
             color: #667eea;
@@ -524,41 +544,157 @@
             text-align: center;
         }
 
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .tab {
-            flex: 1;
-            padding: 12px;
-            background: #f8f9fa;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: bold;
-        }
-
-        .tab.active {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
         .eye-icon {
             font-size: 1.5em;
             margin-left: 10px;
+        }
+
+        /* Leaderboard Styles */
+        .leaderboard {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: white;
+        }
+
+        .leaderboard h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .leaderboard-item {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .leaderboard-item:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-5px);
+        }
+
+        .leaderboard-item.rank-1 {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #333;
+            font-weight: bold;
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .leaderboard-item.rank-2 {
+            background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
+            color: #333;
+            font-weight: bold;
+        }
+
+        .leaderboard-item.rank-3 {
+            background: linear-gradient(135deg, #cd7f32 0%, #e6a57e 100%);
+            color: #333;
+            font-weight: bold;
+        }
+
+        .leaderboard-rank {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-left: 15px;
+        }
+
+        .leaderboard-name {
+            flex: 1;
+            margin: 0 15px;
+            font-size: 1.1em;
+        }
+
+        .leaderboard-points {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .winner-announcement {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            border-radius: 15px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .winner-announcement h2 {
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 15px;
+            animation: trophy-bounce 2s infinite;
+        }
+
+        .winner-announcement .winner-name {
+            font-size: 2em;
+            font-weight: bold;
+            color: #764ba2;
+            margin: 10px 0;
+        }
+
+        .winner-announcement .points-earned {
+            font-size: 1.5em;
+            color: #667eea;
+            margin-top: 10px;
+        }
+
+        .points-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #f0f;
+            position: absolute;
+            animation: confetti 3s linear;
+        }
+
+        /* Sound Control */
+        .sound-control {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+
+        .sound-control:hover {
+            transform: scale(1.1);
+        }
+
+        .sound-control.muted {
+            background: #f8f9fa;
         }
 
         @media (max-width: 480px) {
@@ -585,10 +721,23 @@
             .timer {
                 font-size: 2em;
             }
+
+            .winner-announcement h2 {
+                font-size: 1.8em;
+            }
+
+            .winner-announcement .winner-name {
+                font-size: 1.5em;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Sound Control -->
+    <div class="sound-control" id="soundControl" onclick="toggleSound()">
+        <span id="soundIcon">🔊</span>
+    </div>
+
     <div class="container">
         <h1>🕵️ لعبة الجاسوس 🕵️</h1>
 
@@ -650,6 +799,12 @@
                 <h3>كود الغرفة:</h3>
                 <div class="code" id="displayRoomCode">000000</div>
                 <p style="margin-top: 10px; color: #666;">شارك هذا الكود مع أصدقائك</p>
+            </div>
+
+            <!-- Leaderboard -->
+            <div id="lobbyLeaderboard" class="leaderboard">
+                <h3>🏆 لوحة المتصدرين 🏆</h3>
+                <div id="leaderboardList"></div>
             </div>
 
             <div class="settings-section" id="hostSettings" style="display: none;">
@@ -726,14 +881,16 @@
         <div id="onlineResultsScreen" class="screen">
             <h2 style="text-align: center; color: #667eea; margin-bottom: 30px;">🎯 النتائج</h2>
             
+            <div id="onlineWinnerAnnouncement"></div>
             <div id="onlineWordReveal"></div>
             <div id="onlineVoteResultsDiv"></div>
             <div id="onlineImpostorReveal"></div>
+            <div id="onlinePointsDistribution"></div>
             
             <button onclick="backToLobby()" class="success">العودة للوبي</button>
         </div>
 
-        <!-- OFFLINE SCREENS (Keep existing offline game screens) -->
+        <!-- OFFLINE SCREENS -->
         
         <!-- Offline Setup Screen -->
         <div id="offlineSetupScreen" class="screen">
@@ -834,6 +991,31 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
     <script>
+        // ================== SOUND EFFECTS ==================
+        const sounds = {
+            button: new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZUQ0PVKzn7LBiHAU7k9r0yXkpBSh+zPLaizsIGGe57OihUxELTqXh8bllHAc5kdz0xHknBSl/zPDajT0JFWa57uihUxEKTaXg8rhlHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0'),
+            reveal: new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZUQ0PVKzn7LBiHAU7k9r0yXkpBSh+zPLaizsIGGe57OihUxELTqXh8bllHAc5kdz0xHknBSl/zPDajT0JFWa57uihUxEKTaXg8rhlHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0'),
+            timer: new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZUQ0PVKzn7LBiHAU7k9r0yXkpBSh+zPLaizsIGGe57OihUxELTqXh8bllHAc5kdz0xHknBSl/zPDajT0JFWa57uihUxEKTaXg8rhlHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0'),
+            win: new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZUQ0PVKzn7LBiHAU7k9r0yXkpBSh+zPLaizsIGGe57OihUxELTqXh8bllHAc5kdz0xHknBSl/zPDajT0JFWa57uihUxEKTaXg8rhlHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0'),
+            vote: new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZUQ0PVKzn7LBiHAU7k9r0yXkpBSh+zPLaizsIGGe57OihUxELTqXh8bllHAc5kdz0xHknBSl/zPDajT0JFWa57uihUxEKTaXg8rhlHAc5ktv0xHgoCD+M0fHajz4JFGa57OihUxEJTqXh8rllHAc5ktv0')
+        };
+
+        let soundEnabled = true;
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundIcon').textContent = soundEnabled ? '🔊' : '🔇';
+            document.getElementById('soundControl').classList.toggle('muted', !soundEnabled);
+            playSound('button');
+        }
+
+        function playSound(soundName) {
+            if (soundEnabled && sounds[soundName]) {
+                sounds[soundName].currentTime = 0;
+                sounds[soundName].play().catch(e => console.log('Sound play failed:', e));
+            }
+        }
+
         // ================== FIREBASE CONFIGURATION ==================
         const firebaseConfig = {
             apiKey: "AIzaSyDnezIJxk9gQr--qOGLpDVB6PNaLF-DW_8",
@@ -845,7 +1027,6 @@
             appId: "1:840856200109:web:6e11bd3f0cbfad9094b724"
         };
 
-        // Initialize Firebase
         let firebaseApp, database;
         try {
             firebaseApp = firebase.initializeApp(firebaseConfig);
@@ -899,6 +1080,18 @@
             ]
         };
 
+        // ================== POINTS SYSTEM ==================
+        const POINTS = {
+            IMPOSTOR_WIN: 10,      // Impostor wins (not caught)
+            IMPOSTOR_CAUGHT: -5,   // Impostor caught
+            CITIZEN_WIN: 5,        // Citizen catches impostor
+            CITIZEN_LOSS: -3,      // Citizen fails
+            CORRECT_VOTE: 3,       // Voted correctly
+            WRONG_VOTE: -1         // Voted wrong
+        };
+
+        let leaderboardRef = null;
+
         // ================== GLOBAL VARIABLES ==================
         let gameMode = 'offline';
         let currentRoomCode = null;
@@ -912,7 +1105,6 @@
         let hasReadyToVote = false;
         let onlineTimerInterval = null;
 
-        // Offline game variables
         let players = [];
         let impostors = [];
         let currentWord = "";
@@ -924,8 +1116,25 @@
         let clueEnabled = true;
         let wordVisible = false;
 
+        // ================== UTILITY FUNCTIONS ==================
+        function createConfetti() {
+            const colors = ['#ffd700', '#ff6b6b', '#4facfe', '#43e97b', '#f093fb'];
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 3 + 's';
+                    document.body.appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 30);
+            }
+        }
+
         // ================== MODE SELECTION ==================
         function selectMode(mode) {
+            playSound('button');
             gameMode = mode;
             if (mode === 'offline') {
                 showScreen('offlineSetupScreen');
@@ -935,6 +1144,7 @@
         }
 
         function backToMode() {
+            playSound('button');
             if (roomRef) {
                 leaveRoom();
             }
@@ -954,6 +1164,84 @@
             showScreen('modeScreen');
         }
 
+        // ================== LEADERBOARD FUNCTIONS ==================
+        function updateLeaderboard() {
+            if (!leaderboardRef) return;
+
+            leaderboardRef.once('value').then(snapshot => {
+                const leaderboardData = snapshot.val() || {};
+                const leaderboardArray = Object.entries(leaderboardData).map(([name, data]) => ({
+                    name,
+                    points: data.points || 0,
+                    wins: data.wins || 0,
+                    games: data.games || 0
+                }));
+
+                leaderboardArray.sort((a, b) => b.points - a.points);
+
+                const leaderboardList = document.getElementById('leaderboardList');
+                if (!leaderboardList) return;
+
+                leaderboardList.innerHTML = '';
+
+                if (leaderboardArray.length === 0) {
+                    leaderboardList.innerHTML = '<p style="text-align: center; color: rgba(255,255,255,0.7);">لا توجد بيانات بعد</p>';
+                    return;
+                }
+
+                leaderboardArray.forEach((player, index) => {
+                    const rank = index + 1;
+                    const item = document.createElement('div');
+                    item.className = `leaderboard-item ${rank <= 3 ? 'rank-' + rank : ''}`;
+                    
+                    const rankEmoji = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank;
+                    
+                    item.innerHTML = `
+                        <div class="leaderboard-rank">${rankEmoji}</div>
+                        <div class="leaderboard-name">${player.name}</div>
+                        <div class="leaderboard-points">${player.points} نقطة</div>
+                    `;
+                    leaderboardList.appendChild(item);
+                });
+            });
+        }
+
+        function updatePlayerPoints(playerName, pointsToAdd, reason) {
+            if (!leaderboardRef) return;
+
+            const playerRef = leaderboardRef.child(playerName);
+            playerRef.transaction(currentData => {
+                if (currentData === null) {
+                    return {
+                        points: pointsToAdd,
+                        wins: 0,
+                        games: 1
+                    };
+                }
+                return {
+                    points: (currentData.points || 0) + pointsToAdd,
+                    wins: currentData.wins || 0,
+                    games: (currentData.games || 0) + 1
+                };
+            });
+        }
+
+        function incrementWins(playerName) {
+            if (!leaderboardRef) return;
+
+            const playerRef = leaderboardRef.child(playerName);
+            playerRef.transaction(currentData => {
+                if (currentData === null) {
+                    return { points: 0, wins: 1, games: 1 };
+                }
+                return {
+                    points: currentData.points || 0,
+                    wins: (currentData.wins || 0) + 1,
+                    games: currentData.games || 0
+                };
+            });
+        }
+
         // ================== ONLINE FUNCTIONS ==================
         function generateRoomCode() {
             return Math.floor(100000 + Math.random() * 900000).toString();
@@ -968,6 +1256,7 @@
         }
 
         function createRoom() {
+            playSound('button');
             const name = document.getElementById('playerName').value.trim();
             if (!name) {
                 showOnlineError('الرجاء إدخال اسمك');
@@ -979,6 +1268,8 @@
             isHost = true;
 
             roomRef = database.ref('rooms/' + currentRoomCode);
+            leaderboardRef = roomRef.child('leaderboard');
+
             roomRef.set({
                 host: currentPlayerName,
                 status: 'waiting',
@@ -1008,10 +1299,12 @@
         }
 
         function showJoinRoom() {
+            playSound('button');
             document.getElementById('joinRoomDiv').style.display = 'block';
         }
 
         function joinRoom() {
+            playSound('button');
             const name = document.getElementById('playerName').value.trim();
             const code = document.getElementById('roomCode').value.trim();
 
@@ -1030,6 +1323,8 @@
             isHost = false;
 
             roomRef = database.ref('rooms/' + currentRoomCode);
+            leaderboardRef = roomRef.child('leaderboard');
+
             roomRef.once('value').then(snapshot => {
                 if (!snapshot.exists()) {
                     showOnlineError('الغرفة غير موجودة');
@@ -1082,6 +1377,10 @@
                 }
             });
 
+            leaderboardRef.on('value', () => {
+                updateLeaderboard();
+            });
+
             gameRef = roomRef.child('game');
             gameRef.on('value', snapshot => {
                 const gameData = snapshot.val();
@@ -1106,6 +1405,7 @@
         }
 
         function startOnlineGame() {
+            playSound('button');
             if (!isHost) return;
 
             playersRef.once('value').then(snapshot => {
@@ -1233,7 +1533,6 @@
                 `;
             }
 
-            // Show timer and ready to vote button if timer is running
             if (gameData.timerEndTime) {
                 startOnlineTimerDisplay(gameData.timerEndTime);
                 
@@ -1255,6 +1554,7 @@
         }
 
         function toggleOnlineWordVisibility() {
+            playSound('reveal');
             const wordElement = document.getElementById('onlineActualWord');
             const placeholderElement = document.getElementById('onlinePlaceholder');
             const button = document.getElementById('onlineToggleWordBtn');
@@ -1273,6 +1573,7 @@
         }
 
         function setReadyToVote() {
+            playSound('button');
             if (hasReadyToVote) return;
             
             hasReadyToVote = true;
@@ -1340,6 +1641,8 @@
                 clearInterval(onlineTimerInterval);
             }
 
+            let lastSecond = -1;
+
             onlineTimerInterval = setInterval(() => {
                 const remaining = Math.max(0, Math.floor((timerEndTime - Date.now()) / 1000));
                 
@@ -1349,15 +1652,19 @@
                 
                 if (remaining <= 30) {
                     timerDisplay.classList.add('warning');
+                    if (remaining !== lastSecond && remaining <= 10 && remaining > 0) {
+                        playSound('timer');
+                    }
                 } else {
                     timerDisplay.classList.remove('warning');
                 }
+
+                lastSecond = remaining;
 
                 if (remaining <= 0) {
                     clearInterval(onlineTimerInterval);
                     timerDisplay.textContent = 'انتهى الوقت!';
                     
-                    // Auto move to voting if all players haven't clicked ready
                     if (isHost) {
                         setTimeout(() => {
                             gameRef.update({
@@ -1372,7 +1679,6 @@
         function showOnlineVoting(gameData) {
             showScreen('onlineVotingScreen');
             
-            // Hide waiting div
             document.getElementById('onlineVoteWaiting').style.display = 'none';
             
             if (!hasVoted) {
@@ -1399,6 +1705,7 @@
         }
 
         function voteOnline(playerName, btn) {
+            playSound('vote');
             if (hasVoted) return;
 
             gameRef.child('votes').child(currentPlayerName).set(playerName);
@@ -1421,18 +1728,111 @@
                 if (votesList.length === playersList.length) {
                     if (isHost) {
                         setTimeout(() => {
-                            gameRef.update({
-                                status: 'results'
-                            });
+                            calculateAndDistributePoints(gameData);
                         }, 2000);
                     }
                 }
             });
         }
 
+        function calculateAndDistributePoints(gameData) {
+            const votes = gameData.votes || {};
+            const impostors = Object.keys(gameData.impostors || {});
+            
+            // Count votes
+            const voteCounts = {};
+            Object.values(votes).forEach(votedFor => {
+                voteCounts[votedFor] = (voteCounts[votedFor] || 0) + 1;
+            });
+
+            // Find most voted player
+            let mostVotedPlayer = null;
+            let maxVotes = 0;
+            Object.entries(voteCounts).forEach(([player, count]) => {
+                if (count > maxVotes) {
+                    maxVotes = count;
+                    mostVotedPlayer = player;
+                }
+            });
+
+            // Determine winner and distribute points
+            const impostorsCaught = mostVotedPlayer && impostors.includes(mostVotedPlayer);
+            let winner = null;
+            const pointsDistribution = {};
+
+            playersRef.once('value').then(snapshot => {
+                const playersData = snapshot.val() || {};
+                const playersList = Object.keys(playersData);
+
+                playersList.forEach(player => {
+                    const isImpostor = impostors.includes(player);
+                    const votedFor = votes[player];
+                    let points = 0;
+
+                    if (isImpostor) {
+                        if (impostorsCaught) {
+                            points = POINTS.IMPOSTOR_CAUGHT;
+                        } else {
+                            points = POINTS.IMPOSTOR_WIN;
+                            if (!winner) winner = player;
+                        }
+                    } else {
+                        if (impostorsCaught) {
+                            points = POINTS.CITIZEN_WIN;
+                            if (!winner) winner = player;
+                        } else {
+                            points = POINTS.CITIZEN_LOSS;
+                        }
+                    }
+
+                    // Bonus for correct vote
+                    if (votedFor && impostors.includes(votedFor)) {
+                        points += POINTS.CORRECT_VOTE;
+                    } else if (votedFor) {
+                        points += POINTS.WRONG_VOTE;
+                    }
+
+                    pointsDistribution[player] = points;
+                    updatePlayerPoints(player, points, 'game_end');
+                });
+
+                if (winner) {
+                    incrementWins(winner);
+                }
+
+                gameRef.update({
+                    status: 'results',
+                    winner: winner,
+                    impostorsCaught: impostorsCaught,
+                    pointsDistribution: pointsDistribution
+                });
+            });
+        }
+
         function showOnlineResults(gameData) {
             showScreen('onlineResultsScreen');
             
+            playSound('win');
+            createConfetti();
+
+            // Show winner
+            const winnerDiv = document.getElementById('onlineWinnerAnnouncement');
+            if (gameData.winner) {
+                const isImpostor = gameData.impostors[gameData.winner];
+                const winnerPoints = gameData.pointsDistribution[gameData.winner] || 0;
+                
+                winnerDiv.innerHTML = `
+                    <div class="winner-announcement">
+                        <h2>🏆 الفائز 🏆</h2>
+                        <div class="winner-name">${gameData.winner}</div>
+                        <p style="font-size: 1.2em; color: #333; margin-top: 10px;">
+                            ${isImpostor ? 'الجاسوس فاز! 🕵️' : 'المواطنون فازوا! 👥'}
+                        </p>
+                        <div class="points-earned">+${winnerPoints} نقطة</div>
+                    </div>
+                `;
+            }
+
             // Show word
             document.getElementById('onlineWordReveal').innerHTML = `
                 <div class="word-display"><h2>الكلمة كانت: ${gameData.word}</h2></div>
@@ -1472,9 +1872,32 @@
                 impostorHtml += `<div class="word-display impostor-display"><h2>🕵️ ${impostor}</h2></div>`;
             });
             document.getElementById('onlineImpostorReveal').innerHTML = impostorHtml;
+
+            // Show points distribution
+            const pointsDistribution = gameData.pointsDistribution || {};
+            let pointsHtml = '<div class="vote-results"><h3 style="text-align: center; margin-bottom: 15px;">توزيع النقاط</h3>';
+            
+            Object.entries(pointsDistribution).forEach(([player, points]) => {
+                const pointsColor = points > 0 ? '#2f7d32' : points < 0 ? '#d32f2f' : '#666';
+                pointsHtml += `
+                    <div class="vote-result-item">
+                        <span>${player}</span>
+                        <span style="color: ${pointsColor}; font-weight: bold;">
+                            ${points > 0 ? '+' : ''}${points} نقطة
+                        </span>
+                    </div>
+                `;
+            });
+            
+            pointsHtml += '</div>';
+            document.getElementById('onlinePointsDistribution').innerHTML = pointsHtml;
+
+            // Update leaderboard
+            updateLeaderboard();
         }
 
         function backToLobby() {
+            playSound('button');
             hasVoted = false;
             hasSeenWord = false;
             hasReadyToVote = false;
@@ -1508,6 +1931,7 @@
             if (playersRef) playersRef.off();
             if (gameRef) gameRef.off();
             if (roomRef) roomRef.off();
+            if (leaderboardRef) leaderboardRef.off();
 
             if (onlineTimerInterval) {
                 clearInterval(onlineTimerInterval);
@@ -1520,6 +1944,7 @@
             roomRef = null;
             playersRef = null;
             gameRef = null;
+            leaderboardRef = null;
             hasVoted = false;
             hasSeenWord = false;
             hasReadyToVote = false;
@@ -1529,6 +1954,7 @@
 
         // ================== OFFLINE FUNCTIONS ==================
         function addPlayer() {
+            playSound('button');
             const input = document.getElementById('playerNameInput');
             const name = input.value.trim();
             const errorDiv = document.getElementById('errorMessage');
@@ -1572,11 +1998,13 @@
         }
 
         function removePlayer(index) {
+            playSound('button');
             players.splice(index, 1);
             updatePlayerList();
         }
 
         function startOfflineGame() {
+            playSound('button');
             if (players.length < 3) {
                 showError('يجب إضافة 3 لاعبين على الأقل');
                 return;
@@ -1625,6 +2053,7 @@
         }
 
         function toggleWordVisibility() {
+            playSound('reveal');
             wordVisible = !wordVisible;
             const wordElement = document.getElementById('actualWord');
             const cardElement = document.getElementById('wordCard');
@@ -1708,6 +2137,7 @@
         }
 
         function nextPlayer() {
+            playSound('button');
             currentPlayerIndex++;
             if (currentPlayerIndex >= players.length) {
                 startGamePhase();
@@ -1737,6 +2167,7 @@
         function startTimer(duration) {
             let timeLeft = duration;
             const timerDisplay = document.getElementById('timerDisplay');
+            let lastSecond = -1;
 
             function updateTimer() {
                 const minutes = Math.floor(timeLeft / 60);
@@ -1745,9 +2176,14 @@
                 
                 if (timeLeft <= 30) {
                     timerDisplay.classList.add('warning');
+                    if (timeLeft !== lastSecond && timeLeft <= 10 && timeLeft > 0) {
+                        playSound('timer');
+                    }
                 } else {
                     timerDisplay.classList.remove('warning');
                 }
+
+                lastSecond = timeLeft;
 
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
@@ -1776,12 +2212,14 @@
         }
 
         function vote(player, btn) {
+            playSound('vote');
             votes[player]++;
             btn.classList.add('voted');
             btn.textContent = `${player} (${votes[player]})`;
         }
 
         function showVoteResults() {
+            playSound('button');
             const resultsDiv = document.getElementById('voteResults');
             const sortedVotes = Object.entries(votes).sort((a, b) => b[1] - a[1]);
             
@@ -1801,6 +2239,9 @@
         }
 
         function revealImpostors() {
+            playSound('win');
+            createConfetti();
+            
             if (timerInterval) {
                 clearInterval(timerInterval);
             }
@@ -1825,6 +2266,7 @@
         }
 
         function resetGame() {
+            playSound('button');
             if (timerInterval) {
                 clearInterval(timerInterval);
             }
@@ -1845,6 +2287,13 @@
             });
             document.getElementById(screenId).classList.add('active');
         }
+
+        // Add button click sounds to all buttons
+        document.addEventListener('click', function(e) {
+            if (e.target.tagName === 'BUTTON') {
+                playSound('button');
+            }
+        });
 
         // Event listeners
         document.getElementById('playerNameInput')?.addEventListener('keypress', function(e) {
