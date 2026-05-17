@@ -77,17 +77,6 @@
             }
         }
 
-        @keyframes blurHide {
-            from {
-                filter: blur(0);
-                opacity: 1;
-            }
-            to {
-                filter: blur(20px);
-                opacity: 0;
-            }
-        }
-
         h1 {
             text-align: center;
             color: #667eea;
@@ -180,6 +169,45 @@
             padding: 20px;
         }
 
+        .mode-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .mode-card {
+            padding: 30px;
+            border: 3px solid #667eea;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .mode-card:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .mode-card .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .mode-card h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .mode-card p {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
         .player-list {
             margin: 20px 0;
         }
@@ -198,6 +226,15 @@
         .player-item .name {
             font-weight: bold;
             color: #333;
+        }
+
+        .player-item.host {
+            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            color: white;
+        }
+
+        .player-item.host .name {
+            color: white;
         }
 
         .player-item button {
@@ -308,34 +345,6 @@
             animation: pulse 1s infinite;
         }
 
-        .category-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
-            margin: 20px 0;
-        }
-
-        .category-btn {
-            padding: 15px;
-            background: white;
-            border: 2px solid #667eea;
-            color: #667eea;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: bold;
-        }
-
-        .category-btn:hover {
-            background: #667eea;
-            color: white;
-        }
-
-        .category-btn.selected {
-            background: #667eea;
-            color: white;
-        }
-
         .voting-section {
             margin: 20px 0;
         }
@@ -367,6 +376,11 @@
             background: #4facfe;
             border-color: #4facfe;
             color: white;
+        }
+
+        .vote-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .vote-results {
@@ -409,52 +423,48 @@
             color: #1976d2;
         }
 
-        .player-name-display {
+        .room-code-display {
             text-align: center;
-            font-size: 1.8em;
-            color: #667eea;
+            padding: 20px;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
             margin: 20px 0;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            font-weight: bold;
         }
 
-        .first-player-badge {
-            display: inline-block;
-            background: #ffd700;
+        .room-code-display h3 {
             color: #333;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            margin-right: 10px;
-            box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+            margin-bottom: 10px;
         }
 
-        @media (max-width: 480px) {
-            .container {
-                padding: 20px;
-            }
+        .room-code-display .code {
+            font-size: 3em;
+            font-weight: bold;
+            color: #667eea;
+            letter-spacing: 10px;
+            font-family: monospace;
+        }
 
-            h1 {
-                font-size: 2em;
-            }
+        .waiting-status {
+            text-align: center;
+            padding: 20px;
+            background: #fff3e0;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
 
-            .word-display {
-                height: 200px;
-            }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
 
-            .word-display h2 {
-                font-size: 1.8em;
-            }
-
-            .timer {
-                font-size: 2em;
-            }
-
-            .category-grid {
-                grid-template-columns: 1fr;
-            }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .settings-grid {
@@ -514,95 +524,6 @@
             text-align: center;
         }
 
-        .custom-words-section {
-            background: #fff3e0;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border: 2px solid #ffa726;
-        }
-
-        .custom-words-section h3 {
-            color: #fb8c00;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .word-item {
-            background: white;
-            padding: 12px;
-            margin: 8px 0;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid #ddd;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        .word-item .word-content {
-            flex: 1;
-            position: static;
-            transform: none;
-            width: auto;
-            padding: 0;
-        }
-
-        .word-item .word-text {
-            font-weight: bold;
-            color: #333;
-            font-size: 1.1em;
-        }
-
-        .word-item .hint-text {
-            color: #666;
-            font-size: 0.9em;
-            margin-top: 4px;
-        }
-
-        .word-item button {
-            width: auto;
-            padding: 8px 15px;
-            margin: 0;
-            font-size: 0.9em;
-        }
-
-        .custom-word-input-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr auto;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .custom-word-input-group input {
-            margin: 0;
-        }
-
-        .custom-word-input-group button {
-            margin: 0;
-            white-space: nowrap;
-        }
-
-        .word-count {
-            text-align: center;
-            color: #666;
-            font-size: 0.9em;
-            margin-top: 10px;
-            padding: 8px;
-            background: white;
-            border-radius: 8px;
-        }
-
-        .help-text {
-            font-size: 0.9em;
-            color: #666;
-            margin-top: 8px;
-            padding: 10px;
-            background: white;
-            border-radius: 8px;
-            line-height: 1.6;
-        }
-
         .tabs {
             display: flex;
             gap: 10px;
@@ -639,26 +560,104 @@
             font-size: 1.5em;
             margin-left: 10px;
         }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .mode-selector {
+                grid-template-columns: 1fr;
+            }
+
+            .word-display {
+                height: 200px;
+            }
+
+            .word-display h2 {
+                font-size: 1.8em;
+            }
+
+            .timer {
+                font-size: 2em;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🕵️ لعبة الجاسوس 🕵️</h1>
 
-        <!-- Setup Screen -->
-        <div id="setupScreen" class="screen active">
-            <!-- Tabs -->
-            <div class="tabs">
-                <div class="tab active" onclick="switchTab('settings')">⚙️ الإعدادات</div>
-                <div class="tab" onclick="switchTab('custom')">✏️ كلمات مخصصة</div>
+        <!-- Mode Selection Screen -->
+        <div id="modeScreen" class="screen active">
+            <h2 style="text-align: center; margin-bottom: 30px; color: #333;">اختر وضع اللعب</h2>
+            <div class="mode-selector">
+                <div class="mode-card" onclick="selectMode('offline')">
+                    <div class="icon">📱</div>
+                    <h3>وضع أوفلاين</h3>
+                    <p>العب مع أصدقائك على نفس الجهاز</p>
+                </div>
+                <div class="mode-card" onclick="selectMode('online')">
+                    <div class="icon">🌐</div>
+                    <h3>وضع أونلاين</h3>
+                    <p>العب مع أصدقائك عبر الإنترنت</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Online Room Selection -->
+        <div id="onlineRoomScreen" class="screen">
+            <h2 style="text-align: center; margin-bottom: 30px; color: #333;">وضع أونلاين</h2>
+            
+            <div class="input-group">
+                <label>اسمك:</label>
+                <input type="text" id="playerName" placeholder="أدخل اسمك">
             </div>
 
-            <!-- Settings Tab -->
-            <div id="settingsTab" class="tab-content active">
+            <div class="mode-selector">
+                <div class="mode-card" onclick="createRoom()">
+                    <div class="icon">➕</div>
+                    <h3>إنشاء غرفة</h3>
+                    <p>أنشئ غرفة جديدة</p>
+                </div>
+                <div class="mode-card" onclick="showJoinRoom()">
+                    <div class="icon">🚪</div>
+                    <h3>الانضمام لغرفة</h3>
+                    <p>انضم لغرفة موجودة</p>
+                </div>
+            </div>
+
+            <div id="joinRoomDiv" style="display: none; margin-top: 20px;">
+                <div class="input-group">
+                    <label>كود الغرفة (6 أرقام):</label>
+                    <input type="text" id="roomCode" placeholder="000000" maxlength="6" pattern="[0-9]{6}">
+                </div>
+                <button onclick="joinRoom()" class="success">انضم</button>
+            </div>
+
+            <div id="onlineError"></div>
+
+            <button onclick="backToMode()" class="secondary">رجوع</button>
+        </div>
+
+        <!-- Online Lobby -->
+        <div id="lobbyScreen" class="screen">
+            <div class="room-code-display">
+                <h3>كود الغرفة:</h3>
+                <div class="code" id="displayRoomCode">000000</div>
+                <p style="margin-top: 10px; color: #666;">شارك هذا الكود مع أصدقائك</p>
+            </div>
+
+            <div class="settings-section" id="hostSettings" style="display: none;">
+                <h3>⚙️ إعدادات اللعبة</h3>
+                
                 <div class="input-group">
                     <label>اختر الفئة:</label>
-                    <select id="categorySelect">
-                        <option value="custom">كلمات مخصصة</option>
+                    <select id="onlineCategorySelect">
                         <option value="mixed">مختلط (جميع الفئات)</option>
                         <option value="places">أماكن</option>
                         <option value="jobs">مهن</option>
@@ -673,77 +672,133 @@
                     </select>
                 </div>
 
-                <div class="settings-section">
-                    <h3>⚙️ إعدادات اللعبة</h3>
-                    
-                    <div class="settings-grid">
-                        <div class="setting-item">
-                            <label>عدد الجواسيس:</label>
-                            <input type="number" id="impostorCount" min="1" value="1">
-                        </div>
-                        <div class="setting-item">
-                            <label>المؤقت (ثانية):</label>
-                            <input type="number" id="timerDuration" min="0" value="180">
-                        </div>
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <label>عدد الجواسيس:</label>
+                        <input type="number" id="onlineImpostorCount" min="1" value="1">
                     </div>
-
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="votingEnabled">
-                        <label for="votingEnabled">تفعيل نظام التصويت</label>
-                    </div>
-
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="clueEnabled" checked>
-                        <label for="clueEnabled">إعطاء تلميح للجاسوس</label>
+                    <div class="setting-item">
+                        <label>المؤقت (ثانية):</label>
+                        <input type="number" id="onlineTimerDuration" min="0" value="180">
                     </div>
                 </div>
 
-                <div class="input-group">
-                    <label>أضف لاعب:</label>
-                    <input type="text" id="playerNameInput" placeholder="اسم اللاعب">
-                    <button onclick="addPlayer()">إضافة لاعب</button>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="onlineClueEnabled" checked>
+                    <label for="onlineClueEnabled">إعطاء تلميح للجاسوس</label>
                 </div>
-
-                <div id="errorMessage"></div>
-
-                <div class="player-list" id="playerList"></div>
-
-                <button onclick="startGame()" class="success">ابدأ اللعبة</button>
             </div>
 
-            <!-- Custom Words Tab -->
-            <div id="customTab" class="tab-content">
-                <div class="custom-words-section">
-                    <h3>✏️ أضف كلماتك الخاصة</h3>
-                    
-                    <div class="help-text">
-                        💡 <strong>كيفية الإضافة:</strong><br>
-                        • أدخل الكلمة في الحقل الأول<br>
-                        • أدخل التلميح في الحقل الثاني (اختياري)<br>
-                        • إذا لم تدخل تلميح، سيتم إنشاؤه تلقائياً<br>
-                        • اضغط "إضافة كلمة" لحفظ الكلمة
-                    </div>
+            <h3 style="margin: 20px 0; text-align: center;">اللاعبون (<span id="playerCount">0</span>)</h3>
+            <div class="player-list" id="onlinePlayerList"></div>
 
-                    <div class="custom-word-input-group">
-                        <input type="text" id="customWordInput" placeholder="الكلمة">
-                        <input type="text" id="customHintInput" placeholder="التلميح (اختياري)">
-                        <button onclick="addCustomWord()" class="warning">إضافة كلمة</button>
-                    </div>
+            <div class="waiting-status" id="waitingStatus">
+                <div class="spinner"></div>
+                <p>في انتظار اللاعبين... (الحد الأدنى: 3 لاعبين)</p>
+            </div>
 
-                    <div id="customWordError"></div>
+            <button id="startOnlineGameBtn" onclick="startOnlineGame()" class="success" style="display: none;">ابدأ اللعبة</button>
+            <button onclick="leaveRoom()" class="secondary">مغادرة الغرفة</button>
+        </div>
 
-                    <div class="word-count" id="customWordCount">عدد الكلمات: 0</div>
-
-                    <div class="player-list" id="customWordsList"></div>
-
-                    <button onclick="clearCustomWords()" class="secondary">حذف جميع الكلمات</button>
-                </div>
+        <!-- Online Game Screen -->
+        <div id="onlineGameScreen" class="screen">
+            <div id="onlineWordDisplay"></div>
+            <div id="onlineShowHideButtonContainer"></div>
+            
+            <div id="onlineWaitingDiv" class="waiting-status" style="display: none;">
+                <div class="spinner"></div>
+                <p>في انتظار باقي اللاعبين...</p>
             </div>
         </div>
 
-        <!-- Show Word Screen -->
+        <!-- Online Voting Screen -->
+        <div id="onlineVotingScreen" class="screen">
+            <h2 style="text-align: center; margin-bottom: 20px; color: #667eea;">⏱️ انتهى الوقت!</h2>
+            <h3 style="text-align: center; margin-bottom: 20px;">صوت على الجاسوس</h3>
+            
+            <div class="vote-buttons" id="onlineVoteButtons"></div>
+            
+            <div id="onlineVoteWaiting" class="waiting-status" style="display: none;">
+                <div class="spinner"></div>
+                <p>في انتظار تصويت اللاعبين...</p>
+            </div>
+        </div>
+
+        <!-- Online Results Screen -->
+        <div id="onlineResultsScreen" class="screen">
+            <h2 style="text-align: center; color: #667eea; margin-bottom: 30px;">🎯 النتائج</h2>
+            
+            <div id="onlineWordReveal"></div>
+            <div id="onlineVoteResultsDiv"></div>
+            <div id="onlineImpostorReveal"></div>
+            
+            <button onclick="backToLobby()" class="success">العودة للوبي</button>
+        </div>
+
+        <!-- OFFLINE SCREENS (Keep existing offline game screens) -->
+        
+        <!-- Offline Setup Screen -->
+        <div id="offlineSetupScreen" class="screen">
+            <div class="input-group">
+                <label>اختر الفئة:</label>
+                <select id="categorySelect">
+                    <option value="mixed">مختلط (جميع الفئات)</option>
+                    <option value="places">أماكن</option>
+                    <option value="jobs">مهن</option>
+                    <option value="items">أشياء</option>
+                    <option value="animals">حيوانات</option>
+                    <option value="food">طعام</option>
+                    <option value="countries">دول</option>
+                    <option value="actions">أفعال</option>
+                    <option value="insects">حشرات</option>
+                    <option value="clothes">ملابس</option>
+                    <option value="furniture">أثاث</option>
+                </select>
+            </div>
+
+            <div class="settings-section">
+                <h3>⚙️ إعدادات اللعبة</h3>
+                
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <label>عدد الجواسيس:</label>
+                        <input type="number" id="impostorCount" min="1" value="1">
+                    </div>
+                    <div class="setting-item">
+                        <label>المؤقت (ثانية):</label>
+                        <input type="number" id="timerDuration" min="0" value="180">
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="votingEnabled">
+                    <label for="votingEnabled">تفعيل نظام التصويت</label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="clueEnabled" checked>
+                    <label for="clueEnabled">إعطاء تلميح للجاسوس</label>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>أضف لاعب:</label>
+                <input type="text" id="playerNameInput" placeholder="اسم اللاعب">
+                <button onclick="addPlayer()">إضافة لاعب</button>
+            </div>
+
+            <div id="errorMessage"></div>
+
+            <div class="player-list" id="playerList"></div>
+
+            <button onclick="startOfflineGame()" class="success">ابدأ اللعبة</button>
+            <button onclick="backToMode()" class="secondary">رجوع</button>
+        </div>
+
+        <!-- Offline Show Word Screen -->
         <div id="wordScreen" class="screen">
-            <div class="player-name-display" id="currentPlayerName"></div>
+            <div style="text-align: center; font-size: 1.8em; color: #667eea; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 10px; font-weight: bold;" id="currentPlayerName"></div>
             
             <div id="wordDisplay"></div>
 
@@ -752,7 +807,7 @@
             <button onclick="nextPlayer()" class="success">اللاعب التالي</button>
         </div>
 
-        <!-- Game Screen -->
+        <!-- Offline Game Screen -->
         <div id="gameScreen" class="screen">
             <div id="timerDisplay" class="timer"></div>
 
@@ -770,140 +825,96 @@
             <button onclick="resetGame()" class="secondary">جولة جديدة</button>
         </div>
 
-        <!-- Results Screen -->
+        <!-- Offline Results Screen -->
         <div id="resultsScreen" class="screen">
             <div id="impostorReveal"></div>
             <button onclick="resetGame()" class="success">لعب مرة أخرى</button>
         </div>
     </div>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
     <script>
-        // Game data
+        // ================== FIREBASE CONFIGURATION ==================
+        // TODO: Replace with your Firebase config
+     const firebaseConfig = {
+    apiKey: "AIzaSyDnezIJxk9gQr--qOGLpDVB6PNaLF-DW_8",
+    authDomain: "imposter-dfa43.firebaseapp.com",
+    databaseURL: "https://imposter-dfa43-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "imposter-dfa43",
+    storageBucket: "imposter-dfa43.appspot.com",
+    messagingSenderId: "840856200109",
+    appId: "1:840856200109:web:6e11bd3f0cbfad9094b724"
+};
+
+        // Initialize Firebase
+        let firebaseApp, database;
+        try {
+            firebaseApp = firebase.initializeApp(firebaseConfig);
+            database = firebase.database();
+            console.log("Firebase initialized successfully");
+        } catch (error) {
+            console.error("Firebase initialization error:", error);
+        }
+
+        // ================== GAME DATA ==================
         const words = {
             places: [
                 "مسجد", "مدرسة", "مستشفى", "مطار", "محطة قطار", "ملعب", "حديقة", "شاطئ", "جبل", "صحراء",
-                "مكتبة", "متحف", "سوق", "مول", "مطعم", "مقهى", "فندق", "سينما", "مسرح", "حديقة حيوان",
-                "حوض سمك", "منتزه", "كهف", "واحة", "نهر", "بحيرة", "بحر", "محيط", "غابة", "حقل",
-                "مزرعة", "قرية", "مدينة", "عاصمة", "ميناء", "جسر", "نفق", "برج", "قلعة", "قصر",
-                "معبد", "كنيسة", "معرض", "استاد", "قاعة", "مختبر", "مصنع", "ورشة", "محل", "صيدلية",
-                "بنك", "مكتب بريد", "مخبز", "جزارة", "سوبرماركت", "محطة وقود", "موقف", "كوبري", "ميدان", "شارع",
-                "حارة", "زقاق", "ساحة", "كورنيش", "نادي", "جمعية", "مركز", "عيادة", "مختبر", "ستوديو",
-                "قاعة أفراح", "روضة", "حضانة", "جامعة", "معهد", "أكاديمية", "قاعة رياضة", "مسبح", "منتجع", "فيلا",
-                "شقة", "بيت", "عمارة", "ناطحة سحاب", "كشك", "خيمة", "كوخ", "قبو", "علية", "شرفة",
-                "حديقة منزل", "فناء", "ممر", "سلم", "مصعد", "موقف سيارات", "جراج", "مخزن", "مستودع", "سقيفة"
+                "مكتبة", "متحف", "سوق", "مول", "مطعم", "مقهى", "فندق", "سينما", "مسرح", "حديقة حيوان"
             ],
             jobs: [
                 "طبيب", "معلم", "مهندس", "محامي", "طيار", "شرطي", "رجل إطفاء", "طباخ", "نادل", "سائق",
-                "كهربائي", "سباك", "نجار", "حداد", "بناء", "رسام", "مصور", "صحفي", "كاتب", "مؤلف",
-                "ممثل", "مخرج", "مغني", "موسيقار", "راقص", "رياضي", "مدرب", "حكم", "مزارع", "صياد",
-                "راعي", "بحار", "قبطان", "جندي", "ضابط", "قاضي", "محقق", "حارس", "عامل", "موظف",
-                "مدير", "سكرتير", "محاسب", "خبير", "استشاري", "مبرمج", "مصمم", "فني", "ميكانيكي", "خباز",
-                "جزار", "عطار", "صيدلي", "ممرض", "جراح", "طبيب أسنان", "طبيب عيون", "طبيب بيطري", "عالم", "باحث",
-                "أستاذ جامعي", "مدرس خصوصي", "مربي", "حارس أمن", "جاسوس", "دبلوماسي", "سفير", "وزير", "رئيس", "عمدة",
-                "مرشد سياحي", "مضيف طيران", "بواب", "حمال", "ساعي بريد", "عامل نظافة", "بستاني", "مهندس زراعي", "طبيب نفسي", "أخصائي اجتماعي",
-                "مذيع", "مقدم برامج", "مراسل", "محرر", "مترجم", "خطاط", "نحات", "خزاف", "مهرج", "ساحر",
-                "عارض أزياء", "مصمم أزياء", "حلاق", "كوافير", "خياط", "إسكافي", "صائغ", "نقاش", "دهان", "بلاط"
+                "كهربائي", "سباك", "نجار", "حداد", "بناء", "رسام", "مصور", "صحفي", "كاتب", "مؤلف"
             ],
             items: [
                 "هاتف", "حاسوب", "تلفاز", "ثلاجة", "فرن", "مكيف", "مروحة", "ساعة", "كاميرا", "مفتاح",
-                "قلم", "كتاب", "دفتر", "حقيبة", "محفظة", "نظارة", "مرآة", "فرشاة", "مشط", "صابون",
-                "منشفة", "وسادة", "بطانية", "سجادة", "ستارة", "مصباح", "شمعة", "ولاعة", "عود ثقاب", "سكين",
-                "ملعقة", "شوكة", "صحن", "كوب", "إبريق", "قدر", "مقلاة", "غلاية", "خلاط", "عصارة",
-                "سلة", "دلو", "مكنسة", "ممسحة", "كرسي", "طاولة", "سرير", "خزانة", "رف", "باب",
-                "نافذة", "مفتاح", "قفل", "جرس", "هاتف", "راديو", "ميكروفون", "سماعة", "شاحن", "بطارية",
-                "مسطرة", "ممحاة", "مبراة", "دباسة", "مقص", "لاصق", "غراء", "ألوان", "فرشاة رسم", "لوحة",
-                "إطار", "تقويم", "خريطة", "بوصلة", "منظار", "تلسكوب", "ميزان", "ترمومتر", "ساعة إيقاف", "منبه",
-                "راديو", "جهاز تحكم", "لوحة مفاتيح", "فأرة", "شاشة", "طابعة", "ماسح ضوئي", "فلاش", "قرص", "فلاشة",
-                "سماعات", "ميكروفون", "كابل", "محول", "مقبس", "مفك", "شاكوش", "كماشة", "منشار", "مسمار"
+                "قلم", "كتاب", "دفتر", "حقيبة", "محفظة", "نظارة", "مرآة", "فرشاة", "مشط", "صابون"
             ],
             animals: [
                 "أسد", "نمر", "فهد", "ذئب", "ثعلب", "دب", "قرد", "فيل", "زرافة", "حصان",
-                "حمار", "جمل", "بقرة", "خروف", "ماعز", "خنزير", "كلب", "قطة", "أرنب", "فأر",
-                "سنجاب", "قنفذ", "خلد", "وطواط", "غزال", "أيل", "ظبي", "جاموس", "ثور", "عجل",
-                "حمار وحشي", "كنغر", "كوالا", "باندا", "دولفين", "حوت", "قرش", "أخطبوط", "قنديل", "سلحفاة",
-                "تمساح", "ثعبان", "سحلية", "ضفدع", "سمندل", "عقرب", "عنكبوت", "نحلة", "نملة", "ذبابة",
-                "بعوضة", "صرصور", "خنفساء", "جندب", "فراشة", "يعسوب", "دودة", "حلزون", "محار", "جمبري",
-                "سلطعون", "إسفنج", "نجم البحر", "حصان البحر", "سمكة", "قنديل", "شعاب مرجانية", "دب قطبي", "بطريق", "فقمة",
-                "أسد بحر", "حوت قاتل", "دلفين", "خروف البحر", "ثعلب الماء", "قندس", "قضاعة", "ابن عرس", "سمور", "ظربان",
-                "راكون", "أبو شوكة", "آكل النمل", "كسلان", "أرماديلو", "نيص", "جرذ الخلد", "لاما", "ألبكة", "ياك"
+                "حمار", "جمل", "بقرة", "خروف", "ماعز", "خنزير", "كلب", "قطة", "أرنب", "فأر"
             ],
             food: [
                 "أرز", "خبز", "معكرونة", "بطاطس", "طماطم", "خيار", "خس", "جزر", "بصل", "ثوم",
-                "فلفل", "باذنجان", "كوسا", "فاصوليا", "بازلاء", "ذرة", "قرع", "ملفوف", "قرنبيط", "بروكلي",
-                "سبانخ", "جرجير", "بقدونس", "كزبرة", "نعناع", "ريحان", "زعتر", "شبت", "كرفس", "زيتون",
-                "تفاح", "برتقال", "موز", "عنب", "فراولة", "كرز", "خوخ", "مشمش", "برقوق", "تين",
-                "رمان", "كيوي", "أناناس", "مانجو", "بطيخ", "شمام", "ليمون", "جريب فروت", "يوسفي", "تمر",
-                "لحم بقر", "لحم غنم", "دجاج", "سمك", "روبيان", "بيض", "حليب", "جبن", "زبدة", "قشطة",
-                "لبن", "سكر", "ملح", "فلفل أسود", "كمون", "كركم", "زنجبيل", "قرفة", "هيل", "قرنفل",
-                "عسل", "مربى", "شوكولاتة", "كيك", "بسكويت", "آيس كريم", "حلوى", "عصير", "شاي", "قهوة",
-                "ماء", "صودا", "كولا", "برغر", "بيتزا", "شاورما", "فلافل", "حمص", "فول", "كشري",
-                "مندي", "كبسة", "مقلوبة", "منسف", "ملوخية", "بامية", "محشي", "كفتة", "كباب", "شيش طاووق"
+                "فلفل", "باذنجان", "كوسا", "فاصوليا", "بازلاء", "ذرة", "قرع", "ملفوف", "قرنبيط", "بروكلي"
             ],
             countries: [
                 "مصر", "السعودية", "الإمارات", "الكويت", "قطر", "البحرين", "عمان", "اليمن", "العراق", "سوريا",
-                "لبنان", "الأردن", "فلسطين", "ليبيا", "تونس", "الجزائر", "المغرب", "موريتانيا", "السودان", "الصومال",
-                "جيبوتي", "جزر القمر", "أمريكا", "كندا", "المكسيك", "البرازيل", "الأرجنتين", "تشيلي", "كولومبيا", "بيرو",
-                "بريطانيا", "فرنسا", "ألمانيا", "إيطاليا", "إسبانيا", "البرتغال", "هولندا", "بلجيكا", "سويسرا", "النمسا",
-                "روسيا", "أوكرانيا", "بولندا", "رومانيا", "اليونان", "تركيا", "السويد", "النرويج", "فنلندا", "الدنمارك",
-                "الصين", "اليابان", "كوريا الجنوبية", "كوريا الشمالية", "الهند", "باكستان", "بنغلاديش", "إندونيسيا", "ماليزيا", "تايلاند",
-                "فيتنام", "الفلبين", "سنغافورة", "ميانمار", "كمبوديا", "لاوس", "أفغانستان", "إيران", "أستراليا", "نيوزيلندا",
-                "جنوب أفريقيا", "نيجيريا", "كينيا", "إثيوبيا", "غانا", "تنزانيا", "أوغندا", "الكاميرون", "ساحل العاج", "السنغال",
-                "المجر", "التشيك", "صربيا", "كرواتيا", "بلغاريا", "أيرلندا", "آيسلندا", "إستونيا", "لاتفيا", "ليتوانيا",
-                "الأرجنتين", "فنزويلا", "الإكوادور", "بوليفيا", "باراغواي", "أوروغواي", "كوبا", "جامايكا", "بنما", "كوستاريكا"
+                "لبنان", "الأردن", "فلسطين", "ليبيا", "تونس", "الجزائر", "المغرب", "موريتانيا", "السودان", "الصومال"
             ],
             actions: [
                 "يمشي", "يركض", "يقفز", "يسبح", "يطير", "يزحف", "يتسلق", "ينام", "يستيقظ", "يأكل",
-                "يشرب", "يطبخ", "يغسل", "ينظف", "يكنس", "يمسح", "يرتب", "يطوي", "يكوي", "يخيط",
-                "يقرأ", "يكتب", "يرسم", "يلون", "يغني", "يرقص", "يعزف", "يصفق", "يصفر", "يضحك",
-                "يبكي", "يصرخ", "يهمس", "يتكلم", "يسكت", "يسمع", "ينظر", "يشم", "يتذوق", "يلمس",
-                "يفكر", "يتذكر", "ينسى", "يحلم", "يتخيل", "يفهم", "يتعلم", "يعلم", "يدرس", "يحفظ",
-                "يلعب", "يسلي", "يستمتع", "يفرح", "يحزن", "يغضب", "يخاف", "يشجع", "يهاجم", "يدافع",
-                "يساعد", "يساند", "يحمي", "ينقذ", "يعالج", "يداوي", "يضمد", "يحقن", "يفحص", "يشخص",
-                "يصلي", "يصوم", "يتصدق", "يحج", "يدعو", "يذكر", "يسبح", "يستغفر", "يتوب", "يشكر",
-                "يعمل", "يتعب", "يرتاح", "ينتظر", "يستعجل", "يتأخر", "يسرع", "يبطئ", "يتوقف", "يستمر",
-                "يفتح", "يغلق", "يدفع", "يسحب", "يرفع", "ينزل", "يصعد", "يهبط", "يدخل", "يخرج"
+                "يشرب", "يطبخ", "يغسل", "ينظف", "يكنس", "يمسح", "يرتب", "يطوي", "يكوي", "يخيط"
             ],
             insects: [
                 "نملة", "نحلة", "ذبابة", "بعوضة", "صرصور", "جندب", "جرادة", "فراشة", "عثة", "دبور",
-                "زنبور", "يعسوب", "خنفساء", "دعسوقة", "سوسة", "قمل", "برغوث", "بق", "قراد", "عنكبوت",
-                "عقرب", "حريش", "دودة أرض", "دودة قز", "يرقانة", "شرنقة", "ذبابة الفاكهة", "ذبابة تسي تسي", "نملة بيضاء", "زيز",
-                "فرس النبي", "عصا الحشرة", "حشرة ورق", "خنفساء الروث", "خنفساء القلف", "سوسة القطن", "دودة القطن", "ديدان الحرير", "نحلة العسل", "نحلة نجار",
-                "دبور الطين", "دبور الرمل", "زنبور الخشب", "ذبابة اللحم", "ذبابة المجاري", "بعوضة النمر", "بعوضة الملاريا", "بق الفراش", "قمل الرأس", "قمل الجسم",
-                "برغوث الفئران", "برغوث القطط", "برغوث الكلاب", "قراد الغنم", "قراد الكلاب", "عث الغبار", "عث الدقيق", "عث الملابس", "صرصور ألماني", "صرصور أمريكي",
-                "صرصور شرقي", "جندب أخضر", "جندب بني", "جرادة الصحراء", "جرادة مصرية", "فراشة الملك", "فراشة الليمون", "فراشة أبو دقيق", "عثة الفستان", "عثة الطحين",
-                "يعسوب أحمر", "يعسوب أزرق", "خنفساء خضراء", "خنفساء ذهبية", "دعسوقة حمراء", "دعسوقة صفراء", "سوسة الأرز", "سوسة الذرة", "سوسة الفول", "عنكبوت بيت",
-                "عنكبوت حديقة", "عنكبوت ذئب", "عنكبوت قافز", "عقرب أصفر", "عقرب أسود", "حريش منزلي", "حريش استوائي", "دودة الأرض الحمراء", "دودة الأرض السوداء", "يرقة فراشة",
-                "يرقة خنفساء", "شرنقة فراشة", "شرنقة عثة", "بيض نمل", "بيض نحل", "بيض ذباب", "بيض بعوض", "ملكة النمل", "ملكة النحل", "ذكر النحل"
+                "زنبور", "يعسوب", "خنفساء", "دعسوقة", "سوسة", "قمل", "برغوث", "بق", "قراد", "عنكبوت"
             ],
             clothes: [
                 "قميص", "بنطلون", "فستان", "تنورة", "جاكيت", "معطف", "سترة", "عباءة", "ثوب", "قفطان",
-                "جلباب", "بدلة", "كنزة", "تيشيرت", "بلوزة", "بيجامة", "ملابس داخلية", "حمالة صدر", "سروال", "شورت",
-                "جينز", "بنطلون رياضي", "تراكسوت", "سويت شيرت", "هودي", "سترة صوف", "كارديجان", "بوليرو", "شال", "وشاح",
-                "كوفية", "طاقية", "قبعة", "عمامة", "حجاب", "طرحة", "نقاب", "غطاء رأس", "قفازات", "جوارب",
-                "شراب", "جزمة", "حذاء", "صندل", "شبشب", "كعب عالي", "حذاء رياضي", "حذاء جلد", "بوت", "موكاسان",
-                "إسبادريل", "كروكس", "فليب فلوب", "حزام", "ربطة عنق", "بابيون", "بروش", "أزرار", "سحاب", "كبسون",
-                "جيب", "ياقة", "كم", "ذيل", "بطانة", "حاشية", "رقعة", "طرز", "تطريز", "دانتيل",
-                "فرو", "جلد", "قطن", "حرير", "صوف", "كتان", "قطيفة", "مخمل", "ساتان", "شيفون",
-                "دنيم", "قماش", "نسيج", "خيط", "إبرة", "مقص قماش", "ماكينة خياطة", "منوال", "كشتبان", "شريط قياس",
-                "دبابيس", "أزرار خياطة", "خيط حرير", "خيط صوف", "صبغة", "مكواة", "طاولة كي", "منشر", "مشبك غسيل", "سلة غسيل"
+                "جلباب", "بدلة", "كنزة", "تيشيرت", "بلوزة", "بيجامة", "ملابس داخلية", "حمالة صدر", "سروال", "شورت"
             ],
             furniture: [
                 "كرسي", "طاولة", "سرير", "خزانة", "دولاب", "رف", "مكتبة", "صوفا", "كنبة", "أريكة",
-                "كرسي هزاز", "كرسي بذراعين", "بوف", "طاولة قهوة", "طاولة طعام", "طاولة مكتب", "طاولة تلفاز", "طاولة جانبية", "كومودينو", "تسريحة",
-                "مرآة", "إطار صورة", "لوحة", "ساعة حائط", "ثريا", "نجفة", "لمبة", "أباجورة", "سجادة", "موكيت",
-                "ستارة", "ستارة رول", "ستارة شيفون", "ستارة قطيفة", "وسادة", "مخدة", "مسند ظهر", "مسند قدم", "بطانية", "لحاف",
-                "شرشف", "كفر مخدة", "غطاء سرير", "ناموسية", "خزانة ملابس", "خزانة مطبخ", "خزانة حمام", "خزانة أحذية", "خزانة كتب", "خزانة صينية",
-                "رف كتب", "رف حائط", "رف أحذية", "رف مطبخ", "رف تلفاز", "مكتب", "مكتب كمبيوتر", "كرسي مكتب", "كرسي طعام", "كرسي بار",
-                "سرير مفرد", "سرير دبل", "سرير كينج", "سرير أطفال", "سرير بطابقين", "سرير هزاز", "مرتبة", "قاعدة سرير", "لوح رأس", "لوح قدم",
-                "خزانة ملفات", "درج", "رف تخزين", "صندوق تخزين", "سلة تخزين", "منظم", "حامل معاطف", "شماعة", "مرآة أرضية", "باراڤان",
-                "طاولة كي", "طاولة قابلة للطي", "كرسي قابل للطي", "سرير قابل للطي", "صوفا سرير", "ركنة", "زاوية", "كرسي استرخاء", "كرسي حديقة", "طاولة حديقة",
-                "أرجوحة", "مظلة", "خيمة", "كشك", "برجولة", "مقعد", "دكة", "كنبة حديقة", "سرير تشمس", "أثاث خشبي", "أثاث معدني"
+                "كرسي هزاز", "كرسي بذراعين", "بوف", "طاولة قهوة", "طاولة طعام", "طاولة مكتب", "طاولة تلفاز", "طاولة جانبية", "كومودينو", "تسريحة"
             ]
         };
 
-        // Custom words storage
-        let customWords = [];
+        // ================== GLOBAL VARIABLES ==================
+        let gameMode = 'offline'; // 'offline' or 'online'
+        let currentRoomCode = null;
+        let currentPlayerName = null;
+        let isHost = false;
+        let roomRef = null;
+        let playersRef = null;
+        let gameRef = null;
+        let hasVoted = false;
+        let hasSeenWord = false;
 
+        // Offline game variables
         let players = [];
         let impostors = [];
         let currentWord = "";
@@ -915,127 +926,547 @@
         let clueEnabled = true;
         let wordVisible = false;
 
-        // Load custom words from localStorage on page load
-        window.addEventListener('load', function() {
-            loadCustomWords();
-        });
-
-        function switchTab(tab) {
-            // Update tab buttons
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
-
-            // Update tab content
-            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-            if (tab === 'settings') {
-                document.getElementById('settingsTab').classList.add('active');
-            } else if (tab === 'custom') {
-                document.getElementById('customTab').classList.add('active');
+        // ================== MODE SELECTION ==================
+        function selectMode(mode) {
+            gameMode = mode;
+            if (mode === 'offline') {
+                showScreen('offlineSetupScreen');
+            } else {
+                showScreen('onlineRoomScreen');
             }
         }
 
-        function addCustomWord() {
-            const wordInput = document.getElementById('customWordInput');
-            const hintInput = document.getElementById('customHintInput');
-            const word = wordInput.value.trim();
-            let hint = hintInput.value.trim();
-            const errorDiv = document.getElementById('customWordError');
-
-            if (!word) {
-                showCustomWordError('الرجاء إدخال الكلمة');
-                return;
+        function backToMode() {
+            // Clean up online resources
+            if (roomRef) {
+                leaveRoom();
             }
-
-            // Check for duplicates
-            if (customWords.some(w => w.word === word)) {
-                showCustomWordError('هذه الكلمة موجودة بالفعل');
-                return;
-            }
-
-            // Generate hint if not provided
-            if (!hint) {
-                hint = getHint(word);
-            }
-
-            customWords.push({ word, hint });
-            wordInput.value = '';
-            hintInput.value = '';
-            errorDiv.innerHTML = '';
             
-            saveCustomWords();
-            updateCustomWordsList();
-            showCustomWordSuccess('تم إضافة الكلمة بنجاح');
+            // Reset variables
+            currentRoomCode = null;
+            currentPlayerName = null;
+            isHost = false;
+            hasVoted = false;
+            hasSeenWord = false;
+            
+            showScreen('modeScreen');
         }
 
-        function showCustomWordError(message) {
-            const errorDiv = document.getElementById('customWordError');
+        // ================== ONLINE FUNCTIONS ==================
+        function generateRoomCode() {
+            return Math.floor(100000 + Math.random() * 900000).toString();
+        }
+
+        function showOnlineError(message) {
+            const errorDiv = document.getElementById('onlineError');
             errorDiv.innerHTML = `<div class="alert error">${message}</div>`;
             setTimeout(() => {
                 errorDiv.innerHTML = '';
             }, 3000);
         }
 
-        function showCustomWordSuccess(message) {
-            const errorDiv = document.getElementById('customWordError');
-            errorDiv.innerHTML = `<div class="alert success">${message}</div>`;
-            setTimeout(() => {
-                errorDiv.innerHTML = '';
-            }, 2000);
-        }
-
-        function updateCustomWordsList() {
-            const list = document.getElementById('customWordsList');
-            const count = document.getElementById('customWordCount');
-            
-            list.innerHTML = '';
-            count.textContent = `عدد الكلمات: ${customWords.length}`;
-
-            customWords.forEach((item, index) => {
-                const wordItem = document.createElement('div');
-                wordItem.className = 'word-item';
-                wordItem.innerHTML = `
-                    <div class="word-content">
-                        <div class="word-text">${item.word}</div>
-                        <div class="hint-text">تلميح: ${item.hint}</div>
-                    </div>
-                    <button onclick="removeCustomWord(${index})">حذف</button>
-                `;
-                list.appendChild(wordItem);
-            });
-        }
-
-        function removeCustomWord(index) {
-            customWords.splice(index, 1);
-            saveCustomWords();
-            updateCustomWordsList();
-        }
-
-        function clearCustomWords() {
-            if (customWords.length === 0) {
-                showCustomWordError('لا توجد كلمات لحذفها');
+        function createRoom() {
+            const name = document.getElementById('playerName').value.trim();
+            if (!name) {
+                showOnlineError('الرجاء إدخال اسمك');
                 return;
             }
 
-            if (confirm('هل أنت متأكد من حذف جميع الكلمات؟')) {
-                customWords = [];
-                saveCustomWords();
-                updateCustomWordsList();
-                showCustomWordSuccess('تم حذف جميع الكلمات');
+            currentPlayerName = name;
+            currentRoomCode = generateRoomCode();
+            isHost = true;
+
+            // Create room in Firebase
+            roomRef = database.ref('rooms/' + currentRoomCode);
+            roomRef.set({
+                host: currentPlayerName,
+                status: 'waiting',
+                settings: {
+                    category: 'mixed',
+                    impostorCount: 1,
+                    timerDuration: 180,
+                    clueEnabled: true
+                },
+                createdAt: firebase.database.ServerValue.TIMESTAMP
+            }).then(() => {
+                // Add player to room
+                playersRef = roomRef.child('players');
+                playersRef.child(currentPlayerName).set({
+                    name: currentPlayerName,
+                    isHost: true,
+                    joinedAt: firebase.database.ServerValue.TIMESTAMP
+                });
+
+                // Listen to room changes
+                listenToRoom();
+                
+                // Show lobby
+                document.getElementById('displayRoomCode').textContent = currentRoomCode;
+                document.getElementById('hostSettings').style.display = 'block';
+                showScreen('lobbyScreen');
+            }).catch(error => {
+                showOnlineError('فشل إنشاء الغرفة: ' + error.message);
+            });
+        }
+
+        function showJoinRoom() {
+            document.getElementById('joinRoomDiv').style.display = 'block';
+        }
+
+        function joinRoom() {
+            const name = document.getElementById('playerName').value.trim();
+            const code = document.getElementById('roomCode').value.trim();
+
+            if (!name) {
+                showOnlineError('الرجاء إدخال اسمك');
+                return;
+            }
+
+            if (code.length !== 6 || !/^\d+$/.test(code)) {
+                showOnlineError('كود الغرفة يجب أن يكون 6 أرقام');
+                return;
+            }
+
+            currentPlayerName = name;
+            currentRoomCode = code;
+            isHost = false;
+
+            // Check if room exists
+            roomRef = database.ref('rooms/' + currentRoomCode);
+            roomRef.once('value').then(snapshot => {
+                if (!snapshot.exists()) {
+                    showOnlineError('الغرفة غير موجودة');
+                    return;
+                }
+
+                const roomData = snapshot.val();
+                if (roomData.status !== 'waiting') {
+                    showOnlineError('اللعبة قد بدأت بالفعل');
+                    return;
+                }
+
+                // Check if name is taken
+                if (roomData.players && roomData.players[currentPlayerName]) {
+                    showOnlineError('هذا الاسم مستخدم بالفعل');
+                    return;
+                }
+
+                // Add player to room
+                playersRef = roomRef.child('players');
+                playersRef.child(currentPlayerName).set({
+                    name: currentPlayerName,
+                    isHost: false,
+                    joinedAt: firebase.database.ServerValue.TIMESTAMP
+                });
+
+                // Listen to room changes
+                listenToRoom();
+                
+                // Show lobby
+                document.getElementById('displayRoomCode').textContent = currentRoomCode;
+                document.getElementById('hostSettings').style.display = 'none';
+                showScreen('lobbyScreen');
+            }).catch(error => {
+                showOnlineError('فشل الانضمام: ' + error.message);
+            });
+        }
+
+        function listenToRoom() {
+            // Listen to players
+            playersRef.on('value', snapshot => {
+                const playersData = snapshot.val() || {};
+                const playersList = Object.values(playersData);
+                
+                updateOnlinePlayerList(playersList);
+
+                // Update player count
+                document.getElementById('playerCount').textContent = playersList.length;
+
+                // Show/hide start button
+                if (isHost && playersList.length >= 3) {
+                    document.getElementById('startOnlineGameBtn').style.display = 'block';
+                    document.getElementById('waitingStatus').style.display = 'none';
+                } else {
+                    document.getElementById('startOnlineGameBtn').style.display = 'none';
+                    document.getElementById('waitingStatus').style.display = 'block';
+                }
+            });
+
+            // Listen to game state
+            gameRef = roomRef.child('game');
+            gameRef.on('value', snapshot => {
+                const gameData = snapshot.val();
+                if (gameData) {
+                    handleGameStateChange(gameData);
+                }
+            });
+        }
+
+        function updateOnlinePlayerList(playersList) {
+            const list = document.getElementById('onlinePlayerList');
+            list.innerHTML = '';
+            
+            playersList.forEach(player => {
+                const item = document.createElement('div');
+                item.className = player.isHost ? 'player-item host' : 'player-item';
+                item.innerHTML = `
+                    <span class="name">${player.name}${player.isHost ? ' 👑' : ''}</span>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function startOnlineGame() {
+            if (!isHost) return;
+
+            playersRef.once('value').then(snapshot => {
+                const playersData = snapshot.val() || {};
+                const playersList = Object.keys(playersData);
+
+                if (playersList.length < 3) {
+                    showOnlineError('يجب وجود 3 لاعبين على الأقل');
+                    return;
+                }
+
+                // Get settings
+                const category = document.getElementById('onlineCategorySelect').value;
+                const impostorCount = parseInt(document.getElementById('onlineImpostorCount').value);
+                const timerDuration = parseInt(document.getElementById('onlineTimerDuration').value);
+                const clueEnabled = document.getElementById('onlineClueEnabled').checked;
+
+                if (impostorCount >= playersList.length) {
+                    showOnlineError('عدد الجواسيس يجب أن يكون أقل من عدد اللاعبين');
+                    return;
+                }
+
+                // Select word
+                let wordList;
+                if (category === 'mixed') {
+                    const allWords = [];
+                    Object.values(words).forEach(catWords => {
+                        allWords.push(...catWords);
+                    });
+                    wordList = allWords;
+                } else {
+                    wordList = words[category];
+                }
+
+                const selectedWord = wordList[Math.floor(Math.random() * wordList.length)];
+                const hint = getHint(selectedWord);
+
+                // Select impostors
+                const shuffledPlayers = [...playersList].sort(() => Math.random() - 0.5);
+                const selectedImpostors = shuffledPlayers.slice(0, impostorCount);
+
+                // Create game state
+                const gameState = {
+                    status: 'showing_words',
+                    word: selectedWord,
+                    hint: hint,
+                    impostors: selectedImpostors.reduce((obj, name) => {
+                        obj[name] = true;
+                        return obj;
+                    }, {}),
+                    clueEnabled: clueEnabled,
+                    timerDuration: timerDuration,
+                    playersSeen: {},
+                    votes: {},
+                    startedAt: firebase.database.ServerValue.TIMESTAMP
+                };
+
+                // Update room status
+                roomRef.update({
+                    status: 'playing'
+                });
+
+                // Set game state
+                gameRef.set(gameState);
+            });
+        }
+
+        function handleGameStateChange(gameData) {
+            if (!gameData) return;
+
+            switch (gameData.status) {
+                case 'showing_words':
+                    showOnlineWord(gameData);
+                    break;
+                case 'voting':
+                    showOnlineVoting(gameData);
+                    break;
+                case 'results':
+                    showOnlineResults(gameData);
+                    break;
             }
         }
 
-        function saveCustomWords() {
-            localStorage.setItem('spyGameCustomWords', JSON.stringify(customWords));
+        function showOnlineWord(gameData) {
+            showScreen('onlineGameScreen');
+            
+            const isImpostor = gameData.impostors && gameData.impostors[currentPlayerName];
+            const wordDisplay = document.getElementById('onlineWordDisplay');
+            const buttonContainer = document.getElementById('onlineShowHideButtonContainer');
+            
+            if (!hasSeenWord) {
+                // Show hidden card
+                if (isImpostor) {
+                    if (gameData.clueEnabled) {
+                        wordDisplay.innerHTML = `
+                            <div id="onlineWordCard" class="word-display">
+                                <div id="onlineActualWord" class="word-content word-hidden">
+                                    <h2>🕵️ أنت الجاسوس!</h2>
+                                    <div class="hint">تلميح: ${gameData.hint}</div>
+                                </div>
+                                <div id="onlinePlaceholder" class="hidden-placeholder">🔒</div>
+                            </div>
+                        `;
+                    } else {
+                        wordDisplay.innerHTML = `
+                            <div id="onlineWordCard" class="word-display">
+                                <div id="onlineActualWord" class="word-content word-hidden">
+                                    <h2>🕵️ أنت الجاسوس!</h2>
+                                    <p style="margin-top: 15px; font-size: 1.1em;">لا يوجد تلميح</p>
+                                </div>
+                                <div id="onlinePlaceholder" class="hidden-placeholder">🔒</div>
+                            </div>
+                        `;
+                    }
+                } else {
+                    wordDisplay.innerHTML = `
+                        <div id="onlineWordCard" class="word-display">
+                            <div id="onlineActualWord" class="word-content word-hidden">
+                                <h2>${gameData.word}</h2>
+                            </div>
+                            <div id="onlinePlaceholder" class="hidden-placeholder">🔒</div>
+                        </div>
+                    `;
+                }
+
+                buttonContainer.innerHTML = `
+                    <button id="onlineToggleWordBtn" class="show-hide-btn" onclick="toggleOnlineWordVisibility()">
+                        <span class="eye-icon">👁️</span> إظهار الدور
+                    </button>
+                `;
+            }
+
+            // Check if all players have seen their word
+            checkAllPlayersSeen(gameData);
         }
 
-        function loadCustomWords() {
-            const saved = localStorage.getItem('spyGameCustomWords');
-            if (saved) {
-                customWords = JSON.parse(saved);
-                updateCustomWordsList();
+        function toggleOnlineWordVisibility() {
+            const wordElement = document.getElementById('onlineActualWord');
+            const cardElement = document.getElementById('onlineWordCard');
+            const placeholderElement = document.getElementById('onlinePlaceholder');
+            const button = document.getElementById('onlineToggleWordBtn');
+            
+            if (!hasSeenWord) {
+                wordElement.classList.remove('word-hidden');
+                wordElement.classList.add('word-visible');
+                placeholderElement.style.display = 'none';
+                button.innerHTML = '<span class="eye-icon">✅</span> شاهدت الدور';
+                button.disabled = true;
+                
+                hasSeenWord = true;
+                
+                // Update database
+                gameRef.child('playersSeen').child(currentPlayerName).set(true);
             }
         }
 
+        function checkAllPlayersSeen(gameData) {
+            if (!gameData.playersSeen) return;
+
+            playersRef.once('value').then(snapshot => {
+                const playersData = snapshot.val() || {};
+                const playersList = Object.keys(playersData);
+                const seenList = Object.keys(gameData.playersSeen || {});
+
+                if (seenList.length === playersList.length) {
+                    // All players have seen their word, start timer
+                    if (isHost) {
+                        setTimeout(() => {
+                            startOnlineTimer(gameData.timerDuration);
+                        }, 2000);
+                    }
+                }
+            });
+        }
+
+        function startOnlineTimer(duration) {
+            const endTime = Date.now() + (duration * 1000);
+            
+            if (isHost) {
+                gameRef.update({
+                    timerEndTime: endTime
+                });
+            }
+
+            // Listen to timer
+            gameRef.child('timerEndTime').on('value', snapshot => {
+                const timerEndTime = snapshot.val();
+                if (!timerEndTime) return;
+
+                const interval = setInterval(() => {
+                    const remaining = Math.max(0, Math.floor((timerEndTime - Date.now()) / 1000));
+                    
+                    if (remaining <= 0) {
+                        clearInterval(interval);
+                        if (isHost) {
+                            // Move to voting
+                            gameRef.update({
+                                status: 'voting'
+                            });
+                        }
+                    }
+                }, 1000);
+            });
+        }
+
+        function showOnlineVoting(gameData) {
+            showScreen('onlineVotingScreen');
+            
+            if (!hasVoted) {
+                const voteButtons = document.getElementById('onlineVoteButtons');
+                voteButtons.innerHTML = '';
+                
+                playersRef.once('value').then(snapshot => {
+                    const playersData = snapshot.val() || {};
+                    const playersList = Object.keys(playersData);
+                    
+                    playersList.forEach(playerName => {
+                        const btn = document.createElement('button');
+                        btn.className = 'vote-btn';
+                        btn.textContent = playerName;
+                        btn.onclick = () => voteOnline(playerName, btn);
+                        voteButtons.appendChild(btn);
+                    });
+                });
+            } else {
+                document.getElementById('onlineVoteWaiting').style.display = 'block';
+            }
+
+            // Check if all players voted
+            checkAllPlayersVoted(gameData);
+        }
+
+        function voteOnline(playerName, btn) {
+            if (hasVoted) return;
+
+            gameRef.child('votes').child(currentPlayerName).set(playerName);
+            hasVoted = true;
+            
+            btn.classList.add('voted');
+            Array.from(document.querySelectorAll('.vote-btn')).forEach(b => b.disabled = true);
+            
+            document.getElementById('onlineVoteWaiting').style.display = 'block';
+        }
+
+        function checkAllPlayersVoted(gameData) {
+            if (!gameData.votes) return;
+
+            playersRef.once('value').then(snapshot => {
+                const playersData = snapshot.val() || {};
+                const playersList = Object.keys(playersData);
+                const votesList = Object.keys(gameData.votes || {});
+
+                if (votesList.length === playersList.length) {
+                    // All players voted
+                    if (isHost) {
+                        setTimeout(() => {
+                            gameRef.update({
+                                status: 'results'
+                            });
+                        }, 2000);
+                    }
+                }
+            });
+        }
+
+        function showOnlineResults(gameData) {
+            showScreen('onlineResultsScreen');
+            
+            // Show word
+            document.getElementById('onlineWordReveal').innerHTML = `
+                <div class="word-display"><h2>الكلمة كانت: ${gameData.word}</h2></div>
+            `;
+
+            // Show vote results
+            const voteCounts = {};
+            Object.values(gameData.votes || {}).forEach(votedFor => {
+                voteCounts[votedFor] = (voteCounts[votedFor] || 0) + 1;
+            });
+
+            const sortedVotes = Object.entries(voteCounts).sort((a, b) => b[1] - a[1]);
+            
+            let voteHtml = '<div class="vote-results"><h3 style="text-align: center; margin-bottom: 15px;">نتائج التصويت</h3>';
+            sortedVotes.forEach(([player, count]) => {
+                const isImpostor = gameData.impostors[player];
+                voteHtml += `
+                    <div class="vote-result-item">
+                        <span>${player} ${isImpostor ? '🕵️' : ''}</span>
+                        <span>${count} ${count === 1 ? 'صوت' : 'أصوات'}</span>
+                    </div>
+                `;
+            });
+            voteHtml += '</div>';
+            document.getElementById('onlineVoteResultsDiv').innerHTML = voteHtml;
+
+            // Show impostors
+            const impostorsList = Object.keys(gameData.impostors || {});
+            let impostorHtml = '<h3 style="margin: 30px 0 15px; text-align: center;">الجواسيس:</h3>';
+            impostorsList.forEach(impostor => {
+                impostorHtml += `<div class="word-display impostor-display"><h2>🕵️ ${impostor}</h2></div>`;
+            });
+            document.getElementById('onlineImpostorReveal').innerHTML = impostorHtml;
+        }
+
+        function backToLobby() {
+            hasVoted = false;
+            hasSeenWord = false;
+            
+            if (isHost) {
+                // Reset game
+                gameRef.remove();
+                roomRef.update({
+                    status: 'waiting'
+                });
+            }
+            
+            showScreen('lobbyScreen');
+        }
+
+        function leaveRoom() {
+            if (!currentRoomCode || !currentPlayerName) return;
+
+            // Remove player from room
+            if (playersRef) {
+                playersRef.child(currentPlayerName).remove();
+            }
+
+            // If host, delete room
+            if (isHost && roomRef) {
+                roomRef.remove();
+            }
+
+            // Clean up listeners
+            if (playersRef) playersRef.off();
+            if (gameRef) gameRef.off();
+            if (roomRef) roomRef.off();
+
+            // Reset
+            currentRoomCode = null;
+            currentPlayerName = null;
+            isHost = false;
+            roomRef = null;
+            playersRef = null;
+            gameRef = null;
+            hasVoted = false;
+            hasSeenWord = false;
+
+            backToMode();
+        }
+
+        // ================== OFFLINE FUNCTIONS (Keep existing) ==================
         function addPlayer() {
             const input = document.getElementById('playerNameInput');
             const name = input.value.trim();
@@ -1084,7 +1515,7 @@
             updatePlayerList();
         }
 
-        function startGame() {
+        function startOfflineGame() {
             if (players.length < 3) {
                 showError('يجب إضافة 3 لاعبين على الأقل');
                 return;
@@ -1096,45 +1527,31 @@
                 return;
             }
 
-            // Check if clue is enabled
             clueEnabled = document.getElementById('clueEnabled').checked;
 
-            // Select random word
             const category = document.getElementById('categorySelect').value;
             let wordList;
             
-            if (category === 'custom') {
-                if (customWords.length === 0) {
-                    showError('الرجاء إضافة كلمات مخصصة أولاً أو اختيار فئة أخرى');
-                    return;
-                }
-                const randomIndex = Math.floor(Math.random() * customWords.length);
-                currentWord = customWords[randomIndex].word;
-                currentHint = customWords[randomIndex].hint;
-            } else if (category === 'mixed') {
+            if (category === 'mixed') {
                 const allWords = [];
                 Object.values(words).forEach(catWords => {
                     allWords.push(...catWords);
                 });
                 wordList = allWords;
-                currentWord = wordList[Math.floor(Math.random() * wordList.length)];
-                currentHint = getHint(currentWord);
             } else {
                 wordList = words[category];
-                currentWord = wordList[Math.floor(Math.random() * wordList.length)];
-                currentHint = getHint(currentWord);
             }
 
-            // Select random impostors
+            currentWord = wordList[Math.floor(Math.random() * wordList.length)];
+            currentHint = getHint(currentWord);
+
             const shuffledPlayers = [...players].sort(() => Math.random() - 0.5);
             impostors = shuffledPlayers.slice(0, impostorCount);
 
-            // Reset and start
             currentPlayerIndex = 0;
             votes = {};
             wordVisible = false;
             
-            // Select random first player
             firstPlayer = players[Math.floor(Math.random() * players.length)];
 
             showScreen('wordScreen');
@@ -1142,7 +1559,6 @@
         }
 
         function getHint(word) {
-            // Generate a simple hint (first and last letter)
             if (word.length <= 2) return word[0] + "*";
             return word[0] + "*".repeat(word.length - 2) + word[word.length - 1];
         }
@@ -1162,7 +1578,6 @@
                 placeholderElement.style.display = 'none';
                 button.innerHTML = '<span class="eye-icon">👁️</span> إخفاء';
                 
-                // Change card color if impostor
                 if (isImpostor) {
                     if (clueEnabled) {
                         cardElement.className = 'word-display impostor-display impostor-revealed';
@@ -1176,7 +1591,6 @@
                 placeholderElement.style.display = 'block';
                 button.innerHTML = '<span class="eye-icon">👁️</span> إظهار الدور';
                 
-                // Reset to default color
                 cardElement.className = 'word-display';
             }
         }
@@ -1185,7 +1599,6 @@
             const player = players[currentPlayerIndex];
             const isImpostor = impostors.includes(player);
             
-            // Reset word visibility for each player
             wordVisible = false;
             
             document.getElementById('currentPlayerName').textContent = `🎮 ${player}`;
@@ -1194,7 +1607,6 @@
             const buttonContainer = document.getElementById('showHideButtonContainer');
             
             if (isImpostor) {
-                // Impostor - show hidden card with reveal button
                 if (clueEnabled) {
                     wordDisplay.innerHTML = `
                         <div id="wordCard" class="word-display">
@@ -1217,7 +1629,6 @@
                     `;
                 }
             } else {
-                // Normal player - show hidden word with reveal button
                 wordDisplay.innerHTML = `
                     <div id="wordCard" class="word-display">
                         <div id="actualWord" class="word-content word-hidden">
@@ -1228,7 +1639,6 @@
                 `;
             }
             
-            // Show reveal button for all players
             buttonContainer.innerHTML = `
                 <button id="toggleWordBtn" class="show-hide-btn" onclick="toggleWordVisibility()">
                     <span class="eye-icon">👁️</span> إظهار الدور
@@ -1248,18 +1658,15 @@
         function startGamePhase() {
             showScreen('gameScreen');
             
-            // Show first player alert
             const alert = document.getElementById('firstPlayerAlert');
-            alert.innerHTML = `<span class="first-player-badge">🎯 يبدأ</span> ${firstPlayer}`;
+            alert.innerHTML = `<span style="display: inline-block; background: #ffd700; color: #333; padding: 8px 20px; border-radius: 20px; font-size: 0.9em; margin-right: 10px; box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);">🎯 يبدأ</span> ${firstPlayer}`;
             alert.style.display = 'block';
 
-            // Start timer
             const duration = parseInt(document.getElementById('timerDuration').value);
             if (duration > 0) {
                 startTimer(duration);
             }
 
-            // Setup voting if enabled
             if (document.getElementById('votingEnabled').checked) {
                 document.getElementById('votingSection').style.display = 'block';
                 setupVoting();
@@ -1368,7 +1775,7 @@
             firstPlayer = "";
             wordVisible = false;
             document.getElementById('voteResults').style.display = 'none';
-            showScreen('setupScreen');
+            showScreen('offlineSetupScreen');
         }
 
         function showScreen(screenId) {
@@ -1378,23 +1785,17 @@
             document.getElementById(screenId).classList.add('active');
         }
 
-        // Allow Enter key to add player
-        document.getElementById('playerNameInput').addEventListener('keypress', function(e) {
+        // Event listeners
+        document.getElementById('playerNameInput')?.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 addPlayer();
             }
         });
 
-        // Allow Enter key to add custom word
-        document.getElementById('customWordInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                addCustomWord();
-            }
-        });
-
-        document.getElementById('customHintInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                addCustomWord();
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            if (currentRoomCode && currentPlayerName) {
+                leaveRoom();
             }
         });
     </script>
