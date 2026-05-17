@@ -704,6 +704,7 @@
             top: 20px;
             left: 20px;
             display: flex;
+            flex-direction: column;
             gap: 10px;
             z-index: 1000;
         }
@@ -730,6 +731,49 @@
             opacity: 0.6;
         }
 
+        .volume-control {
+            background: white;
+            border-radius: 25px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            width: 200px;
+        }
+
+        .volume-control label {
+            font-size: 0.9em;
+            color: #667eea;
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .volume-slider {
+            width: 100%;
+            height: 5px;
+            border-radius: 5px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+
+        .volume-slider::-moz-range-thumb {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+
         .room-controls {
             display: flex;
             gap: 10px;
@@ -738,6 +782,19 @@
 
         .room-controls button {
             flex: 1;
+        }
+
+        .host-vote-section {
+            background: #fff3e0;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .host-vote-section h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            text-align: center;
         }
 
         @media (max-width: 480px) {
@@ -785,6 +842,11 @@
                 font-size: 1.2em;
             }
 
+            .volume-control {
+                width: 150px;
+                padding: 10px;
+            }
+
             .player-item {
                 flex-direction: column;
                 gap: 10px;
@@ -808,6 +870,12 @@
         </div>
         <div class="sound-control" id="musicControl" onclick="toggleMusic()" title="تشغيل/إيقاف الموسيقى">
             <span id="musicIcon">🎵</span>
+        </div>
+        <div class="volume-control">
+            <label>الأصوات 🔊</label>
+            <input type="range" min="0" max="100" value="70" class="volume-slider" id="sfxVolume" oninput="updateSfxVolume(this.value)">
+            <label style="margin-top: 10px;">الموسيقى 🎵</label>
+            <input type="range" min="0" max="100" value="30" class="volume-slider" id="musicVolume" oninput="updateMusicVolume(this.value)">
         </div>
     </div>
 
@@ -876,6 +944,12 @@
                 <div class="room-controls">
                     <button id="toggleRoomBtn" onclick="toggleRoomStatus()" class="warning">🔒 إغلاق الغرفة</button>
                 </div>
+            </div>
+
+            <div id="hostVoteSection" class="host-vote-section" style="display: none;">
+                <h4>🗳️ التصويت على المضيف</h4>
+                <div class="vote-buttons" id="hostVoteButtons"></div>
+                <div id="hostVoteResults" style="margin-top: 10px; font-size: 0.9em; text-align: center; color: #666;"></div>
             </div>
 
             <div id="lobbyLeaderboard" class="leaderboard">
@@ -1062,6 +1136,20 @@
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         const audioContext = new AudioContext();
 
+        let sfxVolume = 0.7;
+        let musicVolume = 0.3;
+
+        function updateSfxVolume(value) {
+            sfxVolume = value / 100;
+        }
+
+        function updateMusicVolume(value) {
+            musicVolume = value / 100;
+            if (backgroundMusicGain) {
+                backgroundMusicGain.gain.value = musicVolume * 0.15;
+            }
+        }
+
         function playClickSound() {
             if (!soundEnabled) return;
             const oscillator = audioContext.createOscillator();
@@ -1070,7 +1158,7 @@
             gainNode.connect(audioContext.destination);
             oscillator.frequency.value = 800;
             oscillator.type = 'sine';
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(0.3 * sfxVolume, audioContext.currentTime);
             gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
             oscillator.start(audioContext.currentTime);
             oscillator.stop(audioContext.currentTime + 0.1);
@@ -1085,7 +1173,7 @@
             oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
             oscillator.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.3);
             oscillator.type = 'triangle';
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(0.3 * sfxVolume, audioContext.currentTime);
             gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
             oscillator.start(audioContext.currentTime);
             oscillator.stop(audioContext.currentTime + 0.3);
@@ -1099,7 +1187,7 @@
             gainNode.connect(audioContext.destination);
             oscillator.frequency.value = 1000;
             oscillator.type = 'square';
-            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(0.2 * sfxVolume, audioContext.currentTime);
             gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
             oscillator.start(audioContext.currentTime);
             oscillator.stop(audioContext.currentTime + 0.15);
@@ -1114,15 +1202,34 @@
             oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
             oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.2);
             oscillator.type = 'sine';
-            gainNode.gain.setValueAtTime(0.25, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(0.25 * sfxVolume, audioContext.currentTime);
             gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
             oscillator.start(audioContext.currentTime);
             oscillator.stop(audioContext.currentTime + 0.2);
         }
 
-        function playWinSound() {
+        function playImpostorWinSound() {
             if (!soundEnabled) return;
-            const notes = [523.25, 659.25, 783.99, 1046.50];
+            const notes = [392, 349, 311, 293, 262];
+            const duration = 0.15;
+            notes.forEach((freq, index) => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                oscillator.frequency.value = freq;
+                oscillator.type = 'sawtooth';
+                const startTime = audioContext.currentTime + (index * duration);
+                gainNode.gain.setValueAtTime(0.3 * sfxVolume, startTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+                oscillator.start(startTime);
+                oscillator.stop(startTime + duration);
+            });
+        }
+
+        function playCitizensWinSound() {
+            if (!soundEnabled) return;
+            const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
             const duration = 0.2;
             notes.forEach((freq, index) => {
                 const oscillator = audioContext.createOscillator();
@@ -1132,7 +1239,7 @@
                 oscillator.frequency.value = freq;
                 oscillator.type = 'sine';
                 const startTime = audioContext.currentTime + (index * duration);
-                gainNode.gain.setValueAtTime(0.3, startTime);
+                gainNode.gain.setValueAtTime(0.3 * sfxVolume, startTime);
                 gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
                 oscillator.start(startTime);
                 oscillator.stop(startTime + duration);
@@ -1151,7 +1258,7 @@
             oscillator2.frequency.value = 900;
             oscillator1.type = 'sine';
             oscillator2.type = 'sine';
-            gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(0.15 * sfxVolume, audioContext.currentTime);
             gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
             oscillator1.start(audioContext.currentTime);
             oscillator2.start(audioContext.currentTime);
@@ -1160,47 +1267,67 @@
         }
 
         let backgroundMusic = null;
+        let backgroundMusicGain = null;
         let musicEnabled = true;
         let soundEnabled = true;
 
         function createBackgroundMusic() {
             const musicContext = new (window.AudioContext || window.webkitAudioContext)();
-            
-            function playAmbientNote(frequency, startTime, duration) {
+            backgroundMusicGain = musicContext.createGain();
+            backgroundMusicGain.connect(musicContext.destination);
+            backgroundMusicGain.gain.value = musicVolume * 0.15;
+
+            function playNote(frequency, startTime, duration, type = 'sine') {
                 const oscillator = musicContext.createOscillator();
                 const gainNode = musicContext.createGain();
                 const filter = musicContext.createBiquadFilter();
+                
                 oscillator.connect(filter);
                 filter.connect(gainNode);
-                gainNode.connect(musicContext.destination);
+                gainNode.connect(backgroundMusicGain);
+                
                 oscillator.frequency.value = frequency;
-                oscillator.type = 'sine';
+                oscillator.type = type;
+                
                 filter.type = 'lowpass';
-                filter.frequency.value = 800;
+                filter.frequency.value = 1200;
+                filter.Q.value = 1;
+                
                 gainNode.gain.setValueAtTime(0, startTime);
-                gainNode.gain.linearRampToValueAtTime(0.05, startTime + 0.5);
-                gainNode.gain.linearRampToValueAtTime(0.05, startTime + duration - 0.5);
+                gainNode.gain.linearRampToValueAtTime(1, startTime + 0.1);
+                gainNode.gain.linearRampToValueAtTime(0.7, startTime + duration - 0.3);
                 gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
+                
                 oscillator.start(startTime);
                 oscillator.stop(startTime + duration);
             }
-            
+
             function playMusicLoop() {
                 if (!musicEnabled) return;
+                
                 const now = musicContext.currentTime;
-                const noteDuration = 2;
-                const chords = [
-                    [261.63, 329.63, 392.00],
-                    [220.00, 261.63, 329.63],
-                    [174.61, 220.00, 261.63],
-                    [196.00, 246.94, 293.66]
+                const beatDuration = 0.8;
+                
+                const melodySequence = [
+                    { notes: [523.25, 659.25, 783.99], duration: 3 },
+                    { notes: [493.88, 587.33, 739.99], duration: 3 },
+                    { notes: [440.00, 554.37, 659.25], duration: 3 },
+                    { notes: [493.88, 587.33, 698.46], duration: 3 }
                 ];
-                chords.forEach((chord, chordIndex) => {
-                    chord.forEach(frequency => {
-                        playAmbientNote(frequency, now + (chordIndex * noteDuration), noteDuration);
+                
+                const bassNotes = [261.63, 246.94, 220.00, 246.94];
+                
+                let time = now;
+                melodySequence.forEach((seq, index) => {
+                    seq.notes.forEach(freq => {
+                        playNote(freq, time, seq.duration, 'triangle');
                     });
+                    playNote(bassNotes[index], time, seq.duration * 0.9, 'sine');
+                    time += seq.duration;
                 });
-                setTimeout(playMusicLoop, (chords.length * noteDuration * 1000) - 100);
+                
+                const totalDuration = melodySequence.reduce((sum, seq) => sum + seq.duration, 0);
+                setTimeout(playMusicLoop, totalDuration * 1000 - 100);
             }
             
             backgroundMusic = { context: musicContext, play: playMusicLoop };
@@ -1289,6 +1416,7 @@
         let playersRef = null;
         let gameRef = null;
         let bannedPlayersRef = null;
+        let hostVotesRef = null;
         let hasVoted = false;
         let hasSeenWord = false;
         let hasReadyToVote = false;
@@ -1448,6 +1576,93 @@
             });
         }
 
+        function voteForHost(playerName) {
+            playClickSound();
+            if (!hostVotesRef || playerName === currentPlayerName) return;
+            hostVotesRef.child(currentPlayerName).set(playerName);
+        }
+
+        function setupHostVoting() {
+            if (!playersRef || !hostVotesRef) return;
+            
+            playersRef.once('value').then(snapshot => {
+                const playersData = snapshot.val() || {};
+                const playersList = Object.keys(playersData).filter(name => name !== currentPlayerName);
+                
+                if (playersList.length === 0) {
+                    document.getElementById('hostVoteSection').style.display = 'none';
+                    return;
+                }
+                
+                document.getElementById('hostVoteSection').style.display = 'block';
+                const voteButtons = document.getElementById('hostVoteButtons');
+                voteButtons.innerHTML = '';
+                
+                playersList.forEach(playerName => {
+                    const btn = document.createElement('button');
+                    btn.className = 'vote-btn';
+                    btn.textContent = playerName;
+                    btn.style.width = 'auto';
+                    btn.style.padding = '10px 15px';
+                    btn.onclick = () => voteForHost(playerName);
+                    voteButtons.appendChild(btn);
+                });
+            });
+        }
+
+        function checkHostVotes() {
+            if (!hostVotesRef || !playersRef) return;
+            
+            hostVotesRef.on('value', voteSnapshot => {
+                const votes = voteSnapshot.val() || {};
+                const voteCounts = {};
+                
+                Object.values(votes).forEach(votedFor => {
+                    voteCounts[votedFor] = (voteCounts[votedFor] || 0) + 1;
+                });
+                
+                playersRef.once('value').then(playerSnapshot => {
+                    const playersData = playerSnapshot.val() || {};
+                    const totalPlayers = Object.keys(playersData).length;
+                    const majority = Math.ceil(totalPlayers / 2);
+                    
+                    let resultsText = '';
+                    Object.entries(voteCounts).forEach(([player, count]) => {
+                        resultsText += `${player}: ${count} ${count === 1 ? 'صوت' : 'أصوات'} | `;
+                    });
+                    
+                    const resultsDiv = document.getElementById('hostVoteResults');
+                    if (resultsDiv) {
+                        resultsDiv.textContent = resultsText || 'لا توجد أصوات بعد';
+                    }
+                    
+                    Object.entries(voteCounts).forEach(([player, count]) => {
+                        if (count >= majority && playersData[player]) {
+                            changeHost(player);
+                        }
+                    });
+                });
+            });
+        }
+
+        function changeHost(newHostName) {
+            if (!isHost || !roomRef || !playersRef) return;
+            
+            playersRef.once('value').then(snapshot => {
+                const playersData = snapshot.val() || {};
+                
+                Object.keys(playersData).forEach(playerName => {
+                    playersRef.child(playerName).update({ isHost: playerName === newHostName });
+                });
+                
+                roomRef.update({ host: newHostName });
+                
+                if (hostVotesRef) {
+                    hostVotesRef.remove();
+                }
+            });
+        }
+
         function generateRoomCode() {
             return Math.floor(100000 + Math.random() * 900000).toString();
         }
@@ -1473,6 +1688,7 @@
             roomRef = database.ref('rooms/' + currentRoomCode);
             leaderboardRef = roomRef.child('leaderboard');
             bannedPlayersRef = roomRef.child('bannedPlayers');
+            hostVotesRef = roomRef.child('hostVotes');
             roomRef.set({
                 host: currentPlayerName,
                 status: 'waiting',
@@ -1524,6 +1740,7 @@
             roomRef = database.ref('rooms/' + currentRoomCode);
             leaderboardRef = roomRef.child('leaderboard');
             bannedPlayersRef = roomRef.child('bannedPlayers');
+            hostVotesRef = roomRef.child('hostVotes');
             roomRef.once('value').then(snapshot => {
                 if (!snapshot.exists()) {
                     showOnlineError('الغرفة غير موجودة');
@@ -1568,14 +1785,31 @@
             playersRef.on('value', snapshot => {
                 const playersData = snapshot.val() || {};
                 const playersList = Object.values(playersData);
-                if (!playersData[currentPlayerName] && !isHost) {
-                    alert('تم طردك من الغرفة');
-                    leaveRoom();
-                    return;
+                
+                if (!playersData[currentPlayerName]) {
+                    if (!isHost) {
+                        alert('تم طردك من الغرفة');
+                        leaveRoom();
+                        return;
+                    } else {
+                        const newHost = Object.keys(playersData).find(name => name !== currentPlayerName);
+                        if (newHost) {
+                            changeHost(newHost);
+                            isHost = false;
+                        }
+                    }
                 }
+                
+                if (playersData[currentPlayerName] && playersData[currentPlayerName].isHost !== isHost) {
+                    isHost = playersData[currentPlayerName].isHost;
+                    document.getElementById('hostSettings').style.display = isHost ? 'block' : 'none';
+                    document.getElementById('roomControlsDiv').style.display = isHost ? 'block' : 'none';
+                }
+                
                 updateOnlinePlayerList(playersList);
                 updateMaxImpostors(playersList.length);
                 document.getElementById('playerCount').textContent = playersList.length;
+                
                 if (isHost && playersList.length >= 3) {
                     document.getElementById('startOnlineGameBtn').style.display = 'block';
                     document.getElementById('waitingStatus').style.display = 'none';
@@ -1583,7 +1817,10 @@
                     document.getElementById('startOnlineGameBtn').style.display = 'none';
                     document.getElementById('waitingStatus').style.display = 'block';
                 }
+                
+                setupHostVoting();
             });
+            
             roomRef.child('isClosed').on('value', snapshot => {
                 const closed = snapshot.val() || false;
                 if (!isHost) {
@@ -1597,9 +1834,13 @@
                     }
                 }
             });
+            
             leaderboardRef.on('value', () => {
                 updateLeaderboard();
             });
+            
+            checkHostVotes();
+            
             gameRef = roomRef.child('game');
             gameRef.on('value', snapshot => {
                 const gameData = snapshot.val();
@@ -1987,7 +2228,14 @@
 
         function showOnlineResults(gameData) {
             showScreen('onlineResultsScreen');
-            playWinSound();
+            
+            const impostorsCaught = gameData.impostorsCaught;
+            if (impostorsCaught) {
+                playCitizensWinSound();
+            } else {
+                playImpostorWinSound();
+            }
+            
             createConfetti();
             const winnerDiv = document.getElementById('onlineWinnerAnnouncement');
             if (gameData.winner) {
@@ -2074,13 +2322,25 @@
                 playersRef.child(currentPlayerName).remove();
             }
             if (isHost && roomRef) {
-                roomRef.remove();
+                playersRef.once('value').then(snapshot => {
+                    const playersData = snapshot.val() || {};
+                    const remainingPlayers = Object.keys(playersData).filter(name => name !== currentPlayerName);
+                    
+                    if (remainingPlayers.length > 0) {
+                        const newHost = remainingPlayers[0];
+                        playersRef.child(newHost).update({ isHost: true });
+                        roomRef.update({ host: newHost });
+                    } else {
+                        roomRef.remove();
+                    }
+                });
             }
             if (playersRef) playersRef.off();
             if (gameRef) gameRef.off();
             if (roomRef) roomRef.off();
             if (leaderboardRef) leaderboardRef.off();
             if (bannedPlayersRef) bannedPlayersRef.off();
+            if (hostVotesRef) hostVotesRef.off();
             if (onlineTimerInterval) {
                 clearInterval(onlineTimerInterval);
                 onlineTimerInterval = null;
@@ -2093,6 +2353,7 @@
             gameRef = null;
             leaderboardRef = null;
             bannedPlayersRef = null;
+            hostVotesRef = null;
             hasVoted = false;
             hasSeenWord = false;
             hasReadyToVote = false;
@@ -2373,7 +2634,7 @@
         }
 
         function revealImpostors() {
-            playWinSound();
+            playCitizensWinSound();
             createConfetti();
             if (timerInterval) {
                 clearInterval(timerInterval);
