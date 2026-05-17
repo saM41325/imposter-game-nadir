@@ -699,10 +699,11 @@
             animation: confetti 3s linear;
         }
 
+        /* تعديل موقع الأزرار ليكون على اليمين */
         .sound-controls {
             position: fixed;
             top: 20px;
-            left: 20px;
+            right: 20px; /* تم التغيير من left إلى right */
             display: flex;
             flex-direction: column;
             gap: 10px;
@@ -742,7 +743,7 @@
             padding: 15px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.3);
             position: absolute;
-            left: 0;
+            right: 0; /* تم التغيير ليتناسب مع الموقع الجديد على اليمين */
             top: 70px;
             width: 250px;
             max-height: 350px;
@@ -788,16 +789,17 @@
             color: white;
         }
 
-        .music-option.mute {
-            background: #ff6b6b;
-            color: white;
+        /* تنسيق خاص لزر الإيقاف/التشغيل لتوضيح أنه مختلف عن الأغاني */
+        .music-option.toggle-btn {
+            background: #ffe0e0;
+            color: #d32f2f;
+            border: 1px solid #ffb3b3;
             margin-top: 15px;
-            border-top: 2px solid #ddd;
-            padding-top: 15px;
         }
 
-        .music-option.mute:hover {
-            background: #ee5a6f;
+        .music-option.toggle-btn:hover {
+            background: #d32f2f;
+            color: white;
         }
 
         .room-controls {
@@ -879,9 +881,10 @@
                 font-size: 1.5em;
             }
 
+            /* تعديل الموقع للموبايل ليكون على اليمين */
             .sound-controls {
                 top: 10px;
-                left: 10px;
+                right: 10px; /* تم التغيير من left إلى right */
                 gap: 5px;
             }
 
@@ -893,7 +896,7 @@
 
             .music-selector {
                 width: 200px;
-                left: -80px;
+                right: 0; /* تم التغيير لضمان عدم خروج القائمة عن الشاشة */
             }
 
             .player-item {
@@ -945,9 +948,10 @@
                 <div class="music-option" onclick="changeMusic('mystery')">
                     🕵️ موسيقى غامضة
                 </div>
-                
-                <div class="music-option mute" onclick="toggleMusic()">
-                    <span id="muteButtonText">🔇 إيقاف الموسيقى</span>
+
+                <!-- Mute Music Button -->
+                <div class="music-option toggle-btn" id="toggleMusicMenuBtn" onclick="toggleMusic()">
+                    🔇 إيقاف الموسيقى
                 </div>
             </div>
         </div>
@@ -1215,8 +1219,8 @@
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         const audioContext = new AudioContext();
 
-        let sfxVolume = 0.7;
-        let musicVolume = 0.3;
+        let sfxVolume = 0.7; // القيم الثابتة للصوت
+        let musicVolume = 0.3; // القيم الثابتة للموسيقى
         let backgroundAudioPlayer = null;
         let musicEnabled = true;
         let soundEnabled = true;
@@ -1241,24 +1245,20 @@
 
             if (musicLibrary[musicKey]) {
                 playUrlMusic(musicLibrary[musicKey]);
-                
-                // Enable music if it was muted
-                if (!musicEnabled) {
-                    musicEnabled = true;
-                    updateMuteButtonText();
-                }
             }
 
-            // Close selector
+            // إخفاء القائمة بعد الاختيار
             document.getElementById('musicSelector').classList.remove('active');
         }
 
         function updateMusicOptions() {
-            document.querySelectorAll('.music-option:not(.mute)').forEach(option => {
-                option.classList.remove('active');
+            document.querySelectorAll('.music-option').forEach(option => {
+                if(!option.classList.contains('toggle-btn')){
+                    option.classList.remove('active');
+                }
             });
             
-            const activeOption = Array.from(document.querySelectorAll('.music-option:not(.mute)')).find(opt => {
+            const activeOption = Array.from(document.querySelectorAll('.music-option')).find(opt => {
                 return opt.textContent.includes(
                     currentMusic === 'epic' ? 'حماسية' :
                     currentMusic === 'chill' ? 'هادئة' :
@@ -1282,6 +1282,7 @@
             if (musicEnabled) {
                 backgroundAudioPlayer.play().catch(error => {
                     console.log("Audio play failed:", error);
+                    alert('فشل تشغيل الموسيقى. تأكد من صحة الرابط والحصول على إذن الوصول.');
                 });
             }
         }
@@ -1303,7 +1304,17 @@
 
         function toggleMusic() {
             musicEnabled = !musicEnabled;
-            updateMuteButtonText();
+            document.getElementById('musicIcon').textContent = musicEnabled ? '🎵' : '🎶';
+            document.getElementById('musicControl').classList.toggle('muted', !musicEnabled);
+            
+            // تغيير النص في زر القائمة
+            const toggleBtn = document.getElementById('toggleMusicMenuBtn');
+            if(toggleBtn) {
+                toggleBtn.innerHTML = musicEnabled ? '🔇 إيقاف الموسيقى' : '🔊 تشغيل الموسيقى';
+                toggleBtn.style.background = musicEnabled ? '#ffe0e0' : '#e0ffe0';
+                toggleBtn.style.color = musicEnabled ? '#d32f2f' : '#2f7d32';
+                toggleBtn.style.borderColor = musicEnabled ? '#ffb3b3' : '#a3ebb1';
+            }
 
             if (backgroundAudioPlayer) {
                 if (musicEnabled) {
@@ -1316,20 +1327,11 @@
             }
 
             playClickSound();
-            
-            // Close menu after toggling
-            document.getElementById('musicSelector').classList.remove('active');
-        }
-
-        function updateMuteButtonText() {
-            const muteBtn = document.getElementById('muteButtonText');
-            muteBtn.textContent = musicEnabled ? '🔇 إيقاف الموسيقى' : '🔊 تشغيل الموسيقى';
         }
 
         // Close menu when clicking outside
         document.addEventListener('click', function(event) {
             const musicSelector = document.getElementById('musicSelector');
-            const musicControl = document.getElementById('musicControl');
             const wrapper = document.querySelector('.music-selector-wrapper');
             
             if (wrapper && !wrapper.contains(event.target)) {
