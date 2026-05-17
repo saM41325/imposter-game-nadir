@@ -989,7 +989,7 @@ function startOnlineGame() {
         }
         const category = document.getElementById('onlineCategorySelect').value;
         const impostorCount = parseInt(document.getElementById('onlineImpostorCount').value);
-        const timerDuration = parseInt(document.getElementById('onlineTimerDuration').value);
+ 	const timerDuration = parseFloat(document.getElementById('onlineTimerDuration').value) * 60; 
         const clueEnabled = document.getElementById('onlineClueEnabled').checked;
         const maxImpostors = playersList.length - 1;
         if (impostorCount >= playersList.length || impostorCount > maxImpostors) {
@@ -1680,7 +1680,7 @@ function startGamePhase() {
     const alert = document.getElementById('firstPlayerAlert');
     alert.innerHTML = `<span style="display: inline-block; background: #ffd700; color: #333; padding: 8px 20px; border-radius: 20px; font-size: 0.9em; margin-right: 10px; box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);">🎯 يبدأ</span> ${firstPlayer}`;
     alert.style.display = 'block';
-    const duration = parseInt(document.getElementById('timerDuration').value);
+    const duration = parseFloat(document.getElementById('timerDuration').value) * 60; 
     if (duration > 0) {
         startTimer(duration);
     }
