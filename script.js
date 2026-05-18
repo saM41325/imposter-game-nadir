@@ -655,6 +655,39 @@ let gameListenersActive = false;
 let roomStatusListener = null;
 
 // Helper Functions
+function resetOnlineUI() {
+    hasVoted = false;
+    hasSeenWord = false;
+    hasReadyToVote = false;
+
+    if (onlineTimerInterval) {
+        clearInterval(onlineTimerInterval);
+        onlineTimerInterval = null;
+    }
+
+    const timerDisplay = document.getElementById('onlineTimerDisplay');
+    if (timerDisplay) {
+        timerDisplay.style.display = 'none';
+        timerDisplay.textContent = '';
+        timerDisplay.classList.remove('warning');
+    }
+
+    const clearIds = [
+        'onlineWordDisplay',
+        'onlineShowHideButtonContainer',
+        'onlineReadyVoteContainer',
+        'onlineVoteButtons'
+    ];
+
+    clearIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = '';
+    });
+
+    const waiting = document.getElementById('onlineVoteWaiting');
+    if (waiting) waiting.style.display = 'none';
+}
+
 function createConfetti() {
     const colors = ['#ffd700', '#ff6b6b', '#4facfe', '#43e97b', '#f093fb'];
     for (let i = 0; i < 50; i++) {
@@ -1121,101 +1154,51 @@ function joinRoom() {
 }
 
 function listenToRoom() {
+
+    /* ✅ STATUS LISTENER — SOURCE OF TRUTH */
+    roomRef.child('status').on('value', snapshot => {
+        const status = snapshot.val();
+
+        if (status === 'waiting') {
+            resetOnlineUI();
+            showScreen('lobbyScreen');
+        }
+
+        if (status === 'playing') {
+            // gameRef listener will handle transition
+        }
+    });
+
+    /* ✅ GAME LISTENER — ONLY WHEN PLAYING */
+    gameRef = roomRef.child('game');
+
+    gameRef.on('value', snapshot => {
+        const gameData = snapshot.val();
+
+        if (!gameData) return;
+
+        roomRef.child('status').once('value').then(statusSnap => {
+            if (statusSnap.val() === 'playing') {
+                handleGameStateChange(gameData);
+            }
+        });
+    });
+
+    /* ✅ PLAYER LISTENER */
     playersRef.on('value', snapshot => {
         const playersData = snapshot.val() || {};
         const playersList = Object.values(playersData);
-        
-        if (!playersData[currentPlayerName]) {
-            if (!isHost) {
-                alert('تم طردك من الغرفة');
-                leaveRoom();
-                return;
-            }
-        }
-        
-        const newHost = Object.keys(playersData).find(name => playersData[name].isHost);
-        if (newHost) {
-            currentHostName = newHost;
-            if (currentPlayerName === newHost && !isHost) {
-                isHost = true;
-                document.getElementById('hostSettings').style.display = 'block';
-                document.getElementById('roomControlsDiv').style.display = 'block';
-            } else if (currentPlayerName !== newHost && isHost) {
-                isHost = false;
-                document.getElementById('hostSettings').style.display = 'none';
-                document.getElementById('roomControlsDiv').style.display = 'none';
-                showHostChangeNotification(newHost);
-            }
-        }
-        
+
         updateOnlinePlayerList(playersList);
-        updateMaxImpostors(playersList.length);
         document.getElementById('playerCount').textContent = playersList.length;
-        
+
         if (isHost && playersList.length >= 3) {
             document.getElementById('startOnlineGameBtn').style.display = 'block';
-            document.getElementById('waitingStatus').style.display = 'none';
         } else {
             document.getElementById('startOnlineGameBtn').style.display = 'none';
-            document.getElementById('waitingStatus').style.display = 'block';
-        }
-        
-        setupHostVoting();
-    });
-    
-    roomRef.child('isClosed').on('value', snapshot => {
-        const closed = snapshot.val() || false;
-        if (!isHost) {
-            const status = document.getElementById('roomStatus');
-            if (closed) {
-                status.textContent = '🔴 الغرفة مغلقة';
-                status.className = 'room-status closed';
-            } else {
-                status.textContent = '🟢 الغرفة مفتوحة';
-                status.className = 'room-status open';
-            }
-        }
-    });
-    
-    leaderboardRef.on('value', () => {
-        updateLeaderboard();
-    });
-    
-    checkHostVotes();
-    
-    // Setup room status listener - this is critical for syncing
-    if (roomStatusListener) {
-        roomStatusListener.cancel();
-    }
-    roomStatusListener = roomRef.child('status').on('value', snapshot => {
-        const status = snapshot.val();
-        console.log("Room status changed to:", status);
-        
-        if (status === 'waiting') {
-            // Reset all game states when room goes back to waiting
-            resetGameStates();
-            
-            // If currently in a game screen, return to lobby
-            const currentScreen = document.querySelector('.screen.active');
-            if (currentScreen && ['onlineGameScreen', 'onlineVotingScreen', 'onlineResultsScreen'].includes(currentScreen.id)) {
-                showScreen('lobbyScreen');
-            }
-        } else if (status === 'playing') {
-            // Game has started, setup game listener
-            if (!gameListenersActive) {
-                gameListenersActive = true;
-                gameRef = roomRef.child('game');
-                gameRef.on('value', snapshot => {
-                    const gameData = snapshot.val();
-                    if (gameData) {
-                        handleGameStateChange(gameData);
-                    }
-                });
-            }
         }
     });
 }
-
 function resetGameStates() {
     hasVoted = false;
     hasSeenWord = false;
@@ -1282,64 +1265,57 @@ function updateOnlinePlayerList(playersList) {
 function startOnlineGame() {
     playSelectSound();
     if (!isHost) return;
-    playersRef.once('value').then(snapshot => {
-        const playersData = snapshot.val() || {};
-        const playersList = Object.keys(playersData);
-        if (playersList.length < 3) {
-            showOnlineError('يجب وجود 3 لاعبين على الأقل');
-            return;
-        }
-        const category = document.getElementById('onlineCategorySelect').value;
-        const impostorCount = parseInt(document.getElementById('onlineImpostorCount').value);
-        const timerDuration = parseFloat(document.getElementById('onlineTimerDuration').value) * 60;
-        const clueEnabled = document.getElementById('onlineClueEnabled').checked;
-        const maxImpostors = playersList.length - 1;
-        if (impostorCount >= playersList.length || impostorCount > maxImpostors) {
-            showOnlineError(`عدد الجواسيس يجب أن يكون أقل من ${maxImpostors + 1}`);
-            return;
-        }
-        
-        const wordObj = getRandomWord(category);
-        
-        if (!wordObj) {
-            showOnlineError('لا توجد كلمات مخصصة. أضف كلمات أولاً!');
-            return;
-        }
-        
-        const selectedWord = wordObj.word;
-        const hint = getHint(wordObj);
-        const wordEmoji = wordObj.emoji || "";
-        const shuffledPlayers = [...playersList].sort(() => Math.random() - 0.5);
-        const selectedImpostors = shuffledPlayers.slice(0, impostorCount);
-        const firstPlayer = playersList[Math.floor(Math.random() * playersList.length)];
-        
-        // Reset all players' states before starting new game
-        const gameState = {
-            status: 'showing_words',
-            word: selectedWord,
-            hint: hint,
-            emoji: wordEmoji,
-            impostors: selectedImpostors.reduce((obj, name) => {
-                obj[name] = true;
-                return obj;
-            }, {}),
-            clueEnabled: clueEnabled,
-            timerDuration: timerDuration,
-            firstPlayer: firstPlayer,
-            playersSeen: {},
-            readyToVote: {},
-            votes: {},
-            startedAt: firebase.database.ServerValue.TIMESTAMP
-        };
-        
-        // First update room status to playing
-        roomRef.update({ status: 'playing' }).then(() => {
-            // Then set the game data
-            gameRef.set(gameState).catch(error => {
-                console.error("Error starting game:", error);
-                showOnlineError('فشل بدء اللعبة');
+
+    // ✅ Remove any old game completely
+    gameRef.remove().then(() => {
+
+        playersRef.once('value').then(snapshot => {
+
+            const playersData = snapshot.val() || {};
+            const playersList = Object.keys(playersData);
+
+            if (playersList.length < 3) {
+                showOnlineError('يجب وجود 3 لاعبين على الأقل');
+                return;
+            }
+
+            const category = document.getElementById('onlineCategorySelect').value;
+            const impostorCount = parseInt(document.getElementById('onlineImpostorCount').value);
+            const timerDuration = parseFloat(document.getElementById('onlineTimerDuration').value) * 60;
+            const isClueEnabled = document.getElementById('onlineClueEnabled').checked;
+
+            const wordObj = getRandomWord(category);
+            if (!wordObj) {
+                showOnlineError('لا توجد كلمات');
+                return;
+            }
+
+            const shuffled = [...playersList].sort(() => Math.random() - 0.5);
+            const selectedImpostors = shuffled.slice(0, impostorCount);
+
+            const gameState = {
+                status: 'showing_words',
+                word: wordObj.word,
+                hint: wordObj.clue,
+                emoji: wordObj.emoji || "",
+                impostors: selectedImpostors.reduce((obj, name) => {
+                    obj[name] = true;
+                    return obj;
+                }, {}),
+                clueEnabled: isClueEnabled,
+                timerDuration: timerDuration,
+                playersSeen: {},
+                readyToVote: {},
+                votes: {}
+            };
+
+            /* ✅ Important Order */
+            gameRef.set(gameState).then(() => {
+                roomRef.update({ status: 'playing' });
             });
+
         });
+
     });
 }
 
@@ -1781,12 +1757,18 @@ function showOnlineResults(gameData) {
 
 function backToLobby() {
     playClickSound();
-    resetGameStates();
-    
-    // Update leaderboard
-    updateLeaderboard();
-    
-    // Show lobby screen
+
+    if (!isHost) return;
+
+    // ✅ Delete old game first
+    gameRef.remove().then(() => {
+
+        // ✅ Then change status
+        roomRef.update({ status: 'waiting' });
+
+    });
+
+    resetOnlineUI();
     showScreen('lobbyScreen');
 }
 
