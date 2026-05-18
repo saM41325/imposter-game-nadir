@@ -17,8 +17,7 @@ const STORAGE_KEYS = {
 let customWords = [];
 
 // Impostor image (shown to impostors)
-const IMPOSTOR_IMAGE = "https://res.cloudinary.com/djiukbvoa/image/upload/v1779100133/coca-cola-trigger-growth-festival-spy-illustration-03-1800x1200_q5rpll.jpg"; // Replace with your impostor image URL
-
+const IMPOSTOR_IMAGE = "spy.jpg";
 function loadCustomWords() {
     const saved = localStorage.getItem(STORAGE_KEYS.CUSTOM_WORDS);
     if (saved) {
