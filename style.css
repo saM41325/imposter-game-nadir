@@ -293,7 +293,7 @@ button.show-hide-btn {
     padding: 40px;
     background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
     border-radius: 15px;
-    min-height: 250px;
+    min-height: 350px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -305,7 +305,8 @@ button.show-hide-btn {
 .word-display h2 {
     font-size: 2.5em;
     color: #333;
-    margin: 0;
+    margin: 10px 0;
+    word-break: break-word;
 }
 
 .word-display .hint {
@@ -315,10 +316,7 @@ button.show-hide-btn {
 }
 
 .word-content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    position: relative;
     width: 100%;
     padding: 20px;
 }
@@ -338,10 +336,6 @@ button.show-hide-btn {
 .hidden-placeholder {
     font-size: 3em;
     color: #999;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
 }
 
 .impostor-display {
@@ -385,7 +379,7 @@ button.show-hide-btn {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 150px;
+    min-height: 100px;
 }
 
 .emoji-display {
@@ -895,7 +889,7 @@ button.show-hide-btn {
     }
 
     .word-display {
-        min-height: 200px;
+        min-height: 300px;
         padding: 30px 20px;
     }
 
