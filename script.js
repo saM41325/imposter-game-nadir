@@ -16,6 +16,9 @@ const STORAGE_KEYS = {
 // Custom Words Management
 let customWords = [];
 
+// Impostor image (shown to impostors)
+const IMPOSTOR_IMAGE = "https://i.imgur.com/spy-icon.png"; // Replace with your impostor image URL
+
 function loadCustomWords() {
     const saved = localStorage.getItem(STORAGE_KEYS.CUSTOM_WORDS);
     if (saved) {
@@ -384,17 +387,228 @@ try {
     console.error("Firebase initialization error:", error);
 }
 
-// Word Database
+// Word Database with pictures and clues
 const words = {
-    places: ["مسجد", "مدرسة", "مستشفى", "مطار", "محطة قطار", "ملعب", "حديقة", "شاطئ", "جبل", "صحراء", "مكتبة", "متحف", "سوق", "محل", "مطعم", "مقهى", "فندق", "سينما", "مسرح", "حديقة حيوان"],
-    jobs: ["طبيب", "معلم", "مهندس", "محامي", "طيار", "شرطي", "رجل إطفاء", "طباخ", "نادل", "سائق", "كهربائي", "خباز", "نجار", "حداد", "بناء", "رسام", "مصور", "صحفي", "كاتب", "مؤلف"],
-    items: ["هاتف", "حاسوب", "تلفاز", "ثلاجة", "فرن", "مكيف", "مروحة", "ساعة", "كاميرا", "مفتاح", "قلم", "كتاب", "دفتر", "حقيبة", "محفظة", "نظارة", "مرآة", "فرشاة", "مشط", "صابون"],
-    animals: ["أسد", "نمر", "فهد", "ذئب", "ثعلب", "دب", "قرد", "فيل", "زرافة", "حصان", "حمار", "جمل", "بقرة", "خروف", "ماعز", "خنزير", "كلب", "قطة", "أرنب", "فأر"],
-    food: ["بيتزا", "برجر", "شاورما", "كباب", "ايس كريم", "كسكس", "ارز", "لازانيا", "سوشي", "معكرونة", "تاكو", "بوريتو", "ساندويتش", "هوت دوج", "دجاج مقلي", "ستيك", "سمك مشوي", "فاصولياء", "عدس", "بيض مقلي"],
-    countries: ["مصر", "السعودية", "الإمارات", "المغرب", "تونس", "فرنسا", "ألمانيا", "إيطاليا", "إسبانيا", "بريطانيا", "اليابان", "الصين", "كوريا", "الهند", "تايلاند", "أمريكا", "كندا", "البرازيل", "الأرجنتين", "المكسيك", "أستراليا", "نيوزيلندا", "جنوب أفريقيا", "نيجيريا", "كينيا", "روسيا", "تركيا", "إيران"],    fruits: ["تفاح", "موز", "برتقال", "عنب", "فراولة", "مانجو", "أناناس", "بطيخ", "شمام", "خوخ", "مشمش", "كمثرى", "رمان", "تين", "كيوي", "ليمون", "يوسفي", "توت", "كرز", "جوافة"],
-    insects: ["نملة", "نحلة", "ذبابة", "بعوضة", "صرصور", "جرادة", "فراشة", "دبور", "خنفساء", "دعسوقة", "دودة", "عنكبوت", "عقرب", "برغوث", "قمل"],   
-    vegetables: ["طماطم", "خيار", "خس", "جزر", "بصل", "ثوم", "فلفل", "باذنجان", "كوسا", "فاصوليا", "بازلاء", "ذرة", "قرع", "ملفوف", "قرنبيط", "بروكلي", "فجل", "لفت", "سبانخ", "بقدونس"],
-    furniture: ["سرير", "كرسي", "طاولة", "خزانة", "أريكة", "جرس", "رف", "مكتب", "مرآة", "سجادة", "ستارة", "ثريا", "مصباح", "بساط", "وسادة", "حصيرة", "مقعد", "ساعة", "شماعة", "مزهرية"],
+    places: [
+        { word: "مسجد", clue: "مكان عبادة", image: "https://example.com/mosque.jpg" },
+        { word: "مدرسة", clue: "مكان تعليم", image: "https://example.com/school.jpg" },
+        { word: "مستشفى", clue: "مكان علاج", image: "https://example.com/hospital.jpg" },
+        { word: "مطار", clue: "مكان طيران", image: "https://example.com/airport.jpg" },
+        { word: "محطة قطار", clue: "مكان سفر", image: "https://example.com/train-station.jpg" },
+        { word: "ملعب", clue: "مكان رياضة", image: "https://example.com/stadium.jpg" },
+        { word: "حديقة", clue: "مكان أخضر", image: "https://example.com/park.jpg" },
+        { word: "شاطئ", clue: "مكان بحر", image: "https://example.com/beach.jpg" },
+        { word: "جبل", clue: "مكان عالي", image: "https://example.com/mountain.jpg" },
+        { word: "صحراء", clue: "مكان رمل", image: "https://example.com/desert.jpg" },
+        { word: "مكتبة", clue: "مكان كتب", image: "https://example.com/library.jpg" },
+        { word: "متحف", clue: "مكان تاريخ", image: "https://example.com/museum.jpg" },
+        { word: "سوق", clue: "مكان تسوق", image: "https://example.com/market.jpg" },
+        { word: "محل", clue: "مكان بيع", image: "https://example.com/shop.jpg" },
+        { word: "مطعم", clue: "مكان طعام", image: "https://example.com/restaurant.jpg" },
+        { word: "مقهى", clue: "مكان قهوة", image: "https://example.com/cafe.jpg" },
+        { word: "فندق", clue: "مكان إقامة", image: "https://example.com/hotel.jpg" },
+        { word: "سينما", clue: "مكان أفلام", image: "https://example.com/cinema.jpg" },
+        { word: "مسرح", clue: "مكان عروض", image: "https://example.com/theater.jpg" },
+        { word: "حديقة حيوان", clue: "مكان حيوانات", image: "https://example.com/zoo.jpg" }
+    ],
+    jobs: [
+        { word: "طبيب", clue: "يعالج المرضى", image: "https://example.com/doctor.jpg" },
+        { word: "معلم", clue: "يعلم الطلاب", image: "https://example.com/teacher.jpg" },
+        { word: "مهندس", clue: "يصمم ويبني", image: "https://example.com/engineer.jpg" },
+        { word: "محامي", clue: "يدافع في المحكمة", image: "https://example.com/lawyer.jpg" },
+        { word: "طيار", clue: "يقود الطائرة", image: "https://example.com/pilot.jpg" },
+        { word: "شرطي", clue: "يحفظ الأمن", image: "https://example.com/police.jpg" },
+        { word: "رجل إطفاء", clue: "يطفئ الحرائق", image: "https://example.com/firefighter.jpg" },
+        { word: "طباخ", clue: "يطبخ الطعام", image: "https://example.com/chef.jpg" },
+        { word: "نادل", clue: "يقدم الطعام", image: "https://example.com/waiter.jpg" },
+        { word: "سائق", clue: "يقود السيارة", image: "https://example.com/driver.jpg" },
+        { word: "كهربائي", clue: "يصلح الكهرباء", image: "https://example.com/electrician.jpg" },
+        { word: "خباز", clue: "يخبز الخبز", image: "https://example.com/baker.jpg" },
+        { word: "نجار", clue: "يعمل بالخشب", image: "https://example.com/carpenter.jpg" },
+        { word: "حداد", clue: "يعمل بالحديد", image: "https://example.com/blacksmith.jpg" },
+        { word: "بناء", clue: "يبني المنازل", image: "https://example.com/builder.jpg" },
+        { word: "رسام", clue: "يرسم اللوحات", image: "https://example.com/painter.jpg" },
+        { word: "مصور", clue: "يلتقط الصور", image: "https://example.com/photographer.jpg" },
+        { word: "صحفي", clue: "يكتب الأخبار", image: "https://example.com/journalist.jpg" },
+        { word: "كاتب", clue: "يكتب القصص", image: "https://example.com/writer.jpg" },
+        { word: "مؤلف", clue: "يؤلف الكتب", image: "https://example.com/author.jpg" }
+    ],
+    items: [
+        { word: "هاتف", clue: "جهاز اتصال", image: "https://example.com/phone.jpg" },
+        { word: "حاسوب", clue: "جهاز إلكتروني", image: "https://example.com/computer.jpg" },
+        { word: "تلفاز", clue: "شاشة عرض", image: "https://example.com/tv.jpg" },
+        { word: "ثلاجة", clue: "جهاز تبريد", image: "https://example.com/fridge.jpg" },
+        { word: "فرن", clue: "جهاز طبخ", image: "https://example.com/oven.jpg" },
+        { word: "مكيف", clue: "جهاز تبريد", image: "https://example.com/ac.jpg" },
+        { word: "مروحة", clue: "جهاز تهوية", image: "https://example.com/fan.jpg" },
+        { word: "ساعة", clue: "جهاز وقت", image: "https://example.com/clock.jpg" },
+        { word: "كاميرا", clue: "جهاز تصوير", image: "https://example.com/camera.jpg" },
+        { word: "مفتاح", clue: "أداة فتح", image: "https://example.com/key.jpg" },
+        { word: "قلم", clue: "أداة كتابة", image: "https://example.com/pen.jpg" },
+        { word: "كتاب", clue: "للقراءة", image: "https://example.com/book.jpg" },
+        { word: "دفتر", clue: "للكتابة", image: "https://example.com/notebook.jpg" },
+        { word: "حقيبة", clue: "للحمل", image: "https://example.com/bag.jpg" },
+        { word: "محفظة", clue: "للنقود", image: "https://example.com/wallet.jpg" },
+        { word: "نظارة", clue: "للرؤية", image: "https://example.com/glasses.jpg" },
+        { word: "مرآة", clue: "للانعكاس", image: "https://example.com/mirror.jpg" },
+        { word: "فرشاة", clue: "للتنظيف", image: "https://example.com/brush.jpg" },
+        { word: "مشط", clue: "للشعر", image: "https://example.com/comb.jpg" },
+        { word: "صابون", clue: "للنظافة", image: "https://example.com/soap.jpg" }
+    ],
+    animals: [
+        { word: "أسد", clue: "ملك الغابة", image: "https://example.com/lion.jpg" },
+        { word: "نمر", clue: "حيوان مفترس", image: "https://example.com/tiger.jpg" },
+        { word: "فهد", clue: "أسرع حيوان", image: "https://example.com/cheetah.jpg" },
+        { word: "ذئب", clue: "حيوان مفترس", image: "https://example.com/wolf.jpg" },
+        { word: "ثعلب", clue: "حيوان ذكي", image: "https://example.com/fox.jpg" },
+        { word: "دب", clue: "حيوان ضخم", image: "https://example.com/bear.jpg" },
+        { word: "قرد", clue: "حيوان ذكي", image: "https://example.com/monkey.jpg" },
+        { word: "فيل", clue: "أكبر الحيوانات", image: "https://example.com/elephant.jpg" },
+        { word: "زرافة", clue: "أطول حيوان", image: "https://example.com/giraffe.jpg" },
+        { word: "حصان", clue: "حيوان ركوب", image: "https://example.com/horse.jpg" },
+        { word: "حمار", clue: "حيوان حمل", image: "https://example.com/donkey.jpg" },
+        { word: "جمل", clue: "سفينة الصحراء", image: "https://example.com/camel.jpg" },
+        { word: "بقرة", clue: "حيوان الحليب", image: "https://example.com/cow.jpg" },
+        { word: "خروف", clue: "حيوان الصوف", image: "https://example.com/sheep.jpg" },
+        { word: "ماعز", clue: "حيوان أليف", image: "https://example.com/goat.jpg" },
+        { word: "خنزير", clue: "حيوان مزرعة", image: "https://example.com/pig.jpg" },
+        { word: "كلب", clue: "صديق الإنسان", image: "https://example.com/dog.jpg" },
+        { word: "قطة", clue: "حيوان أليف", image: "https://example.com/cat.jpg" },
+        { word: "أرنب", clue: "حيوان سريع", image: "https://example.com/rabbit.jpg" },
+        { word: "فأر", clue: "حيوان صغير", image: "https://example.com/mouse.jpg" }
+    ],
+    meals: [
+        { word: "بيتزا", clue: "طعام إيطالي", image: "https://example.com/pizza.jpg" },
+        { word: "برجر", clue: "وجبة سريعة", image: "https://example.com/burger.jpg" },
+        { word: "شاورما", clue: "طعام عربي", image: "https://example.com/shawarma.jpg" },
+        { word: "كباب", clue: "لحم مشوي", image: "https://example.com/kebab.jpg" },
+        { word: "ايس كريم", clue: "حلوى باردة", image: "https://example.com/icecream.jpg" },
+        { word: "كسكس", clue: "طعام مغربي", image: "https://example.com/couscous.jpg" },
+        { word: "ارز", clue: "حبوب", image: "https://example.com/rice.jpg" },
+        { word: "لازانيا", clue: "معكرونة إيطالية", image: "https://example.com/lasagna.jpg" },
+        { word: "سوشي", clue: "طعام ياباني", image: "https://example.com/sushi.jpg" },
+        { word: "معكرونة", clue: "باستا", image: "https://example.com/pasta.jpg" },
+        { word: "تاكو", clue: "طعام مكسيكي", image: "https://example.com/taco.jpg" },
+        { word: "بوريتو", clue: "لفائف مكسيكية", image: "https://example.com/burrito.jpg" },
+        { word: "ساندويتش", clue: "وجبة خفيفة", image: "https://example.com/sandwich.jpg" },
+        { word: "هوت دوج", clue: "نقانق", image: "https://example.com/hotdog.jpg" },
+        { word: "دجاج مقلي", clue: "وجبة سريعة", image: "https://example.com/fried-chicken.jpg" },
+        { word: "ستيك", clue: "لحم بقري", image: "https://example.com/steak.jpg" },
+        { word: "سمك مشوي", clue: "طعام بحري", image: "https://example.com/grilled-fish.jpg" },
+        { word: "فاصولياء", clue: "بقوليات", image: "https://example.com/beans.jpg" },
+        { word: "عدس", clue: "حبوب", image: "https://example.com/lentils.jpg" },
+        { word: "بيض مقلي", clue: "وجبة إفطار", image: "https://example.com/fried-eggs.jpg" }
+    ],
+    countries: [
+        { word: "مصر", clue: "أرض الأهرامات", image: "https://example.com/egypt.jpg" },
+        { word: "السعودية", clue: "أرض الحرمين", image: "https://example.com/saudi.jpg" },
+        { word: "الإمارات", clue: "برج خليفة", image: "https://example.com/uae.jpg" },
+        { word: "المغرب", clue: "المغرب العربي", image: "https://example.com/morocco.jpg" },
+        { word: "تونس", clue: "شمال أفريقيا", image: "https://example.com/tunisia.jpg" },
+        { word: "فرنسا", clue: "برج إيفل", image: "https://example.com/france.jpg" },
+        { word: "ألمانيا", clue: "أوروبا", image: "https://example.com/germany.jpg" },
+        { word: "إيطاليا", clue: "برج بيزا", image: "https://example.com/italy.jpg" },
+        { word: "إسبانيا", clue: "أوروبا", image: "https://example.com/spain.jpg" },
+        { word: "بريطانيا", clue: "ساعة بيج بن", image: "https://example.com/uk.jpg" },
+        { word: "اليابان", clue: "الشمس المشرقة", image: "https://example.com/japan.jpg" },
+        { word: "الصين", clue: "سور الصين", image: "https://example.com/china.jpg" },
+        { word: "كوريا", clue: "شرق آسيا", image: "https://example.com/korea.jpg" },
+        { word: "الهند", clue: "تاج محل", image: "https://example.com/india.jpg" },
+        { word: "تايلاند", clue: "جنوب آسيا", image: "https://example.com/thailand.jpg" },
+        { word: "أمريكا", clue: "تمثال الحرية", image: "https://example.com/usa.jpg" },
+        { word: "كندا", clue: "أمريكا الشمالية", image: "https://example.com/canada.jpg" },
+        { word: "البرازيل", clue: "أمريكا الجنوبية", image: "https://example.com/brazil.jpg" },
+        { word: "الأرجنتين", clue: "أمريكا الجنوبية", image: "https://example.com/argentina.jpg" },
+        { word: "المكسيك", clue: "أمريكا الوسطى", image: "https://example.com/mexico.jpg" },
+        { word: "أستراليا", clue: "قارة", image: "https://example.com/australia.jpg" },
+        { word: "نيوزيلندا", clue: "أوقيانوسيا", image: "https://example.com/newzealand.jpg" },
+        { word: "جنوب أفريقيا", clue: "أفريقيا", image: "https://example.com/southafrica.jpg" },
+        { word: "نيجيريا", clue: "غرب أفريقيا", image: "https://example.com/nigeria.jpg" },
+        { word: "كينيا", clue: "شرق أفريقيا", image: "https://example.com/kenya.jpg" },
+        { word: "روسيا", clue: "أكبر دولة", image: "https://example.com/russia.jpg" },
+        { word: "تركيا", clue: "بين قارتين", image: "https://example.com/turkey.jpg" },
+        { word: "إيران", clue: "الشرق الأوسط", image: "https://example.com/iran.jpg" }
+    ],
+    fruits: [
+        { word: "تفاح", clue: "فاكهة حمراء", image: "https://example.com/apple.jpg" },
+        { word: "موز", clue: "فاكهة صفراء", image: "https://example.com/banana.jpg" },
+        { word: "برتقال", clue: "فاكهة برتقالية", image: "https://example.com/orange.jpg" },
+        { word: "عنب", clue: "فاكهة عناقيد", image: "https://example.com/grapes.jpg" },
+        { word: "فراولة", clue: "فاكهة حمراء", image: "https://example.com/strawberry.jpg" },
+        { word: "مانجو", clue: "فاكهة استوائية", image: "https://example.com/mango.jpg" },
+        { word: "أناناس", clue: "فاكهة استوائية", image: "https://example.com/pineapple.jpg" },
+        { word: "بطيخ", clue: "فاكهة صيفية", image: "https://example.com/watermelon.jpg" },
+        { word: "شمام", clue: "فاكهة صيفية", image: "https://example.com/melon.jpg" },
+        { word: "خوخ", clue: "فاكهة صيفية", image: "https://example.com/peach.jpg" },
+        { word: "مشمش", clue: "فاكهة برتقالية", image: "https://example.com/apricot.jpg" },
+        { word: "كمثرى", clue: "فاكهة خضراء", image: "https://example.com/pear.jpg" },
+        { word: "رمان", clue: "فاكهة حمراء", image: "https://example.com/pomegranate.jpg" },
+        { word: "تين", clue: "فاكهة صيفية", image: "https://example.com/fig.jpg" },
+        { word: "كيوي", clue: "فاكهة خضراء", image: "https://example.com/kiwi.jpg" },
+        { word: "ليمون", clue: "فاكهة حامضة", image: "https://example.com/lemon.jpg" },
+        { word: "يوسفي", clue: "فاكهة شتوية", image: "https://example.com/tangerine.jpg" },
+        { word: "توت", clue: "فاكهة صغيرة", image: "https://example.com/berries.jpg" },
+        { word: "كرز", clue: "فاكهة حمراء", image: "https://example.com/cherry.jpg" },
+        { word: "جوافة", clue: "فاكهة استوائية", image: "https://example.com/guava.jpg" }
+    ],
+    insects: [
+        { word: "نملة", clue: "حشرة صغيرة", image: "https://example.com/ant.jpg" },
+        { word: "نحلة", clue: "تنتج العسل", image: "https://example.com/bee.jpg" },
+        { word: "ذبابة", clue: "حشرة طائرة", image: "https://example.com/fly.jpg" },
+        { word: "بعوضة", clue: "حشرة لاسعة", image: "https://example.com/mosquito.jpg" },
+        { word: "صرصور", clue: "حشرة منزلية", image: "https://example.com/cockroach.jpg" },
+        { word: "جرادة", clue: "حشرة قافزة", image: "https://example.com/grasshopper.jpg" },
+        { word: "فراشة", clue: "حشرة ملونة", image: "https://example.com/butterfly.jpg" },
+        { word: "دبور", clue: "حشرة لاسعة", image: "https://example.com/wasp.jpg" },
+        { word: "خنفساء", clue: "حشرة صلبة", image: "https://example.com/beetle.jpg" },
+        { word: "دعسوقة", clue: "حشرة حمراء", image: "https://example.com/ladybug.jpg" },
+        { word: "دودة", clue: "تزحف", image: "https://example.com/worm.jpg" },
+        { word: "عنكبوت", clue: "ينسج الخيوط", image: "https://example.com/spider.jpg" },
+        { word: "عقرب", clue: "له ذيل سام", image: "https://example.com/scorpion.jpg" },
+        { word: "برغوث", clue: "حشرة قافزة", image: "https://example.com/flea.jpg" },
+        { word: "قمل", clue: "حشرة الشعر", image: "https://example.com/lice.jpg" }
+    ],
+    vegetables: [
+        { word: "طماطم", clue: "خضار أحمر", image: "https://example.com/tomato.jpg" },
+        { word: "خيار", clue: "خضار أخضر", image: "https://example.com/cucumber.jpg" },
+        { word: "خس", clue: "خضار ورقي", image: "https://example.com/lettuce.jpg" },
+        { word: "جزر", clue: "خضار برتقالي", image: "https://example.com/carrot.jpg" },
+        { word: "بصل", clue: "يبكي العين", image: "https://example.com/onion.jpg" },
+        { word: "ثوم", clue: "نكهة قوية", image: "https://example.com/garlic.jpg" },
+        { word: "فلفل", clue: "خضار حار", image: "https://example.com/pepper.jpg" },
+        { word: "باذنجان", clue: "خضار بنفسجي", image: "https://example.com/eggplant.jpg" },
+        { word: "كوسا", clue: "خضار أخضر", image: "https://example.com/zucchini.jpg" },
+        { word: "فاصوليا", clue: "بقوليات", image: "https://example.com/beans.jpg" },
+        { word: "بازلاء", clue: "خضار أخضر", image: "https://example.com/peas.jpg" },
+        { word: "ذرة", clue: "خضار أصفر", image: "https://example.com/corn.jpg" },
+        { word: "قرع", clue: "خضار برتقالي", image: "https://example.com/pumpkin.jpg" },
+        { word: "ملفوف", clue: "خضار ورقي", image: "https://example.com/cabbage.jpg" },
+        { word: "قرنبيط", clue: "خضار أبيض", image: "https://example.com/cauliflower.jpg" },
+        { word: "بروكلي", clue: "خضار أخضر", image: "https://example.com/broccoli.jpg" },
+        { word: "فجل", clue: "خضار أحمر", image: "https://example.com/radish.jpg" },
+        { word: "لفت", clue: "خضار جذري", image: "https://example.com/turnip.jpg" },
+        { word: "سبانخ", clue: "خضار ورقي", image: "https://example.com/spinach.jpg" },
+        { word: "بقدونس", clue: "نبات عطري", image: "https://example.com/parsley.jpg" }
+    ],
+    furniture: [
+        { word: "سرير", clue: "للنوم", image: "https://example.com/bed.jpg" },
+        { word: "كرسي", clue: "للجلوس", image: "https://example.com/chair.jpg" },
+        { word: "طاولة", clue: "للأكل", image: "https://example.com/table.jpg" },
+        { word: "خزانة", clue: "للملابس", image: "https://example.com/wardrobe.jpg" },
+        { word: "أريكة", clue: "للجلوس", image: "https://example.com/sofa.jpg" },
+        { word: "رف", clue: "للكتب", image: "https://example.com/shelf.jpg" },
+        { word: "مكتب", clue: "للعمل", image: "https://example.com/desk.jpg" },
+        { word: "مرآة", clue: "للنظر", image: "https://example.com/mirror.jpg" },
+        { word: "سجادة", clue: "للأرضية", image: "https://example.com/carpet.jpg" },
+        { word: "ستارة", clue: "للنافذة", image: "https://example.com/curtain.jpg" },
+        { word: "ثريا", clue: "للإضاءة", image: "https://example.com/chandelier.jpg" },
+        { word: "مصباح", clue: "للإضاءة", image: "https://example.com/lamp.jpg" },
+        { word: "وسادة", clue: "للراحة", image: "https://example.com/pillow.jpg" },
+        { word: "مقعد", clue: "للجلوس", image: "https://example.com/stool.jpg" },
+        { word: "ساعة", clue: "للوقت", image: "https://example.com/clock.jpg" },
+        { word: "شماعة", clue: "للملابس", image: "https://example.com/hanger.jpg" },
+        { word: "مزهرية", clue: "للزهور", image: "https://example.com/vase.jpg" }
+    ],
     custom: []
 };
 
@@ -428,6 +642,7 @@ let players = [];
 let impostors = [];
 let currentWord = "";
 let currentHint = "";
+let currentWordImage = "";
 let currentPlayerIndex = 0;
 let timerInterval = null;
 let votes = {};
@@ -753,6 +968,42 @@ function showOnlineError(message) {
     }, 3000);
 }
 
+// Helper function to get random word
+function getRandomWord(category) {
+    let wordList;
+    if (category === 'custom') {
+        loadCustomWords();
+        if (customWords.length === 0) {
+            return null;
+        }
+        // Custom words as objects
+        wordList = customWords.map(w => ({ word: w, clue: "كلمة مخصصة", image: "" }));
+    } else if (category === 'mixed') {
+        const allWords = [];
+        Object.values(words).forEach(catWords => {
+            if (Array.isArray(catWords) && catWords.length > 0) {
+                allWords.push(...catWords);
+            }
+        });
+        wordList = allWords;
+    } else {
+        wordList = words[category];
+    }
+    
+    if (!wordList || wordList.length === 0) return null;
+    return wordList[Math.floor(Math.random() * wordList.length)];
+}
+
+// Update getHint function to get clue from word object
+function getHint(wordObj) {
+    if (typeof wordObj === 'string') {
+        // Fallback for old format
+        if (wordObj.length <= 2) return wordObj[0] + "*";
+        return wordObj[0] + "*".repeat(wordObj.length - 2) + wordObj[wordObj.length - 1];
+    }
+    return wordObj.clue || "لا يوجد تلميح";
+}
+
 function createRoom() {
     playClickSound();
     const name = document.getElementById('playerName').value.trim();
@@ -1010,7 +1261,7 @@ function startOnlineGame() {
         }
         const category = document.getElementById('onlineCategorySelect').value;
         const impostorCount = parseInt(document.getElementById('onlineImpostorCount').value);
-        const timerDuration = parseFloat(document.getElementById('onlineTimerDuration').value) * 60; // Convert minutes to seconds
+        const timerDuration = parseFloat(document.getElementById('onlineTimerDuration').value) * 60;
         const clueEnabled = document.getElementById('onlineClueEnabled').checked;
         const maxImpostors = playersList.length - 1;
         if (impostorCount >= playersList.length || impostorCount > maxImpostors) {
@@ -1018,38 +1269,25 @@ function startOnlineGame() {
             return;
         }
         
-        let wordList;
-        if (category === 'custom') {
-            loadCustomWords();
-            if (customWords.length === 0) {
-                showOnlineError('لا توجد كلمات مخصصة. أضف كلمات أولاً!');
-                return;
-            }
-            wordList = customWords;
-        } else if (category === 'mixed') {
-            const allWords = [];
-            Object.values(words).forEach(catWords => {
-                if (Array.isArray(catWords) && catWords.length > 0) {
-                    allWords.push(...catWords);
-                }
-            });
-            wordList = allWords;
-        } else {
-            wordList = words[category];
+        const wordObj = getRandomWord(category);
+        
+        if (!wordObj) {
+            showOnlineError('لا توجد كلمات مخصصة. أضف كلمات أولاً!');
+            return;
         }
         
-        const selectedWord = wordList[Math.floor(Math.random() * wordList.length)];
-        const hint = getHint(selectedWord);
+        const selectedWord = wordObj.word;
+        const hint = getHint(wordObj);
+        const wordImage = wordObj.image || "";
         const shuffledPlayers = [...playersList].sort(() => Math.random() - 0.5);
         const selectedImpostors = shuffledPlayers.slice(0, impostorCount);
-        
-        // Select random first player
         const firstPlayer = playersList[Math.floor(Math.random() * playersList.length)];
         
         const gameState = {
             status: 'showing_words',
             word: selectedWord,
             hint: hint,
+            image: wordImage,
             impostors: selectedImpostors.reduce((obj, name) => {
                 obj[name] = true;
                 return obj;
@@ -1109,34 +1347,31 @@ function showOnlineWord(gameData) {
     const wordDisplay = document.getElementById('onlineWordDisplay');
     const buttonContainer = document.getElementById('onlineShowHideButtonContainer');
     const readyVoteContainer = document.getElementById('onlineReadyVoteContainer');
+    
     if (!hasSeenWord) {
         if (isImpostor) {
-            if (gameData.clueEnabled) {
-                wordDisplay.innerHTML = `
-                    <div id="onlineWordCard" class="word-display">
-                        <div id="onlineActualWord" class="word-content word-hidden">
-                            <h2>🕵️ أنت الجاسوس!</h2>
-                            <div class="hint">تلميح: ${gameData.hint}</div>
+            // Show impostor with clue and impostor image
+            wordDisplay.innerHTML = `
+                <div id="onlineWordCard" class="word-display impostor-display">
+                    <div id="onlineActualWord" class="word-content word-hidden">
+                        <h2>🕵️ أنت الجاسوس!</h2>
+                        <div class="clue-text">التلميح: ${gameData.hint}</div>
+                        <div id="onlineImageContainer" class="word-image-container image-hidden">
+                            <img src="${IMPOSTOR_IMAGE}" alt="Impostor" class="impostor-image">
                         </div>
-                        <div id="onlinePlaceholder" class="hidden-placeholder">🔒</div>
                     </div>
-                `;
-            } else {
-                wordDisplay.innerHTML = `
-                    <div id="onlineWordCard" class="word-display">
-                        <div id="onlineActualWord" class="word-content word-hidden">
-                            <h2>🕵️ أنت الجاسوس!</h2>
-                            <p style="margin-top: 15px; font-size: 1.1em;">لا يوجد تلميح</p>
-                        </div>
-                        <div id="onlinePlaceholder" class="hidden-placeholder">🔒</div>
-                    </div>
-                `;
-            }
+                    <div id="onlinePlaceholder" class="hidden-placeholder">🔒</div>
+                </div>
+            `;
         } else {
+            // Show word with image for normal players
             wordDisplay.innerHTML = `
                 <div id="onlineWordCard" class="word-display">
                     <div id="onlineActualWord" class="word-content word-hidden">
                         <h2>${gameData.word}</h2>
+                        <div id="onlineImageContainer" class="word-image-container image-hidden">
+                            ${gameData.image ? `<img src="${gameData.image}" alt="${gameData.word}" class="word-image">` : ''}
+                        </div>
                     </div>
                     <div id="onlinePlaceholder" class="hidden-placeholder">🔒</div>
                 </div>
@@ -1148,6 +1383,7 @@ function showOnlineWord(gameData) {
             </button>
         `;
     }
+    
     if (gameData.timerEndTime) {
         startOnlineTimerDisplay(gameData.timerEndTime);
         if (!hasReadyToVote) {
@@ -1171,10 +1407,19 @@ function toggleOnlineWordVisibility() {
     const wordElement = document.getElementById('onlineActualWord');
     const placeholderElement = document.getElementById('onlinePlaceholder');
     const button = document.getElementById('onlineToggleWordBtn');
+    const imageContainer = document.getElementById('onlineImageContainer');
+    
     if (!hasSeenWord) {
         wordElement.classList.remove('word-hidden');
         wordElement.classList.add('word-visible');
         placeholderElement.style.display = 'none';
+        
+        // Show image
+        if (imageContainer) {
+            imageContainer.classList.remove('image-hidden');
+            imageContainer.classList.add('image-visible');
+        }
+        
         button.innerHTML = '<span class="eye-icon">✅</span> شاهدت الدور';
         button.disabled = true;
         hasSeenWord = true;
@@ -1238,7 +1483,7 @@ function checkAllPlayersSeen(gameData) {
             if (isHost) {
                 setTimeout(() => {
                     startOnlineTimer(gameData.timerDuration);
-                }, 3000); // Increased delay to show announcement
+                }, 3000);
             }
         }
     });
@@ -1690,28 +1935,17 @@ function startOfflineGame() {
     clueEnabled = document.getElementById('clueEnabled').checked;
     const category = document.getElementById('categorySelect').value;
     
-    let wordList;
-    if (category === 'custom') {
-        loadCustomWords();
-        if (customWords.length === 0) {
-            showError('لا توجد كلمات مخصصة. أضف كلمات أولاً!');
-            return;
-        }
-        wordList = customWords;
-    } else if (category === 'mixed') {
-        const allWords = [];
-        Object.values(words).forEach(catWords => {
-            if (Array.isArray(catWords) && catWords.length > 0) {
-                allWords.push(...catWords);
-            }
-        });
-        wordList = allWords;
-    } else {
-        wordList = words[category];
+    const wordObj = getRandomWord(category);
+    
+    if (!wordObj) {
+        showError('لا توجد كلمات مخصصة. أضف كلمات أولاً!');
+        return;
     }
     
-    currentWord = wordList[Math.floor(Math.random() * wordList.length)];
-    currentHint = getHint(currentWord);
+    currentWord = wordObj.word;
+    currentHint = getHint(wordObj);
+    currentWordImage = wordObj.image || "";
+    
     const shuffledPlayers = [...players].sort(() => Math.random() - 0.5);
     impostors = shuffledPlayers.slice(0, impostorCount);
     currentPlayerIndex = 0;
@@ -1722,9 +1956,48 @@ function startOfflineGame() {
     showPlayerWord();
 }
 
-function getHint(word) {
-    if (word.length <= 2) return word[0] + "*";
-    return word[0] + "*".repeat(word.length - 2) + word[word.length - 1];
+function showPlayerWord() {
+    const player = players[currentPlayerIndex];
+    const isImpostor = impostors.includes(player);
+    wordVisible = false;
+    document.getElementById('currentPlayerName').textContent = `🎮 ${player}`;
+    const wordDisplay = document.getElementById('wordDisplay');
+    const buttonContainer = document.getElementById('showHideButtonContainer');
+    
+    if (isImpostor) {
+        // Show impostor with clue and impostor image
+        wordDisplay.innerHTML = `
+            <div id="wordCard" class="word-display impostor-display">
+                <div id="actualWord" class="word-content word-hidden">
+                    <h2>🕵️ أنت الجاسوس!</h2>
+                    <div class="clue-text">التلميح: ${currentHint}</div>
+                    <div id="imageContainer" class="word-image-container image-hidden">
+                        <img src="${IMPOSTOR_IMAGE}" alt="Impostor" class="impostor-image">
+                    </div>
+                </div>
+                <div id="placeholder" class="hidden-placeholder">🔒</div>
+            </div>
+        `;
+    } else {
+        // Show word with image for normal players
+        wordDisplay.innerHTML = `
+            <div id="wordCard" class="word-display">
+                <div id="actualWord" class="word-content word-hidden">
+                    <h2>${currentWord}</h2>
+                    <div id="imageContainer" class="word-image-container image-hidden">
+                        ${currentWordImage ? `<img src="${currentWordImage}" alt="${currentWord}" class="word-image">` : ''}
+                    </div>
+                </div>
+                <div id="placeholder" class="hidden-placeholder">🔒</div>
+            </div>
+        `;
+    }
+    
+    buttonContainer.innerHTML = `
+        <button id="toggleWordBtn" class="show-hide-btn" onclick="toggleWordVisibility()">
+            <span class="eye-icon">👁️</span> إظهار الدور
+        </button>
+    `;
 }
 
 function toggleWordVisibility() {
@@ -1734,73 +2007,40 @@ function toggleWordVisibility() {
     const cardElement = document.getElementById('wordCard');
     const placeholderElement = document.getElementById('placeholder');
     const button = document.getElementById('toggleWordBtn');
+    const imageContainer = document.getElementById('imageContainer');
     const player = players[currentPlayerIndex];
     const isImpostor = impostors.includes(player);
+    
     if (wordVisible) {
         wordElement.classList.remove('word-hidden');
         wordElement.classList.add('word-visible');
         placeholderElement.style.display = 'none';
-        button.innerHTML = '<span class="eye-icon">👁️</span> إخفاء';
+        
+        // Show image
+        if (imageContainer) {
+            imageContainer.classList.remove('image-hidden');
+            imageContainer.classList.add('image-visible');
+        }
+        
+        button.innerHTML = '<span class="eye-icon">🙈</span> إخفاء';
+        
         if (isImpostor) {
-            if (clueEnabled) {
-                cardElement.className = 'word-display impostor-display impostor-revealed';
-            } else {
-                cardElement.className = 'word-display impostor-display-no-hint impostor-revealed';
-            }
+            cardElement.className = 'word-display impostor-display impostor-revealed';
         }
     } else {
         wordElement.classList.remove('word-visible');
         wordElement.classList.add('word-hidden');
         placeholderElement.style.display = 'block';
+        
+        // Hide image
+        if (imageContainer) {
+            imageContainer.classList.remove('image-visible');
+            imageContainer.classList.add('image-hidden');
+        }
+        
         button.innerHTML = '<span class="eye-icon">👁️</span> إظهار الدور';
         cardElement.className = 'word-display';
     }
-}
-
-function showPlayerWord() {
-    const player = players[currentPlayerIndex];
-    const isImpostor = impostors.includes(player);
-    wordVisible = false;
-    document.getElementById('currentPlayerName').textContent = `🎮 ${player}`;
-    const wordDisplay = document.getElementById('wordDisplay');
-    const buttonContainer = document.getElementById('showHideButtonContainer');
-    if (isImpostor) {
-        if (clueEnabled) {
-            wordDisplay.innerHTML = `
-                <div id="wordCard" class="word-display">
-                    <div id="actualWord" class="word-content word-hidden">
-                        <h2>🕵️ أنت الجاسوس!</h2>
-                        <div class="hint">تلميح: ${currentHint}</div>
-                    </div>
-                    <div id="placeholder" class="hidden-placeholder">🔒</div>
-                </div>
-            `;
-        } else {
-            wordDisplay.innerHTML = `
-                <div id="wordCard" class="word-display">
-                    <div id="actualWord" class="word-content word-hidden">
-                        <h2>🕵️ أنت الجاسوس!</h2>
-                        <p style="margin-top: 15px; font-size: 1.1em;">لا يوجد تلميح</p>
-                    </div>
-                    <div id="placeholder" class="hidden-placeholder">🔒</div>
-                </div>
-            `;
-        }
-    } else {
-        wordDisplay.innerHTML = `
-            <div id="wordCard" class="word-display">
-                <div id="actualWord" class="word-content word-hidden">
-                    <h2>${currentWord}</h2>
-                </div>
-                <div id="placeholder" class="hidden-placeholder">🔒</div>
-            </div>
-        `;
-    }
-    buttonContainer.innerHTML = `
-        <button id="toggleWordBtn" class="show-hide-btn" onclick="toggleWordVisibility()">
-            <span class="eye-icon">👁️</span> إظهار الدور
-        </button>
-    `;
 }
 
 function nextPlayer() {
@@ -1818,7 +2058,7 @@ function startGamePhase() {
     const alert = document.getElementById('firstPlayerAlert');
     alert.innerHTML = `<span style="display: inline-block; background: #ffd700; color: #333; padding: 8px 20px; border-radius: 20px; font-size: 0.9em; margin-right: 10px; box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);">🎯 يبدأ</span> ${firstPlayer}`;
     alert.style.display = 'block';
-    const duration = parseFloat(document.getElementById('timerDuration').value) * 60; // Convert minutes to seconds
+    const duration = parseFloat(document.getElementById('timerDuration').value);
     if (duration > 0) {
         startTimer(duration);
     }
@@ -1924,6 +2164,7 @@ function resetGame() {
     impostors = [];
     currentWord = "";
     currentHint = "";
+    currentWordImage = "";
     currentPlayerIndex = 0;
     votes = {};
     firstPlayer = "";
