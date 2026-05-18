@@ -1357,7 +1357,7 @@ function showOnlineWord(gameData) {
                         <h2>🕵️ أنت الجاسوس!</h2>
                         <div class="clue-text">التلميح: ${gameData.hint}</div>
                         <div id="onlineImageContainer" class="word-image-container image-hidden">
-                            <img src="${IMPOSTOR_IMAGE}" alt="Impostor" class="impostor-image">
+                            <img src="${IMPOSTOR_IMAGE}" alt="Impostor" class="impostor-image" onload="this.style.opacity=1" onerror="this.style.display='none'" style="opacity:0; transition: opacity 0.3s;">
                         </div>
                     </div>
                     <div id="onlinePlaceholder" class="hidden-placeholder">🔒</div>
@@ -1365,12 +1365,16 @@ function showOnlineWord(gameData) {
             `;
         } else {
             // Show word with image for normal players
+            const imageHTML = gameData.image ? 
+                `<img src="${gameData.image}" alt="${gameData.word}" class="word-image" onload="this.style.opacity=1" onerror="this.style.display='none'" style="opacity:0; transition: opacity 0.3s;">` : 
+                '<p style="color: #999; font-size: 0.9em;">لا توجد صورة متاحة</p>';
+            
             wordDisplay.innerHTML = `
                 <div id="onlineWordCard" class="word-display">
                     <div id="onlineActualWord" class="word-content word-hidden">
                         <h2>${gameData.word}</h2>
                         <div id="onlineImageContainer" class="word-image-container image-hidden">
-                            ${gameData.image ? `<img src="${gameData.image}" alt="${gameData.word}" class="word-image">` : ''}
+                            ${imageHTML}
                         </div>
                     </div>
                     <div id="onlinePlaceholder" class="hidden-placeholder">🔒</div>
@@ -1401,7 +1405,6 @@ function showOnlineWord(gameData) {
     checkAllPlayersSeen(gameData);
     checkAllPlayersReady(gameData);
 }
-
 function toggleOnlineWordVisibility() {
     playRevealSound();
     const wordElement = document.getElementById('onlineActualWord');
@@ -1972,7 +1975,7 @@ function showPlayerWord() {
                     <h2>🕵️ أنت الجاسوس!</h2>
                     <div class="clue-text">التلميح: ${currentHint}</div>
                     <div id="imageContainer" class="word-image-container image-hidden">
-                        <img src="${IMPOSTOR_IMAGE}" alt="Impostor" class="impostor-image">
+                        <img src="${IMPOSTOR_IMAGE}" alt="Impostor" class="impostor-image" onload="this.style.opacity=1" onerror="this.style.display='none'" style="opacity:0; transition: opacity 0.3s;">
                     </div>
                 </div>
                 <div id="placeholder" class="hidden-placeholder">🔒</div>
@@ -1980,12 +1983,16 @@ function showPlayerWord() {
         `;
     } else {
         // Show word with image for normal players
+        const imageHTML = currentWordImage ? 
+            `<img src="${currentWordImage}" alt="${currentWord}" class="word-image" onload="this.style.opacity=1" onerror="this.style.display='none'" style="opacity:0; transition: opacity 0.3s;">` : 
+            '<p style="color: #999; font-size: 0.9em;">لا توجد صورة متاحة</p>';
+        
         wordDisplay.innerHTML = `
             <div id="wordCard" class="word-display">
                 <div id="actualWord" class="word-content word-hidden">
                     <h2>${currentWord}</h2>
                     <div id="imageContainer" class="word-image-container image-hidden">
-                        ${currentWordImage ? `<img src="${currentWordImage}" alt="${currentWord}" class="word-image">` : ''}
+                        ${imageHTML}
                     </div>
                 </div>
                 <div id="placeholder" class="hidden-placeholder">🔒</div>
@@ -1999,6 +2006,7 @@ function showPlayerWord() {
         </button>
     `;
 }
+
 
 function toggleWordVisibility() {
     playRevealSound();
