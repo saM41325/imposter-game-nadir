@@ -651,6 +651,7 @@ let clueEnabled = true;
 let wordVisible = false;
 let currentHostName = null;
 let onlineClueEnabled = true;
+let gameListenersActive = false;
 
 // Helper Functions
 function createConfetti() {
@@ -692,6 +693,7 @@ function backToMode() {
     hasReadyToVote = false;
     hasVotedForHost = false;
     isRoomClosed = false;
+    gameListenersActive = false;
     if (onlineTimerInterval) {
         clearInterval(onlineTimerInterval);
         onlineTimerInterval = null;
@@ -1195,13 +1197,17 @@ function listenToRoom() {
         }
     });
 
-    gameRef = roomRef.child('game');
-    gameRef.on('value', snapshot => {
-        const gameData = snapshot.val();
-        if (gameData) {
-            handleGameStateChange(gameData);
-        }
-    });
+    // Only setup game listeners once
+    if (!gameListenersActive) {
+        gameListenersActive = true;
+        gameRef = roomRef.child('game');
+        gameRef.on('value', snapshot => {
+            const gameData = snapshot.val();
+            if (gameData) {
+                handleGameStateChange(gameData);
+            }
+        });
+    }
 }
 
 function resetGameStates() {
@@ -1837,6 +1843,7 @@ function leaveRoom() {
     hasReadyToVote = false;
     hasVotedForHost = false;
     isRoomClosed = false;
+    gameListenersActive = false;
     
     backToMode();
 }
