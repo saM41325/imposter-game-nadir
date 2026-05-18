@@ -481,7 +481,7 @@ const words = {
         { word: "بيتزا", clue: "طعام إيطالي", emoji: "🍕" },
         { word: "برجر", clue: "وجبة سريعة", emoji: "🍔" },
         { word: "شاورما", clue: "طعام عربي", emoji: "🌯" },
-        { word: "كباب", clue: "لحم مشوي", emoji: "�串" },
+        { word: "كباب", clue: "لحم مشوي", emoji: "🍢" },
         { word: "ايس كريم", clue: "حلوى باردة", emoji: "🍦" },
         { word: "كسكس", clue: "طعام مغربي", emoji: "🍲" },
         { word: "ارز", clue: "حبوب", emoji: "🍚" },
@@ -650,6 +650,7 @@ let firstPlayer = "";
 let clueEnabled = true;
 let wordVisible = false;
 let currentHostName = null;
+let onlineClueEnabled = true;
 
 // Helper Functions
 function createConfetti() {
@@ -1184,14 +1185,7 @@ function listenToRoom() {
         const status = snapshot.val();
         if (status === 'waiting') {
             // Reset all game states when room goes back to waiting
-            hasVoted = false;
-            hasSeenWord = false;
-            hasReadyToVote = false;
-            
-            if (onlineTimerInterval) {
-                clearInterval(onlineTimerInterval);
-                onlineTimerInterval = null;
-            }
+            resetGameStates();
             
             // If currently in a game screen, return to lobby
             const currentScreen = document.querySelector('.screen.active');
@@ -1208,6 +1202,32 @@ function listenToRoom() {
             handleGameStateChange(gameData);
         }
     });
+}
+
+function resetGameStates() {
+    hasVoted = false;
+    hasSeenWord = false;
+    hasReadyToVote = false;
+    
+    if (onlineTimerInterval) {
+        clearInterval(onlineTimerInterval);
+        onlineTimerInterval = null;
+    }
+    
+    // Clear timer display
+    const timerDisplay = document.getElementById('onlineTimerDisplay');
+    if (timerDisplay) {
+        timerDisplay.style.display = 'none';
+        timerDisplay.textContent = '';
+        timerDisplay.classList.remove('warning');
+    }
+    
+    // Clear all game containers
+    document.getElementById('onlineWordDisplay').innerHTML = '';
+    document.getElementById('onlineShowHideButtonContainer').innerHTML = '';
+    document.getElementById('onlineReadyVoteContainer').innerHTML = '';
+    document.getElementById('onlineVoteButtons').innerHTML = '';
+    document.getElementById('onlineVoteWaiting').style.display = 'none';
 }
 
 function updateMaxImpostors(playerCount) {
@@ -1311,14 +1331,7 @@ function handleGameStateChange(gameData) {
         const roomStatus = snapshot.val();
         if (roomStatus === 'waiting') {
             // Reset states and show lobby
-            hasVoted = false;
-            hasSeenWord = false;
-            hasReadyToVote = false;
-            
-            if (onlineTimerInterval) {
-                clearInterval(onlineTimerInterval);
-                onlineTimerInterval = null;
-            }
+            resetGameStates();
             
             showScreen('lobbyScreen');
             return;
@@ -1348,11 +1361,15 @@ function showOnlineWord(gameData) {
     
     if (!hasSeenWord) {
         if (isImpostor) {
+            const clueHTML = gameData.clueEnabled ? 
+                `<div class="clue-text">التلميح: ${gameData.hint}</div>` : 
+                '';
+            
             wordDisplay.innerHTML = `
                 <div id="onlineWordCard" class="word-display impostor-display">
                     <div id="onlineActualWord" class="word-content word-hidden">
                         <h2>🕵️ أنت الجاسوس!</h2>
-                        <div class="clue-text">التلميح: ${gameData.hint}</div>
+                        ${clueHTML}
                         <div id="onlineEmojiContainer" class="emoji-container emoji-hidden">
                             <div class="emoji-display impostor-emoji">${IMPOSTOR_EMOJI}</div>
                         </div>
@@ -1756,40 +1773,7 @@ function showOnlineResults(gameData) {
 
 function backToLobby() {
     playClickSound();
-    
-    // Reset all player states
-    hasVoted = false;
-    hasSeenWord = false;
-    hasReadyToVote = false;
-    hasVotedForHost = false;
-    
-    // Clear timer
-    if (onlineTimerInterval) {
-        clearInterval(onlineTimerInterval);
-        onlineTimerInterval = null;
-    }
-    
-    // Clear timer display
-    const timerDisplay = document.getElementById('onlineTimerDisplay');
-    if (timerDisplay) {
-        timerDisplay.style.display = 'none';
-        timerDisplay.textContent = '';
-        timerDisplay.classList.remove('warning');
-    }
-    
-    // Clear all game containers
-    document.getElementById('onlineWordDisplay').innerHTML = '';
-    document.getElementById('onlineShowHideButtonContainer').innerHTML = '';
-    document.getElementById('onlineReadyVoteContainer').innerHTML = '';
-    document.getElementById('onlineVoteButtons').innerHTML = '';
-    document.getElementById('onlineVoteWaiting').style.display = 'none';
-    
-    // Host: Remove game data and reset room status
-    if (isHost) {
-        gameRef.remove().then(() => {
-            roomRef.update({ status: 'waiting' });
-        });
-    }
+    resetGameStates();
     
     // Update leaderboard
     updateLeaderboard();
@@ -1966,11 +1950,15 @@ function showPlayerWord() {
     const buttonContainer = document.getElementById('showHideButtonContainer');
     
     if (isImpostor) {
+        const clueHTML = clueEnabled ? 
+            `<div class="clue-text">التلميح: ${currentHint}</div>` : 
+            '';
+        
         wordDisplay.innerHTML = `
             <div id="wordCard" class="word-display impostor-display">
                 <div id="actualWord" class="word-content word-hidden">
                     <h2>🕵️ أنت الجاسوس!</h2>
-                    <div class="clue-text">التلميح: ${currentHint}</div>
+                    ${clueHTML}
                     <div id="emojiContainer" class="emoji-container emoji-hidden">
                         <div class="emoji-display impostor-emoji">${IMPOSTOR_EMOJI}</div>
                     </div>
@@ -2171,6 +2159,10 @@ function resetGame() {
     firstPlayer = "";
     wordVisible = false;
     document.getElementById('voteResults').style.display = 'none';
+    document.getElementById('votingSection').style.display = 'none';
+    document.getElementById('firstPlayerAlert').style.display = 'none';
+    document.getElementById('timerDisplay').textContent = '';
+    document.getElementById('timerDisplay').classList.remove('warning');
     showScreen('offlineSetupScreen');
 }
 
