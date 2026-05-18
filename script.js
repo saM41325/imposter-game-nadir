@@ -1944,15 +1944,12 @@ function showPlayerWord() {
     const buttonContainer = document.getElementById('showHideButtonContainer');
     
     if (isImpostor) {
-        const clueHTML = clueEnabled ? 
-            `<div class="clue-text">التلميح: ${currentHint}</div>` : 
-            '';
-        
+        // CHANGED: Use regular word-display class initially, add impostor-display only when revealed
         wordDisplay.innerHTML = `
-            <div id="wordCard" class="word-display impostor-display">
+            <div id="wordCard" class="word-display">
                 <div id="actualWord" class="word-content word-hidden">
                     <h2>🕵️ أنت الجاسوس!</h2>
-                    ${clueHTML}
+                    <div class="clue-text">التلميح: ${currentHint}</div>
                     <div id="emojiContainer" class="emoji-container emoji-hidden">
                         <div class="emoji-display impostor-emoji">${IMPOSTOR_EMOJI}</div>
                     </div>
@@ -1984,7 +1981,6 @@ function showPlayerWord() {
         </button>
     `;
 }
-
 function toggleWordVisibility() {
     playRevealSound();
     wordVisible = !wordVisible;
@@ -2008,8 +2004,10 @@ function toggleWordVisibility() {
         
         button.innerHTML = '<span class="eye-icon">🙈</span> إخفاء';
         
+        // CHANGED: Add impostor styling when revealed
         if (isImpostor) {
-            cardElement.className = 'word-display impostor-display impostor-revealed';
+            cardElement.classList.add('impostor-display');
+            cardElement.classList.add('impostor-revealed');
         }
     } else {
         wordElement.classList.remove('word-visible');
@@ -2022,10 +2020,14 @@ function toggleWordVisibility() {
         }
         
         button.innerHTML = '<span class="eye-icon">👁️</span> إظهار الدور';
-        cardElement.className = 'word-display';
+        
+        // CHANGED: Remove impostor styling when hidden
+        if (isImpostor) {
+            cardElement.classList.remove('impostor-display');
+            cardElement.classList.remove('impostor-revealed');
+        }
     }
 }
-
 function nextPlayer() {
     playClickSound();
     currentPlayerIndex++;
