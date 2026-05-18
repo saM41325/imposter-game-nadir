@@ -652,6 +652,7 @@ let wordVisible = false;
 let currentHostName = null;
 let onlineClueEnabled = true;
 let gameListenersActive = false;
+let roomStatusListener = null;
 
 // Helper Functions
 function createConfetti() {
@@ -1182,9 +1183,14 @@ function listenToRoom() {
     
     checkHostVotes();
     
-    // Listen to room status changes
-    roomRef.child('status').on('value', snapshot => {
+    // Setup room status listener - this is critical for syncing
+    if (roomStatusListener) {
+        roomStatusListener.cancel();
+    }
+    roomStatusListener = roomRef.child('status').on('value', snapshot => {
         const status = snapshot.val();
+        console.log("Room status changed to:", status);
+        
         if (status === 'waiting') {
             // Reset all game states when room goes back to waiting
             resetGameStates();
@@ -1194,20 +1200,20 @@ function listenToRoom() {
             if (currentScreen && ['onlineGameScreen', 'onlineVotingScreen', 'onlineResultsScreen'].includes(currentScreen.id)) {
                 showScreen('lobbyScreen');
             }
+        } else if (status === 'playing') {
+            // Game has started, setup game listener
+            if (!gameListenersActive) {
+                gameListenersActive = true;
+                gameRef = roomRef.child('game');
+                gameRef.on('value', snapshot => {
+                    const gameData = snapshot.val();
+                    if (gameData) {
+                        handleGameStateChange(gameData);
+                    }
+                });
+            }
         }
     });
-
-    // Only setup game listeners once
-    if (!gameListenersActive) {
-        gameListenersActive = true;
-        gameRef = roomRef.child('game');
-        gameRef.on('value', snapshot => {
-            const gameData = snapshot.val();
-            if (gameData) {
-                handleGameStateChange(gameData);
-            }
-        });
-    }
 }
 
 function resetGameStates() {
@@ -1307,6 +1313,7 @@ function startOnlineGame() {
         const selectedImpostors = shuffledPlayers.slice(0, impostorCount);
         const firstPlayer = playersList[Math.floor(Math.random() * playersList.length)];
         
+        // Reset all players' states before starting new game
         const gameState = {
             status: 'showing_words',
             word: selectedWord,
@@ -1324,38 +1331,33 @@ function startOnlineGame() {
             votes: {},
             startedAt: firebase.database.ServerValue.TIMESTAMP
         };
-        roomRef.update({ status: 'playing' });
-        gameRef.set(gameState);
+        
+        // First update room status to playing
+        roomRef.update({ status: 'playing' }).then(() => {
+            // Then set the game data
+            gameRef.set(gameState).catch(error => {
+                console.error("Error starting game:", error);
+                showOnlineError('فشل بدء اللعبة');
+            });
+        });
     });
 }
 
 function handleGameStateChange(gameData) {
     if (!gameData) return;
     
-    // Check if room is back to waiting status - return to lobby
-    roomRef.child('status').once('value').then(snapshot => {
-        const roomStatus = snapshot.val();
-        if (roomStatus === 'waiting') {
-            // Reset states and show lobby
-            resetGameStates();
-            
-            showScreen('lobbyScreen');
-            return;
-        }
-        
-        // Continue with normal game state handling
-        switch (gameData.status) {
-            case 'showing_words':
-                showOnlineWord(gameData);
-                break;
-            case 'voting':
-                showOnlineVoting(gameData);
-                break;
-            case 'results':
-                showOnlineResults(gameData);
-                break;
-        }
-    });
+    // Continue with normal game state handling
+    switch (gameData.status) {
+        case 'showing_words':
+            showOnlineWord(gameData);
+            break;
+        case 'voting':
+            showOnlineVoting(gameData);
+            break;
+        case 'results':
+            showOnlineResults(gameData);
+            break;
+    }
 }
 
 function showOnlineWord(gameData) {
@@ -1819,7 +1821,9 @@ function leaveRoom() {
     if (bannedPlayersRef) bannedPlayersRef.off();
     if (hostVotesRef) hostVotesRef.off();
     if (roomRef) {
-        roomRef.child('status').off();
+        if (roomStatusListener) {
+            roomStatusListener.cancel();
+        }
         roomRef.child('isClosed').off();
         roomRef.off();
     }
@@ -1838,6 +1842,7 @@ function leaveRoom() {
     leaderboardRef = null;
     bannedPlayersRef = null;
     hostVotesRef = null;
+    roomStatusListener = null;
     hasVoted = false;
     hasSeenWord = false;
     hasReadyToVote = false;
