@@ -17,7 +17,7 @@ const STORAGE_KEYS = {
 let customWords = [];
 
 // Impostor image (shown to impostors)
-const IMPOSTOR_IMAGE = "https://i.imgur.com/spy-icon.png"; // Replace with your impostor image URL
+const IMPOSTOR_IMAGE = "https://junior.london/work/coca-colas-growth-festival/"; // Replace with your impostor image URL
 
 function loadCustomWords() {
     const saved = localStorage.getItem(STORAGE_KEYS.CUSTOM_WORDS);
@@ -390,13 +390,13 @@ try {
 // Word Database with pictures and clues
 const words = {
     places: [
-        { word: "مسجد", clue: "مكان عبادة", image: "https://example.com/mosque.jpg" },
-        { word: "مدرسة", clue: "مكان تعليم", image: "https://example.com/school.jpg" },
-        { word: "مستشفى", clue: "مكان علاج", image: "https://example.com/hospital.jpg" },
-        { word: "مطار", clue: "مكان طيران", image: "https://example.com/airport.jpg" },
-        { word: "محطة قطار", clue: "مكان سفر", image: "https://example.com/train-station.jpg" },
-        { word: "ملعب", clue: "مكان رياضة", image: "https://example.com/stadium.jpg" },
-        { word: "حديقة", clue: "مكان أخضر", image: "https://example.com/park.jpg" },
+        { word: "مسجد", clue: "مكان عبادة", image: "https://www.magnific.com/free-photos-vectors/masjid-mosque" },
+        { word: "مدرسة", clue: "مكان تعليم", image: "https://ar.pngtree.com/free-school-clipart" },
+        { word: "مستشفى", clue: "مكان علاج", image: "https://www.magnific.com/free-photos-vectors/hospital" },
+        { word: "مطار", clue: "مكان طيران", image: "https://www.magnific.com/free-photos-vectors/outside-airport" },
+        { word: "محطة قطار", clue: "مكان سفر", image: "https://www.freepik.com/free-photos-vectors/train-station-facilities" },
+        { word: "ملعب", clue: "مكان رياضة", image: "https://www.freepik.com/vectors/stadiums" },
+        { word: "حديقة", clue: "مكان أخضر", image: "https://www.vecteezy.com/free-vector/city-park" },
         { word: "شاطئ", clue: "مكان بحر", image: "https://example.com/beach.jpg" },
         { word: "جبل", clue: "مكان عالي", image: "https://example.com/mountain.jpg" },
         { word: "صحراء", clue: "مكان رمل", image: "https://example.com/desert.jpg" },
