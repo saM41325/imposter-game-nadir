@@ -6,19 +6,21 @@
     <meta name="theme-color" content="#0a0e27">
     <title>ليلة القرية - Werewolf Game</title>
     <link rel="stylesheet" href="style.css">
-    
-    <!-- Prevent pulling down to refresh -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
 </head>
 <body>
-    <!-- ===============================================
-         MAIN CONTAINER
-         =============================================== -->
+    <svg style="display:none;">
+        <defs>
+            <linearGradient id="gradientStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#ffd700;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#ffed4e;stop-opacity:1" />
+            </linearGradient>
+        </defs>
+    </svg>
+
     <div id="app-container" class="app-container">
 
-        <!-- ===============================================
-             SETUP PHASE
-             =============================================== -->
+        <!-- SETUP SCREEN -->
         <section id="setup-screen" class="screen screen-active">
             <div class="setup-content">
                 <h1 class="title-main">ليلة القرية 🌙</h1>
@@ -29,9 +31,9 @@
                     <div class="form-group">
                         <label for="player-count">عدد اللاعبين:</label>
                         <div class="number-input-group">
-                            <button id="btn-decrease-players" class="btn-count-control">−</button>
+                            <button type="button" id="btn-decrease-players" class="btn-count-control">−</button>
                             <input type="number" id="player-count" min="4" max="20" value="7" readonly>
-                            <button id="btn-increase-players" class="btn-count-control">+</button>
+                            <button type="button" id="btn-increase-players" class="btn-count-control">+</button>
                         </div>
                         <small class="hint">(4 إلى 20 لاعب)</small>
                     </div>
@@ -65,16 +67,14 @@
                     </div>
 
                     <!-- Start Button -->
-                    <button id="btn-start-game" class="btn btn-primary btn-large">
+                    <button type="button" id="btn-start-game" class="btn btn-primary btn-large">
                         ابدأ اللعبة
                     </button>
                 </div>
             </div>
         </section>
 
-        <!-- ===============================================
-             ROLE DISTRIBUTION SCREEN
-             =============================================== -->
+        <!-- ROLE DISTRIBUTION SCREEN -->
         <section id="role-distribution-screen" class="screen">
             <div class="overlay-content centered">
                 <h2>توزيع الأدوار جاري...</h2>
@@ -83,9 +83,7 @@
             </div>
         </section>
 
-        <!-- ===============================================
-             NIGHT PHASE - IDENTITY SCREEN
-             =============================================== -->
+        <!-- NIGHT IDENTITY SCREEN -->
         <section id="night-identity-screen" class="screen">
             <div class="overlay-content centered">
                 <h1 class="night-title">🌙 اللحظة مظلمة</h1>
@@ -95,7 +93,7 @@
                     <h2 id="night-player-name" class="player-name-display">---</h2>
                 </div>
 
-                <button id="btn-reveal-role" class="btn btn-primary btn-large">
+                <button type="button" id="btn-reveal-role" class="btn btn-primary btn-large">
                     عرض دوري
                 </button>
 
@@ -103,17 +101,13 @@
             </div>
         </section>
 
-        <!-- ===============================================
-             NIGHT PHASE - ROLE REVEAL SCREEN
-             =============================================== -->
+        <!-- NIGHT ROLE SCREEN -->
         <section id="night-role-screen" class="screen">
             <div class="role-reveal-container">
-                <!-- Role Display -->
                 <div id="role-content" class="role-content">
                     <!-- Dynamically populated based on role -->
                 </div>
 
-                <!-- Timer -->
                 <div class="reveal-timer">
                     <div class="timer-circle">
                         <svg viewBox="0 0 100 100">
@@ -126,21 +120,17 @@
             </div>
         </section>
 
-        <!-- ===============================================
-             NIGHT PHASE - WOLF VOTING
-             =============================================== -->
+        <!-- WOLF VOTING SCREEN -->
         <section id="wolf-voting-screen" class="screen">
             <div class="voting-content">
                 <h2>🐺 اختر ضحيتك</h2>
                 <p class="voting-instruction">اصوت على من ستهاجمونه:</p>
 
                 <div class="voting-board">
-                    <!-- Live Vote Counter -->
                     <div id="wolf-vote-counter" class="vote-counter">
                         <!-- Dynamically populated -->
                     </div>
 
-                    <!-- Target Selection -->
                     <div id="wolf-targets-list" class="targets-list">
                         <!-- Dynamically populated -->
                     </div>
@@ -152,9 +142,7 @@
             </div>
         </section>
 
-        <!-- ===============================================
-             NIGHT PHASE - DOCTOR PROTECTION
-             =============================================== -->
+        <!-- DOCTOR SCREEN -->
         <section id="doctor-screen" class="screen">
             <div class="action-content">
                 <h2>💉 اختر من ستحمي</h2>
@@ -170,9 +158,7 @@
             </div>
         </section>
 
-        <!-- ===============================================
-             NIGHT PHASE - SEER REVEAL
-             =============================================== -->
+        <!-- SEER SCREEN -->
         <section id="seer-screen" class="screen">
             <div class="action-content">
                 <h2>🔮 اختر من تستشعر</h2>
@@ -189,9 +175,7 @@
             </div>
         </section>
 
-        <!-- ===============================================
-             NIGHT PHASE - VILLAGER
-             =============================================== -->
+        <!-- VILLAGER SCREEN -->
         <section id="villager-screen" class="screen">
             <div class="overlay-content centered">
                 <h1>👨‍🌾 أنت قروي</h1>
@@ -204,29 +188,29 @@
 
                 <div class="reveal-timer">
                     <div class="timer-circle small">
+                        <svg viewBox="0 0 100 100">
+                            <circle class="timer-bg" cx="50" cy="50" r="45"></circle>
+                            <circle id="villager-timer-progress" class="timer-progress" cx="50" cy="50" r="45"></circle>
+                        </svg>
                         <span id="villager-timer" class="timer-text">10</span>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- ===============================================
-             NIGHT COMPLETE - PASS DEVICE
-             =============================================== -->
+        <!-- NIGHT PASS DEVICE -->
         <section id="night-pass-device-screen" class="screen">
             <div class="overlay-content centered">
                 <h1 class="emphasis">اجعل الهاتف بيد اللاعب التالي</h1>
                 <p class="large-text">تأكد من عدم رؤية أحد للشاشة</p>
 
-                <button id="btn-next-night-player" class="btn btn-primary btn-large">
+                <button type="button" id="btn-next-night-player" class="btn btn-primary btn-large">
                     تم ✓
                 </button>
             </div>
         </section>
 
-        <!-- ===============================================
-             NIGHT RESOLUTION
-             =============================================== -->
+        <!-- NIGHT RESOLUTION -->
         <section id="night-resolution-screen" class="screen">
             <div class="overlay-content centered">
                 <h1>الليل ينتهي...</h1>
@@ -237,14 +221,11 @@
             </div>
         </section>
 
-        <!-- ===============================================
-             DAY PHASE - INFORMATION
-             =============================================== -->
+        <!-- DAY INFO SCREEN -->
         <section id="day-info-screen" class="screen">
             <div class="day-content">
                 <h1 class="day-title">☀️ شروق الشمس</h1>
 
-                <!-- Death Report -->
                 <div id="death-report" class="death-report hidden">
                     <h2>⚰️ لقد مات:</h2>
                     <div class="death-card">
@@ -253,13 +234,11 @@
                     </div>
                 </div>
 
-                <!-- No Death Report -->
                 <div id="no-death-report" class="no-death-report hidden">
                     <p class="large-text">لا أحد مات هذه الليلة!</p>
                     <div class="animation-element">✨</div>
                 </div>
 
-                <!-- Discussion Timer -->
                 <div class="discussion-section">
                     <h3>وقت النقاش:</h3>
                     <div class="timer-circle large">
@@ -271,15 +250,13 @@
                     </div>
                 </div>
 
-                <button id="btn-skip-discussion" class="btn btn-secondary">
+                <button type="button" id="btn-skip-discussion" class="btn btn-secondary">
                     انتقل إلى التصويت
                 </button>
             </div>
         </section>
 
-        <!-- ===============================================
-             DAY PHASE - VOTING IDENTITY
-             =============================================== -->
+        <!-- DAY VOTE IDENTITY -->
         <section id="day-vote-identity-screen" class="screen">
             <div class="overlay-content centered">
                 <h1 class="vote-title">🗳️ وقت التصويت</h1>
@@ -289,15 +266,13 @@
                     <h2 id="day-vote-player-name" class="player-name-display">---</h2>
                 </div>
 
-                <button id="btn-enter-voting-booth" class="btn btn-primary btn-large">
+                <button type="button" id="btn-enter-voting-booth" class="btn btn-primary btn-large">
                     ادخل قاعة التصويت
                 </button>
             </div>
         </section>
 
-        <!-- ===============================================
-             DAY PHASE - VOTING BOOTH
-             =============================================== -->
+        <!-- DAY VOTING BOOTH -->
         <section id="day-voting-booth-screen" class="screen">
             <div class="voting-content">
                 <h2>من ستصوت للإعدام؟</h2>
@@ -313,9 +288,7 @@
             </div>
         </section>
 
-        <!-- ===============================================
-             DAY PHASE - EXECUTION
-             =============================================== -->
+        <!-- EXECUTION SCREEN -->
         <section id="execution-screen" class="screen">
             <div class="overlay-content centered">
                 <h1>⚖️ الحكم</h1>
@@ -330,9 +303,7 @@
             </div>
         </section>
 
-        <!-- ===============================================
-             WIN SCREEN
-             =============================================== -->
+        <!-- WIN SCREEN -->
         <section id="win-screen" class="screen">
             <div class="overlay-content centered win-content">
                 <h1 id="win-title" class="win-title">🎉 فاز الفريق!</h1>
@@ -342,7 +313,7 @@
                     <!-- Dynamically populated -->
                 </div>
 
-                <button id="btn-play-again" class="btn btn-primary btn-large">
+                <button type="button" id="btn-play-again" class="btn btn-primary btn-large">
                     لعبة جديدة
                 </button>
             </div>
@@ -350,11 +321,9 @@
 
     </div>
 
-    <!-- ===============================================
-         AUDIO ELEMENTS (No UI)
-         =============================================== -->
-    <audio id="audio-night-bg" preload="none" loop></audio>
-    <audio id="audio-day-bg" preload="none" loop></audio>
+    <!-- AUDIO ELEMENTS -->
+    <audio id="audio-night-bg" preload="none"></audio>
+    <audio id="audio-day-bg" preload="none"></audio>
     <audio id="audio-reveal" preload="none"></audio>
     <audio id="audio-wolf-vote" preload="none"></audio>
     <audio id="audio-night-start" preload="none"></audio>
