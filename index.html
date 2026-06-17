@@ -3,367 +3,338 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0a0e27">
-    <title>ليلة القرية - Werewolf Game</title>
+    <title>لعبة الجاسوس</title>
     <link rel="stylesheet" href="style.css">
-    
-    <!-- Prevent pulling down to refresh -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
 </head>
 <body>
-    <!-- ===============================================
-         MAIN CONTAINER
-         =============================================== -->
-    <div id="app-container" class="app-container">
+    <!-- Background Audio Player -->
+    <audio 
+        id="backgroundAudioPlayer" 
+        loop 
+        style="display: none;"
+        src="https://res.cloudinary.com/djiukbvoa/video/upload/v1779042254/Investigation_Music_Background_Suspenseful_Tension_Criminal_Background_Music_Royalty_Free_srcmg6.mp3">
+    </audio>
 
-        <!-- ===============================================
-             SETUP PHASE
-             =============================================== -->
-        <section id="setup-screen" class="screen screen-active">
-            <div class="setup-content">
-                <h1 class="title-main">ليلة القرية 🌙</h1>
-                <p class="subtitle">لعبة الذئاب والقرويين</p>
-
-                <div class="setup-form">
-                    <!-- Player Count Selection -->
-                    <div class="form-group">
-                        <label for="player-count">عدد اللاعبين:</label>
-                        <div class="number-input-group">
-                            <button id="btn-decrease-players" class="btn-count-control">−</button>
-                            <input type="number" id="player-count" min="4" max="20" value="7" readonly>
-                            <button id="btn-increase-players" class="btn-count-control">+</button>
-                        </div>
-                        <small class="hint">(4 إلى 20 لاعب)</small>
-                    </div>
-
-                    <!-- Role Distribution -->
-                    <div class="form-group">
-                        <label>توزيع الأدوار:</label>
-                        <div id="role-distribution" class="role-distribution-grid">
-                            <!-- Dynamically populated -->
-                        </div>
-                    </div>
-
-                    <!-- Player Names Entry -->
-                    <div class="form-group">
-                        <label>أسماء اللاعبين:</label>
-                        <div id="player-names-list" class="player-names-list">
-                            <!-- Dynamically populated -->
-                        </div>
-                    </div>
-
-                    <!-- Settings -->
-                    <div class="form-group">
-                        <label>
-                            <input type="checkbox" id="setting-sounds" checked>
-                            تفعيل الأصوات
-                        </label>
-                        <label>
-                            <input type="checkbox" id="setting-music" checked>
-                            تفعيل الموسيقى
-                        </label>
-                    </div>
-
-                    <!-- Start Button -->
-                    <button id="btn-start-game" class="btn btn-primary btn-large">
-                        ابدأ اللعبة
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- ===============================================
-             ROLE DISTRIBUTION SCREEN
-             =============================================== -->
-        <section id="role-distribution-screen" class="screen">
-            <div class="overlay-content centered">
-                <h2>توزيع الأدوار جاري...</h2>
-                <div class="loading-spinner"></div>
-                <p>جاري التحضير للعبة</p>
-            </div>
-        </section>
-
-        <!-- ===============================================
-             NIGHT PHASE - IDENTITY SCREEN
-             =============================================== -->
-        <section id="night-identity-screen" class="screen">
-            <div class="overlay-content centered">
-                <h1 class="night-title">🌙 اللحظة مظلمة</h1>
-                
-                <div class="identity-card">
-                    <p class="label-small">دور اللاعب:</p>
-                    <h2 id="night-player-name" class="player-name-display">---</h2>
-                </div>
-
-                <button id="btn-reveal-role" class="btn btn-primary btn-large">
-                    عرض دوري
-                </button>
-
-                <p class="instruction-text">لا تشر إلى أحد بما تراه</p>
-            </div>
-        </section>
-
-        <!-- ===============================================
-             NIGHT PHASE - ROLE REVEAL SCREEN
-             =============================================== -->
-        <section id="night-role-screen" class="screen">
-            <div class="role-reveal-container">
-                <!-- Role Display -->
-                <div id="role-content" class="role-content">
-                    <!-- Dynamically populated based on role -->
-                </div>
-
-                <!-- Timer -->
-                <div class="reveal-timer">
-                    <div class="timer-circle">
-                        <svg viewBox="0 0 100 100">
-                            <circle class="timer-bg" cx="50" cy="50" r="45"></circle>
-                            <circle id="timer-progress" class="timer-progress" cx="50" cy="50" r="45"></circle>
-                        </svg>
-                        <span id="timer-display" class="timer-text">10</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ===============================================
-             NIGHT PHASE - WOLF VOTING
-             =============================================== -->
-        <section id="wolf-voting-screen" class="screen">
-            <div class="voting-content">
-                <h2>🐺 اختر ضحيتك</h2>
-                <p class="voting-instruction">اصوت على من ستهاجمونه:</p>
-
-                <div class="voting-board">
-                    <!-- Live Vote Counter -->
-                    <div id="wolf-vote-counter" class="vote-counter">
-                        <!-- Dynamically populated -->
-                    </div>
-
-                    <!-- Target Selection -->
-                    <div id="wolf-targets-list" class="targets-list">
-                        <!-- Dynamically populated -->
-                    </div>
-                </div>
-
-                <div class="voting-status">
-                    <p>الأصوات على <span id="selected-target-name">---</span>: <strong id="selected-target-votes">0</strong></p>
-                </div>
-            </div>
-        </section>
-
-        <!-- ===============================================
-             NIGHT PHASE - DOCTOR PROTECTION
-             =============================================== -->
-        <section id="doctor-screen" class="screen">
-            <div class="action-content">
-                <h2>💉 اختر من ستحمي</h2>
-                <p class="action-instruction">حمِ لاعباً من هجوم الذئاب:</p>
-
-                <div id="doctor-targets-list" class="targets-list">
-                    <!-- Dynamically populated -->
-                </div>
-
-                <div class="action-status">
-                    <p>سيتم حماية: <span id="protected-player-name">---</span></p>
-                </div>
-            </div>
-        </section>
-
-        <!-- ===============================================
-             NIGHT PHASE - SEER REVEAL
-             =============================================== -->
-        <section id="seer-screen" class="screen">
-            <div class="action-content">
-                <h2>🔮 اختر من تستشعر</h2>
-                <p class="action-instruction">اكتشف دور أحد اللاعبين:</p>
-
-                <div id="seer-targets-list" class="targets-list">
-                    <!-- Dynamically populated -->
-                </div>
-
-                <div id="seer-result" class="seer-result hidden">
-                    <h3>النتيجة:</h3>
-                    <p id="seer-result-text" class="result-text">---</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- ===============================================
-             NIGHT PHASE - VILLAGER
-             =============================================== -->
-        <section id="villager-screen" class="screen">
-            <div class="overlay-content centered">
-                <h1>👨‍🌾 أنت قروي</h1>
-                <p class="large-text">أنت نائم هذه الليلة...</p>
-                
-                <div class="villager-sleep-animation">
-                    <div class="zzz">Z</div>
-                    <div class="zzz">Z</div>
-                </div>
-
-                <div class="reveal-timer">
-                    <div class="timer-circle small">
-                        <span id="villager-timer" class="timer-text">10</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ===============================================
-             NIGHT COMPLETE - PASS DEVICE
-             =============================================== -->
-        <section id="night-pass-device-screen" class="screen">
-            <div class="overlay-content centered">
-                <h1 class="emphasis">اجعل الهاتف بيد اللاعب التالي</h1>
-                <p class="large-text">تأكد من عدم رؤية أحد للشاشة</p>
-
-                <button id="btn-next-night-player" class="btn btn-primary btn-large">
-                    تم ✓
-                </button>
-            </div>
-        </section>
-
-        <!-- ===============================================
-             NIGHT RESOLUTION
-             =============================================== -->
-        <section id="night-resolution-screen" class="screen">
-            <div class="overlay-content centered">
-                <h1>الليل ينتهي...</h1>
-                <div class="dramatic-animation">
-                    <div class="animation-element">🌅</div>
-                </div>
-                <p id="resolution-text" class="resolution-text">---</p>
-            </div>
-        </section>
-
-        <!-- ===============================================
-             DAY PHASE - INFORMATION
-             =============================================== -->
-        <section id="day-info-screen" class="screen">
-            <div class="day-content">
-                <h1 class="day-title">☀️ شروق الشمس</h1>
-
-                <!-- Death Report -->
-                <div id="death-report" class="death-report hidden">
-                    <h2>⚰️ لقد مات:</h2>
-                    <div class="death-card">
-                        <p id="death-player-name" class="large-text">---</p>
-                        <p id="death-player-role" class="role-badge">---</p>
-                    </div>
-                </div>
-
-                <!-- No Death Report -->
-                <div id="no-death-report" class="no-death-report hidden">
-                    <p class="large-text">لا أحد مات هذه الليلة!</p>
-                    <div class="animation-element">✨</div>
-                </div>
-
-                <!-- Discussion Timer -->
-                <div class="discussion-section">
-                    <h3>وقت النقاش:</h3>
-                    <div class="timer-circle large">
-                        <svg viewBox="0 0 100 100">
-                            <circle class="timer-bg" cx="50" cy="50" r="45"></circle>
-                            <circle id="day-timer-progress" class="timer-progress" cx="50" cy="50" r="45"></circle>
-                        </svg>
-                        <span id="day-timer-display" class="timer-text">180</span>
-                    </div>
-                </div>
-
-                <button id="btn-skip-discussion" class="btn btn-secondary">
-                    انتقل إلى التصويت
-                </button>
-            </div>
-        </section>
-
-        <!-- ===============================================
-             DAY PHASE - VOTING IDENTITY
-             =============================================== -->
-        <section id="day-vote-identity-screen" class="screen">
-            <div class="overlay-content centered">
-                <h1 class="vote-title">🗳️ وقت التصويت</h1>
-                
-                <div class="identity-card">
-                    <p class="label-small">لاعب:</p>
-                    <h2 id="day-vote-player-name" class="player-name-display">---</h2>
-                </div>
-
-                <button id="btn-enter-voting-booth" class="btn btn-primary btn-large">
-                    ادخل قاعة التصويت
-                </button>
-            </div>
-        </section>
-
-        <!-- ===============================================
-             DAY PHASE - VOTING BOOTH
-             =============================================== -->
-        <section id="day-voting-booth-screen" class="screen">
-            <div class="voting-content">
-                <h2>من ستصوت للإعدام؟</h2>
-                <p class="voting-instruction">اختر سراً:</p>
-
-                <div id="day-targets-list" class="targets-list">
-                    <!-- Dynamically populated -->
-                </div>
-
-                <div class="voting-status">
-                    <p>صوتك ل: <span id="day-voted-player-name">---</span></p>
-                </div>
-            </div>
-        </section>
-
-        <!-- ===============================================
-             DAY PHASE - EXECUTION
-             =============================================== -->
-        <section id="execution-screen" class="screen">
-            <div class="overlay-content centered">
-                <h1>⚖️ الحكم</h1>
-                <p class="large-text">تم اختيار:</p>
-                
-                <div class="death-card">
-                    <p id="executed-player-name" class="large-text">---</p>
-                    <p id="executed-player-role" class="role-badge">---</p>
-                </div>
-
-                <p class="execution-text">تم إعدامهم!</p>
-            </div>
-        </section>
-
-        <!-- ===============================================
-             WIN SCREEN
-             =============================================== -->
-        <section id="win-screen" class="screen">
-            <div class="overlay-content centered win-content">
-                <h1 id="win-title" class="win-title">🎉 فاز الفريق!</h1>
-                <p id="win-reason" class="large-text">---</p>
-
-                <div id="winner-stats" class="winner-stats">
-                    <!-- Dynamically populated -->
-                </div>
-
-                <button id="btn-play-again" class="btn btn-primary btn-large">
-                    لعبة جديدة
-                </button>
-            </div>
-        </section>
-
+    <!-- Sound Controls -->
+    <div class="sound-controls">
+        <div class="sound-control" id="soundControl" onclick="toggleSound()" title="تشغيل/إيقاف المؤثرات الصوتية">
+            <span id="soundIcon">🔊</span>
+        </div>
+        
+        <div class="sound-control" id="musicControl" onclick="toggleMusic()" title="تشغيل/إيقاف الموسيقى">
+            <span id="musicIcon">🎵</span>
+        </div>
     </div>
 
-    <!-- ===============================================
-         AUDIO ELEMENTS (No UI)
-         =============================================== -->
-    <audio id="audio-night-bg" preload="none" loop></audio>
-    <audio id="audio-day-bg" preload="none" loop></audio>
-    <audio id="audio-reveal" preload="none"></audio>
-    <audio id="audio-wolf-vote" preload="none"></audio>
-    <audio id="audio-night-start" preload="none"></audio>
-    <audio id="audio-day-start" preload="none"></audio>
-    <audio id="audio-death" preload="none"></audio>
-    <audio id="audio-protect" preload="none"></audio>
-    <audio id="audio-execution" preload="none"></audio>
-    <audio id="audio-win" preload="none"></audio>
+    <div class="container">
+        <h1>🕵️ لعبة الجاسوس 🕵️</h1>
 
+        <div id="modeScreen" class="screen active">
+            <h2 style="text-align: center; margin-bottom: 30px; color: #333;">اختر وضع اللعب</h2>
+            
+            <div class="mode-selector">
+                <div class="mode-card" onclick="selectMode('offline')">
+                    <div class="icon">📱</div>
+                    <h3>وضع أوفلاين</h3>
+                    <p>العب مع أصدقائك على نفس الجهاز</p>
+                </div>
+                <div class="mode-card" onclick="selectMode('online')">
+                    <div class="icon">🌐</div>
+                    <h3>وضع أونلاين</h3>
+                    <p>العب مع أصدقائك عبر الإنترنت</p>
+                </div>
+            </div>
+
+            <button onclick="showCustomWordsManager()" class="warning">📝 إدارة الكلمات المخصصة</button>
+        </div>
+
+        <!-- Custom Words Manager Screen -->
+        <div id="customWordsScreen" class="screen">
+            <h2 style="text-align: center; margin-bottom: 20px; color: #333;">📝 الكلمات المخصصة</h2>
+            
+            <div class="custom-words-section">
+                <h3>كلماتي المخصصة (<span id="customWordsCount">0</span>)</h3>
+                
+                <div class="input-group">
+                    <label>أضف كلمة جديدة:</label>
+                    <input type="text" id="customWordInput" placeholder="اكتب كلمة...">
+                    <button onclick="addCustomWord()">إضافة ➕</button>
+                </div>
+
+                <div class="words-display" id="customWordsDisplay">
+                    <p style="text-align: center; color: #999;">لا توجد كلمات بعد</p>
+                </div>
+
+                <div class="button-group">
+                    <button onclick="clearAllCustomWords()" class="danger">حذف الكل 🗑️</button>
+                    <button onclick="showShareCode()" class="success">مشاركة القائمة 🔗</button>
+                </div>
+            </div>
+
+            <div class="custom-words-section">
+                <h3>استيراد كلمات من كود</h3>
+                
+                <div class="input-group">
+                    <label>أدخل كود القائمة:</label>
+                    <input type="text" id="importCodeInput" placeholder="الصق الكود هنا...">
+                    <button onclick="importWordsFromCode()" class="success">استيراد 📥</button>
+                </div>
+            </div>
+
+            <div id="shareCodeDisplay" style="display: none;">
+                <div class="share-code-display">
+                    <h3>كود المشاركة جاهز!</h3>
+                    <div id="shareCodeText" style="display: none;"></div>
+                    <p style="color: #666; margin-top: 10px;">انسخ الكود وشاركه مع أصدقائك لنقل قائمة الكلمات</p>
+                    <button onclick="copyShareCode()" class="success">نسخ الكود 📋</button>
+                </div>
+            </div>
+
+            <div id="customWordsAlert"></div>
+
+            <button onclick="backToMode()" class="secondary">رجوع</button>
+        </div>
+
+        <div id="onlineRoomScreen" class="screen">
+            <h2 style="text-align: center; margin-bottom: 30px; color: #333;">وضع أونلاين</h2>
+            
+            <div class="input-group">
+                <label>اسمك:</label>
+                <input type="text" id="playerName" placeholder="أدخل اسمك">
+            </div>
+
+            <div class="mode-selector">
+                <div class="mode-card" onclick="createRoom()">
+                    <div class="icon">➕</div>
+                    <h3>إنشاء غرفة</h3>
+                    <p>أنشئ غرفة جديدة</p>
+                </div>
+                <div class="mode-card" onclick="showJoinRoom()">
+                    <div class="icon">🚪</div>
+                    <h3>الانضمام لغرفة</h3>
+                    <p>انضم لغرفة موجودة</p>
+                </div>
+            </div>
+
+            <div id="joinRoomDiv" style="display: none; margin-top: 20px;">
+                <div class="input-group">
+                    <label>كود الغرفة (6 أرقام):</label>
+                    <input type="text" id="roomCode" placeholder="000000" maxlength="6" pattern="[0-9]{6}">
+                </div>
+                <button onclick="joinRoom()" class="success">انضم</button>
+            </div>
+
+            <div id="onlineError"></div>
+
+            <button onclick="backToMode()" class="secondary">رجوع</button>
+        </div>
+
+        <div id="lobbyScreen" class="screen">
+            <div id="hostChangeNotification"></div>
+
+            <div class="room-code-display">
+                <h3>كود الغرفة:</h3>
+                <div class="code" id="displayRoomCode">000000</div>
+                <div class="room-status open" id="roomStatus">🟢 الغرفة مفتوحة</div>
+                <p style="margin-top: 10px; color: #666;">شارك هذا الكود مع أصدقائك</p>
+            </div>
+
+            <div id="roomControlsDiv" style="display: none;">
+                <div class="room-controls">
+                    <button id="toggleRoomBtn" onclick="toggleRoomStatus()" class="warning">🔒 إغلاق الغرفة</button>
+                </div>
+            </div>
+
+            <div id="hostVoteSection" class="host-vote-section" style="display: none;">
+                <h4>🗳️ التصويت على المضيف الجديد</h4>
+                <p style="text-align: center; font-size: 0.9em; color: #764ba2; margin-bottom: 10px;">
+                    اختر من يكون المضيف الجديد
+                </p>
+                <div class="vote-buttons" id="hostVoteButtons"></div>
+                <div id="hostVoteStatus" class="host-vote-status"></div>
+            </div>
+
+            <div id="lobbyLeaderboard" class="leaderboard">
+                <h3>🏆 لوحة المتصدرين 🏆</h3>
+                <div id="leaderboardList"></div>
+            </div>
+
+            <div class="settings-section" id="hostSettings" style="display: none;">
+                <h3>⚙️ إعدادات اللعبة</h3>
+                
+                <div class="input-group">
+                    <label>اختر الفئة:</label>
+                    <select id="onlineCategorySelect">
+                        <option value="mixed">مختلط (جميع الفئات)</option>
+                        <option value="places">أماكن</option>
+                        <option value="jobs">مهن</option>
+                        <option value="items">أشياء</option>
+                        <option value="animals">حيوانات</option>
+                        <option value="meals">وجبات</option>
+                        <option value="countries">دول</option>
+                        <option value="vegetables">خضروات</option>
+                        <option value="insects">حشرات</option>
+                        <option value="fruits">فواكه</option>
+                        <option value="furniture">أثاث</option>
+                        <option value="custom">كلمات مخصصة 📝</option>
+                    </select>
+                </div>
+
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <label>عدد الجواسيس:</label>
+                        <input type="number" id="onlineImpostorCount" min="1" value="1">
+                        <small style="color: #666; font-size: 0.85em; display: block; margin-top: 5px;">الحد الأقصى: <span id="maxImpostorsDisplay">1</span></small>
+                    </div>
+                    <div class="setting-item">
+                        <label>المؤقت (دقائق):</label>
+                        <input type="number" id="onlineTimerDuration" min="0" value="3" step="0.5">
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="onlineClueEnabled" checked>
+                    <label for="onlineClueEnabled">إعطاء تلميح للجاسوس</label>
+                </div>
+            </div>
+
+            <h3 style="margin: 20px 0; text-align: center;">اللاعبون (<span id="playerCount">0</span>)</h3>
+            <div class="player-list" id="onlinePlayerList"></div>
+
+            <div class="waiting-status" id="waitingStatus">
+                <div class="spinner"></div>
+                <p>في انتظار اللاعبين... (الحد الأدنى: 3 لاعبين)</p>
+            </div>
+
+            <button id="startOnlineGameBtn" onclick="startOnlineGame()" class="success" style="display: none;">ابدأ اللعبة</button>
+            <button onclick="leaveRoom()" class="secondary">مغادرة الغرفة</button>
+        </div>
+
+        <div id="onlineGameScreen" class="screen">
+            <div id="onlineTimerDisplay" class="timer" style="display: none;"></div>
+            <div id="onlineWordDisplay"></div>
+            <div id="onlineShowHideButtonContainer"></div>
+            <div id="onlineReadyVoteContainer"></div>
+        </div>
+
+        <div id="onlineVotingScreen" class="screen">
+            <h2 style="text-align: center; margin-bottom: 20px; color: #667eea;">⏱️ وقت التصويت!</h2>
+            <h3 style="text-align: center; margin-bottom: 20px;">صوت على الجاسوس</h3>
+            
+            <div class="vote-buttons" id="onlineVoteButtons"></div>
+            
+            <div id="onlineVoteWaiting" class="waiting-status" style="display: none;">
+                <div class="spinner"></div>
+                <p>في انتظار تصويت اللاعبين...</p>
+            </div>
+        </div>
+
+        <div id="onlineResultsScreen" class="screen">
+            <h2 style="text-align: center; color: #667eea; margin-bottom: 30px;">🎯 النتائج</h2>
+            
+            <div id="onlineWinnerAnnouncement"></div>
+            <div id="onlineWordReveal"></div>
+            <div id="onlineVoteResultsDiv"></div>
+            <div id="onlineImpostorReveal"></div>
+            <div id="onlinePointsDistribution"></div>
+            
+            <button onclick="backToLobby()" class="success">العودة للوبي</button>
+        </div>
+
+        <div id="offlineSetupScreen" class="screen">
+            <div class="input-group">
+                <label>اختر الفئة:</label>
+                <select id="categorySelect">
+                    <option value="mixed">مختلط (جميع الفئات)</option>
+                    <option value="places">أماكن</option>
+                    <option value="jobs">مهن</option>
+                    <option value="items">أشياء</option>
+                    <option value="animals">حيوانات</option>
+                    <option value="meals">وجبات</option>
+                    <option value="countries">دول</option>
+                    <option value="vegetables">خضروات</option>
+                    <option value="insects">حشرات</option>
+                    <option value="fruits">فواكه</option>
+                    <option value="furniture">أثاث</option>
+                    <option value="custom">كلمات مخصصة 📝</option>
+                </select>
+            </div>
+
+            <div class="settings-section">
+                <h3>⚙️ إعدادات اللعبة</h3>
+                
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <label>عدد الجواسيس:</label>
+                        <input type="number" id="impostorCount" min="1" value="1">
+                        <small style="color: #666; font-size: 0.85em; display: block; margin-top: 5px;">الحد الأقصى: <span id="offlineMaxImpostorsDisplay">1</span></small>
+                    </div>
+                    <div class="setting-item">
+                        <label>المؤقت (ثانية):</label>
+                        <input type="number" id="timerDuration" min="0" value="180">
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="votingEnabled">
+                    <label for="votingEnabled">تفعيل نظام التصويت</label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="clueEnabled" checked>
+                    <label for="clueEnabled">إعطاء تلميح للجاسوس</label>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>أضف لاعب:</label>
+                <input type="text" id="playerNameInput" placeholder="اسم اللاعب">
+                <button onclick="addPlayer()">إضافة لاعب</button>
+            </div>
+
+            <div id="errorMessage"></div>
+
+            <div class="player-list" id="playerList"></div>
+
+            <button onclick="startOfflineGame()" class="success">ابدأ اللعبة</button>
+            <button onclick="backToMode()" class="secondary">رجوع</button>
+        </div>
+
+        <div id="wordScreen" class="screen">
+            <div style="text-align: center; font-size: 1.8em; color: #667eea; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 10px; font-weight: bold;" id="currentPlayerName"></div>
+            
+            <div id="wordDisplay"></div>
+
+            <div id="showHideButtonContainer"></div>
+
+            <button onclick="nextPlayer()" class="success">اللاعب التالي</button>
+        </div>
+
+        <div id="gameScreen" class="screen">
+            <div id="timerDisplay" class="timer"></div>
+
+            <div class="alert success" id="firstPlayerAlert" style="display: none;"></div>
+
+            <div id="votingSection" class="voting-section" style="display: none;">
+                <h3 style="text-align: center; margin-bottom: 15px;">صوت على الجاسوس</h3>
+                <div class="vote-buttons" id="voteButtons"></div>
+                <button onclick="showVoteResults()" class="secondary" style="margin-top: 15px;">عرض النتائج</button>
+            </div>
+
+            <div id="voteResults" class="vote-results" style="display: none;"></div>
+
+            <button onclick="revealImpostors()">كشف الجواسيس</button>
+            <button onclick="resetGame()" class="secondary">جولة جديدة</button>
+        </div>
+
+        <div id="resultsScreen" class="screen">
+            <div id="impostorReveal"></div>
+            <button onclick="resetGame()" class="success">لعب مرة أخرى</button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
