@@ -16,6 +16,9 @@ const STORAGE_KEYS = {
 // Custom Words Management
 let customWords = [];
 
+// Impostor emoji
+const IMPOSTOR_EMOJI = "🕵️‍♂️";
+
 function loadCustomWords() {
     const saved = localStorage.getItem(STORAGE_KEYS.CUSTOM_WORDS);
     if (saved) {
@@ -384,17 +387,228 @@ try {
     console.error("Firebase initialization error:", error);
 }
 
-// Word Database
+// Word Database with emojis and clues
 const words = {
-    places: ["مسجد", "مدرسة", "مستشفى", "مطار", "محطة قطار", "ملعب", "حديقة", "شاطئ", "جبل", "صحراء", "مكتبة", "متحف", "سوق", "محل", "مطعم", "مقهى", "فندق", "سينما", "مسرح", "حديقة حيوان"],
-    jobs: ["طبيب", "معلم", "مهندس", "محامي", "طيار", "شرطي", "رجل إطفاء", "طباخ", "نادل", "سائق", "كهربائي", "خباز", "نجار", "حداد", "بناء", "رسام", "مصور", "صحفي", "كاتب", "مؤلف"],
-    items: ["هاتف", "حاسوب", "تلفاز", "ثلاجة", "فرن", "مكيف", "مروحة", "ساعة", "كاميرا", "مفتاح", "قلم", "كتاب", "دفتر", "حقيبة", "محفظة", "نظارة", "مرآة", "فرشاة", "مشط", "صابون"],
-    animals: ["أسد", "نمر", "فهد", "ذئب", "ثعلب", "دب", "قرد", "فيل", "زرافة", "حصان", "حمار", "جمل", "بقرة", "خروف", "ماعز", "خنزير", "كلب", "قطة", "أرنب", "فأر"],
-    food: ["بيتزا", "برجر", "شاورما", "كباب", "ايس كريم", "كسكس", "ارز", "لازانيا", "سوشي", "معكرونة", "تاكو", "بوريتو", "ساندويتش", "هوت دوج", "دجاج مقلي", "ستيك", "سمك مشوي", "فاصولياء", "عدس", "بيض مقلي"],
-    countries: ["مصر", "السعودية", "الإمارات", "المغرب", "تونس", "فرنسا", "ألمانيا", "إيطاليا", "إسبانيا", "بريطانيا", "اليابان", "الصين", "كوريا", "الهند", "تايلاند", "أمريكا", "كندا", "البرازيل", "الأرجنتين", "المكسيك", "أستراليا", "نيوزيلندا", "جنوب أفريقيا", "نيجيريا", "كينيا", "روسيا", "تركيا", "إيران"],    fruits: ["تفاح", "موز", "برتقال", "عنب", "فراولة", "مانجو", "أناناس", "بطيخ", "شمام", "خوخ", "مشمش", "كمثرى", "رمان", "تين", "كيوي", "ليمون", "يوسفي", "توت", "كرز", "جوافة"],
-    insects: ["نملة", "نحلة", "ذبابة", "بعوضة", "صرصور", "جرادة", "فراشة", "دبور", "خنفساء", "دعسوقة", "دودة", "عنكبوت", "عقرب", "برغوث", "قمل"],   
-    vegetables: ["طماطم", "خيار", "خس", "جزر", "بصل", "ثوم", "فلفل", "باذنجان", "كوسا", "فاصوليا", "بازلاء", "ذرة", "قرع", "ملفوف", "قرنبيط", "بروكلي", "فجل", "لفت", "سبانخ", "بقدونس"],
-    furniture: ["سرير", "كرسي", "طاولة", "خزانة", "أريكة", "جرس", "رف", "مكتب", "مرآة", "سجادة", "ستارة", "ثريا", "مصباح", "بساط", "وسادة", "حصيرة", "مقعد", "ساعة", "شماعة", "مزهرية"],
+    places: [
+        { word: "مسجد", clue: "مكان عبادة", emoji: "🕌" },
+        { word: "مدرسة", clue: "مكان تعليم", emoji: "🏫" },
+        { word: "مستشفى", clue: "مكان علاج", emoji: "🏥" },
+        { word: "مطار", clue: "مكان طيران", emoji: "✈️" },
+        { word: "محطة قطار", clue: "مكان سفر", emoji: "🚉" },
+        { word: "ملعب", clue: "مكان رياضة", emoji: "🏟️" },
+        { word: "حديقة", clue: "مكان أخضر", emoji: "🏞️" },
+        { word: "شاطئ", clue: "مكان بحر", emoji: "🏖️" },
+        { word: "جبل", clue: "مكان عالي", emoji: "⛰️" },
+        { word: "صحراء", clue: "مكان رمل", emoji: "🏜️" },
+        { word: "مكتبة", clue: "مكان كتب", emoji: "📚" },
+        { word: "متحف", clue: "مكان تاريخ", emoji: "🏛️" },
+        { word: "سوق", clue: "مكان تسوق", emoji: "🏪" },
+        { word: "محل", clue: "مكان بيع", emoji: "🏬" },
+        { word: "مطعم", clue: "مكان طعام", emoji: "🍽️" },
+        { word: "مقهى", clue: "مكان قهوة", emoji: "☕" },
+        { word: "فندق", clue: "مكان إقامة", emoji: "🏨" },
+        { word: "سينما", clue: "مكان أفلام", emoji: "🎬" },
+        { word: "مسرح", clue: "مكان عروض", emoji: "🎭" },
+        { word: "حديقة حيوان", clue: "مكان حيوانات", emoji: "🦁" }
+    ],
+    jobs: [
+        { word: "طبيب", clue: "يعالج المرضى", emoji: "👨‍⚕️" },
+        { word: "معلم", clue: "يعلم الطلاب", emoji: "👨‍🏫" },
+        { word: "مهندس", clue: "يصمم ويبني", emoji: "👷" },
+        { word: "محامي", clue: "يدافع في المحكمة", emoji: "⚖️" },
+        { word: "طيار", clue: "يقود الطائرة", emoji: "👨‍✈️" },
+        { word: "شرطي", clue: "يحفظ الأمن", emoji: "👮" },
+        { word: "رجل إطفاء", clue: "يطفئ الحرائق", emoji: "👨‍🚒" },
+        { word: "طباخ", clue: "يطبخ الطعام", emoji: "👨‍🍳" },
+        { word: "نادل", clue: "يقدم الطعام", emoji: "🧑‍🍳" },
+        { word: "سائق", clue: "يقود السيارة", emoji: "🚗" },
+        { word: "كهربائي", clue: "يصلح الكهرباء", emoji: "🔌" },
+        { word: "خباز", clue: "يخبز الخبز", emoji: "🥖" },
+        { word: "نجار", clue: "يعمل بالخشب", emoji: "🪚" },
+        { word: "حداد", clue: "يعمل بالحديد", emoji: "🔨" },
+        { word: "بناء", clue: "يبني المنازل", emoji: "🏗️" },
+        { word: "رسام", clue: "يرسم اللوحات", emoji: "🎨" },
+        { word: "مصور", clue: "يلتقط الصور", emoji: "📷" },
+        { word: "صحفي", clue: "يكتب الأخبار", emoji: "📰" },
+        { word: "كاتب", clue: "يكتب القصص", emoji: "✍️" },
+        { word: "مؤلف", clue: "يؤلف الكتب", emoji: "📖" }
+    ],
+    items: [
+        { word: "هاتف", clue: "جهاز اتصال", emoji: "📱" },
+        { word: "حاسوب", clue: "جهاز إلكتروني", emoji: "💻" },
+        { word: "تلفاز", clue: "شاشة عرض", emoji: "📺" },
+        { word: "ثلاجة", clue: "جهاز تبريد", emoji: "🧊" },
+        { word: "فرن", clue: "جهاز طبخ", emoji: "🔥" },
+        { word: "مكيف", clue: "جهاز تبريد", emoji: "❄️" },
+        { word: "مروحة", clue: "جهاز تهوية", emoji: "🌀" },
+        { word: "ساعة", clue: "جهاز وقت", emoji: "⌚" },
+        { word: "كاميرا", clue: "جهاز تصوير", emoji: "📷" },
+        { word: "مفتاح", clue: "أداة فتح", emoji: "🔑" },
+        { word: "قلم", clue: "أداة كتابة", emoji: "✏️" },
+        { word: "كتاب", clue: "للقراءة", emoji: "📖" },
+        { word: "دفتر", clue: "للكتابة", emoji: "📓" },
+        { word: "حقيبة", clue: "للحمل", emoji: "👜" },
+        { word: "محفظة", clue: "للنقود", emoji: "👛" },
+        { word: "نظارة", clue: "للرؤية", emoji: "👓" },
+        { word: "مرآة", clue: "للانعكاس", emoji: "🪞" },
+        { word: "فرشاة", clue: "للتنظيف", emoji: "🪥" },
+        { word: "مشط", clue: "للشعر", emoji: "💇" },
+        { word: "صابون", clue: "للنظافة", emoji: "🧼" }
+    ],
+    animals: [
+        { word: "أسد", clue: "ملك الغابة", emoji: "🦁" },
+        { word: "نمر", clue: "حيوان مفترس", emoji: "🐯" },
+        { word: "فهد", clue: "أسرع حيوان", emoji: "🐆" },
+        { word: "ذئب", clue: "حيوان مفترس", emoji: "🐺" },
+        { word: "ثعلب", clue: "حيوان ذكي", emoji: "🦊" },
+        { word: "دب", clue: "حيوان ضخم", emoji: "🐻" },
+        { word: "قرد", clue: "حيوان ذكي", emoji: "🐵" },
+        { word: "فيل", clue: "أكبر الحيوانات", emoji: "🐘" },
+        { word: "زرافة", clue: "أطول حيوان", emoji: "🦒" },
+        { word: "حصان", clue: "حيوان ركوب", emoji: "🐴" },
+        { word: "حمار", clue: "حيوان حمل", emoji: "🫏" },
+        { word: "جمل", clue: "سفينة الصحراء", emoji: "🐪" },
+        { word: "بقرة", clue: "حيوان الحليب", emoji: "🐄" },
+        { word: "خروف", clue: "حيوان الصوف", emoji: "🐑" },
+        { word: "ماعز", clue: "حيوان أليف", emoji: "🐐" },
+        { word: "خنزير", clue: "حيوان مزرعة", emoji: "🐷" },
+        { word: "كلب", clue: "صديق الإنسان", emoji: "🐕" },
+        { word: "قطة", clue: "حيوان أليف", emoji: "🐱" },
+        { word: "أرنب", clue: "حيوان سريع", emoji: "🐰" },
+        { word: "فأر", clue: "حيوان صغير", emoji: "🐭" }
+    ],
+    meals: [
+        { word: "بيتزا", clue: "طعام إيطالي", emoji: "🍕" },
+        { word: "برجر", clue: "وجبة سريعة", emoji: "🍔" },
+        { word: "شاورما", clue: "طعام عربي", emoji: "🌯" },
+        { word: "كباب", clue: "لحم مشوي", emoji: "🍢" },
+        { word: "ايس كريم", clue: "حلوى باردة", emoji: "🍦" },
+        { word: "كسكس", clue: "طعام مغربي", emoji: "🍲" },
+        { word: "ارز", clue: "حبوب", emoji: "🍚" },
+        { word: "لازانيا", clue: "معكرونة إيطالية", emoji: "🍝" },
+        { word: "سوشي", clue: "طعام ياباني", emoji: "🍣" },
+        { word: "معكرونة", clue: "باستا", emoji: "🍝" },
+        { word: "تاكو", clue: "طعام مكسيكي", emoji: "🌮" },
+        { word: "بوريتو", clue: "لفائف مكسيكية", emoji: "🌯" },
+        { word: "ساندويتش", clue: "وجبة خفيفة", emoji: "🥪" },
+        { word: "هوت دوج", clue: "نقانق", emoji: "🌭" },
+        { word: "دجاج مقلي", clue: "وجبة سريعة", emoji: "🍗" },
+        { word: "ستيك", clue: "لحم بقري", emoji: "🥩" },
+        { word: "سمك مشوي", clue: "طعام بحري", emoji: "🐟" },
+        { word: "فاصولياء", clue: "بقوليات", emoji: "🫘" },
+        { word: "عدس", clue: "حبوب", emoji: "🫘" },
+        { word: "بيض مقلي", clue: "وجبة إفطار", emoji: "🍳" }
+    ],
+    countries: [
+        { word: "مصر", clue: "أرض الأهرامات", emoji: "🇪🇬" },
+        { word: "السعودية", clue: "أرض الحرمين", emoji: "🇸🇦" },
+        { word: "الإمارات", clue: "برج خليفة", emoji: "🇦🇪" },
+        { word: "المغرب", clue: "المغرب العربي", emoji: "🇲🇦" },
+        { word: "تونس", clue: "شمال أفريقيا", emoji: "🇹🇳" },
+        { word: "فرنسا", clue: "برج إيفل", emoji: "🇫🇷" },
+        { word: "ألمانيا", clue: "أوروبا", emoji: "🇩🇪" },
+        { word: "إيطاليا", clue: "برج بيزا", emoji: "🇮🇹" },
+        { word: "إسبانيا", clue: "أوروبا", emoji: "🇪🇸" },
+        { word: "بريطانيا", clue: "ساعة بيج بن", emoji: "🇬🇧" },
+        { word: "اليابان", clue: "الشمس المشرقة", emoji: "🇯🇵" },
+        { word: "الصين", clue: "سور الصين", emoji: "🇨🇳" },
+        { word: "كوريا", clue: "شرق آسيا", emoji: "🇰🇷" },
+        { word: "الهند", clue: "تاج محل", emoji: "🇮🇳" },
+        { word: "تايلاند", clue: "جنوب آسيا", emoji: "🇹🇭" },
+        { word: "أمريكا", clue: "تمثال الحرية", emoji: "🇺🇸" },
+        { word: "كندا", clue: "أمريكا الشمالية", emoji: "🇨🇦" },
+        { word: "البرازيل", clue: "أمريكا الجنوبية", emoji: "🇧🇷" },
+        { word: "الأرجنتين", clue: "أمريكا الجنوبية", emoji: "🇦🇷" },
+        { word: "المكسيك", clue: "أمريكا الوسطى", emoji: "🇲🇽" },
+        { word: "أستراليا", clue: "قارة", emoji: "🇦🇺" },
+        { word: "نيوزيلندا", clue: "أوقيانوسيا", emoji: "🇳🇿" },
+        { word: "جنوب أفريقيا", clue: "أفريقيا", emoji: "🇿🇦" },
+        { word: "نيجيريا", clue: "غرب أفريقيا", emoji: "🇳🇬" },
+        { word: "كينيا", clue: "شرق أفريقيا", emoji: "🇰🇪" },
+        { word: "روسيا", clue: "أكبر دولة", emoji: "🇷🇺" },
+        { word: "تركيا", clue: "بين قارتين", emoji: "🇹🇷" },
+        { word: "إيران", clue: "الشرق الأوسط", emoji: "🇮🇷" }
+    ],
+    fruits: [
+        { word: "تفاح", clue: "فاكهة حمراء", emoji: "🍎" },
+        { word: "موز", clue: "فاكهة صفراء", emoji: "🍌" },
+        { word: "برتقال", clue: "فاكهة برتقالية", emoji: "🍊" },
+        { word: "عنب", clue: "فاكهة عناقيد", emoji: "🍇" },
+        { word: "فراولة", clue: "فاكهة حمراء", emoji: "🍓" },
+        { word: "مانجو", clue: "فاكهة استوائية", emoji: "🥭" },
+        { word: "أناناس", clue: "فاكهة استوائية", emoji: "🍍" },
+        { word: "بطيخ", clue: "فاكهة صيفية", emoji: "🍉" },
+        { word: "شمام", clue: "فاكهة صيفية", emoji: "🍈" },
+        { word: "خوخ", clue: "فاكهة صيفية", emoji: "🍑" },
+        { word: "مشمش", clue: "فاكهة برتقالية", emoji: "🍑" },
+        { word: "كمثرى", clue: "فاكهة خضراء", emoji: "🍐" },
+        { word: "رمان", clue: "فاكهة حمراء", emoji: "🍒" },
+        { word: "تين", clue: "فاكهة صيفية", emoji: "🫐" },
+        { word: "كيوي", clue: "فاكهة خضراء", emoji: "🥝" },
+        { word: "ليمون", clue: "فاكهة حامضة", emoji: "🍋" },
+        { word: "يوسفي", clue: "فاكهة شتوية", emoji: "🍊" },
+        { word: "توت", clue: "فاكهة صغيرة", emoji: "🫐" },
+        { word: "كرز", clue: "فاكهة حمراء", emoji: "🍒" },
+        { word: "جوافة", clue: "فاكهة استوائية", emoji: "🍈" }
+    ],
+    insects: [
+        { word: "نملة", clue: "حشرة صغيرة", emoji: "🐜" },
+        { word: "نحلة", clue: "تنتج العسل", emoji: "🐝" },
+        { word: "ذبابة", clue: "حشرة طائرة", emoji: "🪰" },
+        { word: "بعوضة", clue: "حشرة لاسعة", emoji: "🦟" },
+        { word: "صرصور", clue: "حشرة منزلية", emoji: "🪳" },
+        { word: "جرادة", clue: "حشرة قافزة", emoji: "🦗" },
+        { word: "فراشة", clue: "حشرة ملونة", emoji: "🦋" },
+        { word: "دبور", clue: "حشرة لاسعة", emoji: "🐝" },
+        { word: "خنفساء", clue: "حشرة صلبة", emoji: "🪲" },
+        { word: "دعسوقة", clue: "حشرة حمراء", emoji: "🐞" },
+        { word: "دودة", clue: "تزحف", emoji: "🪱" },
+        { word: "عنكبوت", clue: "ينسج الخيوط", emoji: "🕷️" },
+        { word: "عقرب", clue: "له ذيل سام", emoji: "🦂" },
+        { word: "برغوث", clue: "حشرة قافزة", emoji: "🦟" },
+        { word: "قمل", clue: "حشرة الشعر", emoji: "🪳" }
+    ],
+    vegetables: [
+        { word: "طماطم", clue: "خضار أحمر", emoji: "🍅" },
+        { word: "خيار", clue: "خضار أخضر", emoji: "🥒" },
+        { word: "خس", clue: "خضار ورقي", emoji: "🥬" },
+        { word: "جزر", clue: "خضار برتقالي", emoji: "🥕" },
+        { word: "بصل", clue: "يبكي العين", emoji: "🧅" },
+        { word: "ثوم", clue: "نكهة قوية", emoji: "🧄" },
+        { word: "فلفل", clue: "خضار حار", emoji: "🌶️" },
+        { word: "باذنجان", clue: "خضار بنفسجي", emoji: "🍆" },
+        { word: "كوسا", clue: "خضار أخضر", emoji: "🥒" },
+        { word: "فاصوليا", clue: "بقوليات", emoji: "🫘" },
+        { word: "بازلاء", clue: "خضار أخضر", emoji: "🫛" },
+        { word: "ذرة", clue: "خضار أصفر", emoji: "🌽" },
+        { word: "قرع", clue: "خضار برتقالي", emoji: "🎃" },
+        { word: "ملفوف", clue: "خضار ورقي", emoji: "🥬" },
+        { word: "قرنبيط", clue: "خضار أبيض", emoji: "🥦" },
+        { word: "بروكلي", clue: "خضار أخضر", emoji: "🥦" },
+        { word: "فجل", clue: "خضار أحمر", emoji: "🌶️" },
+        { word: "لفت", clue: "خضار جذري", emoji: "🥕" },
+        { word: "سبانخ", clue: "خضار ورقي", emoji: "🥬" },
+        { word: "بقدونس", clue: "نبات عطري", emoji: "🌿" }
+    ],
+    furniture: [
+        { word: "سرير", clue: "للنوم", emoji: "🛏️" },
+        { word: "كرسي", clue: "للجلوس", emoji: "🪑" },
+        { word: "طاولة", clue: "للأكل", emoji: "🪑" },
+        { word: "خزانة", clue: "للملابس", emoji: "🗄️" },
+        { word: "أريكة", clue: "للجلوس", emoji: "🛋️" },
+        { word: "رف", clue: "للكتب", emoji: "📚" },
+        { word: "مكتب", clue: "للعمل", emoji: "🖥️" },
+        { word: "مرآة", clue: "للنظر", emoji: "🪞" },
+        { word: "سجادة", clue: "للأرضية", emoji: "🧶" },
+        { word: "ستارة", clue: "للنافذة", emoji: "🪟" },
+        { word: "ثريا", clue: "للإضاءة", emoji: "💡" },
+        { word: "مصباح", clue: "للإضاءة", emoji: "🔦" },
+        { word: "وسادة", clue: "للراحة", emoji: "🛏️" },
+        { word: "مقعد", clue: "للجلوس", emoji: "🪑" },
+        { word: "ساعة", clue: "للوقت", emoji: "🕐" },
+        { word: "شماعة", clue: "للملابس", emoji: "👔" },
+        { word: "مزهرية", clue: "للزهور", emoji: "🌺" }
+    ],
     custom: []
 };
 
@@ -428,6 +642,7 @@ let players = [];
 let impostors = [];
 let currentWord = "";
 let currentHint = "";
+let currentWordEmoji = "";
 let currentPlayerIndex = 0;
 let timerInterval = null;
 let votes = {};
@@ -435,8 +650,44 @@ let firstPlayer = "";
 let clueEnabled = true;
 let wordVisible = false;
 let currentHostName = null;
+let onlineClueEnabled = true;
+let gameListenersActive = false;
+let roomStatusListener = null;
 
 // Helper Functions
+function resetOnlineUI() {
+    hasVoted = false;
+    hasSeenWord = false;
+    hasReadyToVote = false;
+
+    if (onlineTimerInterval) {
+        clearInterval(onlineTimerInterval);
+        onlineTimerInterval = null;
+    }
+
+    const timerDisplay = document.getElementById('onlineTimerDisplay');
+    if (timerDisplay) {
+        timerDisplay.style.display = 'none';
+        timerDisplay.textContent = '';
+        timerDisplay.classList.remove('warning');
+    }
+
+    const clearIds = [
+        'onlineWordDisplay',
+        'onlineShowHideButtonContainer',
+        'onlineReadyVoteContainer',
+        'onlineVoteButtons'
+    ];
+
+    clearIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = '';
+    });
+
+    const waiting = document.getElementById('onlineVoteWaiting');
+    if (waiting) waiting.style.display = 'none';
+}
+
 function createConfetti() {
     const colors = ['#ffd700', '#ff6b6b', '#4facfe', '#43e97b', '#f093fb'];
     for (let i = 0; i < 50; i++) {
@@ -476,6 +727,7 @@ function backToMode() {
     hasReadyToVote = false;
     hasVotedForHost = false;
     isRoomClosed = false;
+    gameListenersActive = false;
     if (onlineTimerInterval) {
         clearInterval(onlineTimerInterval);
         onlineTimerInterval = null;
@@ -753,6 +1005,40 @@ function showOnlineError(message) {
     }, 3000);
 }
 
+// Helper function to get random word
+function getRandomWord(category) {
+    let wordList;
+    if (category === 'custom') {
+        loadCustomWords();
+        if (customWords.length === 0) {
+            return null;
+        }
+        wordList = customWords.map(w => ({ word: w, clue: "كلمة مخصصة", emoji: "📝" }));
+    } else if (category === 'mixed') {
+        const allWords = [];
+        Object.values(words).forEach(catWords => {
+            if (Array.isArray(catWords) && catWords.length > 0) {
+                allWords.push(...catWords);
+            }
+        });
+        wordList = allWords;
+    } else {
+        wordList = words[category];
+    }
+    
+    if (!wordList || wordList.length === 0) return null;
+    return wordList[Math.floor(Math.random() * wordList.length)];
+}
+
+// Update getHint function to get clue from word object
+function getHint(wordObj) {
+    if (typeof wordObj === 'string') {
+        if (wordObj.length <= 2) return wordObj[0] + "*";
+        return wordObj[0] + "*".repeat(wordObj.length - 2) + wordObj[wordObj.length - 1];
+    }
+    return wordObj.clue || "لا يوجد تلميح";
+}
+
 function createRoom() {
     playClickSound();
     const name = document.getElementById('playerName').value.trim();
@@ -868,97 +1154,75 @@ function joinRoom() {
 }
 
 function listenToRoom() {
-    playersRef.on('value', snapshot => {
-        const playersData = snapshot.val() || {};
-        const playersList = Object.values(playersData);
-        
-        if (!playersData[currentPlayerName]) {
-            if (!isHost) {
-                alert('تم طردك من الغرفة');
-                leaveRoom();
-                return;
-            }
-        }
-        
-        const newHost = Object.keys(playersData).find(name => playersData[name].isHost);
-        if (newHost) {
-            currentHostName = newHost;
-            if (currentPlayerName === newHost && !isHost) {
-                isHost = true;
-                document.getElementById('hostSettings').style.display = 'block';
-                document.getElementById('roomControlsDiv').style.display = 'block';
-            } else if (currentPlayerName !== newHost && isHost) {
-                isHost = false;
-                document.getElementById('hostSettings').style.display = 'none';
-                document.getElementById('roomControlsDiv').style.display = 'none';
-                showHostChangeNotification(newHost);
-            }
-        }
-        
-        updateOnlinePlayerList(playersList);
-        updateMaxImpostors(playersList.length);
-        document.getElementById('playerCount').textContent = playersList.length;
-        
-        if (isHost && playersList.length >= 3) {
-            document.getElementById('startOnlineGameBtn').style.display = 'block';
-            document.getElementById('waitingStatus').style.display = 'none';
-        } else {
-            document.getElementById('startOnlineGameBtn').style.display = 'none';
-            document.getElementById('waitingStatus').style.display = 'block';
-        }
-        
-        setupHostVoting();
-    });
-    
-    roomRef.child('isClosed').on('value', snapshot => {
-        const closed = snapshot.val() || false;
-        if (!isHost) {
-            const status = document.getElementById('roomStatus');
-            if (closed) {
-                status.textContent = '🔴 الغرفة مغلقة';
-                status.className = 'room-status closed';
-            } else {
-                status.textContent = '🟢 الغرفة مفتوحة';
-                status.className = 'room-status open';
-            }
-        }
-    });
-    
-    leaderboardRef.on('value', () => {
-        updateLeaderboard();
-    });
-    
-    checkHostVotes();
-    
-    // Listen to room status changes
+
+    /* ✅ STATUS LISTENER — SOURCE OF TRUTH */
     roomRef.child('status').on('value', snapshot => {
         const status = snapshot.val();
+
         if (status === 'waiting') {
-            // Reset all game states when room goes back to waiting
-            hasVoted = false;
-            hasSeenWord = false;
-            hasReadyToVote = false;
-            
-            if (onlineTimerInterval) {
-                clearInterval(onlineTimerInterval);
-                onlineTimerInterval = null;
-            }
-            
-            // If currently in a game screen, return to lobby
-            const currentScreen = document.querySelector('.screen.active');
-            if (currentScreen && ['onlineGameScreen', 'onlineVotingScreen', 'onlineResultsScreen'].includes(currentScreen.id)) {
-                showScreen('lobbyScreen');
-            }
+            resetOnlineUI();
+            showScreen('lobbyScreen');
+        }
+
+        if (status === 'playing') {
+            // gameRef listener will handle transition
         }
     });
 
+    /* ✅ GAME LISTENER — ONLY WHEN PLAYING */
     gameRef = roomRef.child('game');
+
     gameRef.on('value', snapshot => {
         const gameData = snapshot.val();
-        if (gameData) {
-            handleGameStateChange(gameData);
+
+        if (!gameData) return;
+
+        roomRef.child('status').once('value').then(statusSnap => {
+            if (statusSnap.val() === 'playing') {
+                handleGameStateChange(gameData);
+            }
+        });
+    });
+
+    /* ✅ PLAYER LISTENER */
+    playersRef.on('value', snapshot => {
+        const playersData = snapshot.val() || {};
+        const playersList = Object.values(playersData);
+
+        updateOnlinePlayerList(playersList);
+        document.getElementById('playerCount').textContent = playersList.length;
+
+        if (isHost && playersList.length >= 3) {
+            document.getElementById('startOnlineGameBtn').style.display = 'block';
+        } else {
+            document.getElementById('startOnlineGameBtn').style.display = 'none';
         }
     });
+}
+function resetGameStates() {
+    hasVoted = false;
+    hasSeenWord = false;
+    hasReadyToVote = false;
+    
+    if (onlineTimerInterval) {
+        clearInterval(onlineTimerInterval);
+        onlineTimerInterval = null;
+    }
+    
+    // Clear timer display
+    const timerDisplay = document.getElementById('onlineTimerDisplay');
+    if (timerDisplay) {
+        timerDisplay.style.display = 'none';
+        timerDisplay.textContent = '';
+        timerDisplay.classList.remove('warning');
+    }
+    
+    // Clear all game containers
+    document.getElementById('onlineWordDisplay').innerHTML = '';
+    document.getElementById('onlineShowHideButtonContainer').innerHTML = '';
+    document.getElementById('onlineReadyVoteContainer').innerHTML = '';
+    document.getElementById('onlineVoteButtons').innerHTML = '';
+    document.getElementById('onlineVoteWaiting').style.display = 'none';
 }
 
 function updateMaxImpostors(playerCount) {
@@ -1001,106 +1265,75 @@ function updateOnlinePlayerList(playersList) {
 function startOnlineGame() {
     playSelectSound();
     if (!isHost) return;
-    playersRef.once('value').then(snapshot => {
-        const playersData = snapshot.val() || {};
-        const playersList = Object.keys(playersData);
-        if (playersList.length < 3) {
-            showOnlineError('يجب وجود 3 لاعبين على الأقل');
-            return;
-        }
-        const category = document.getElementById('onlineCategorySelect').value;
-        const impostorCount = parseInt(document.getElementById('onlineImpostorCount').value);
-        const timerDuration = parseFloat(document.getElementById('onlineTimerDuration').value) * 60; // Convert minutes to seconds
-        const clueEnabled = document.getElementById('onlineClueEnabled').checked;
-        const maxImpostors = playersList.length - 1;
-        if (impostorCount >= playersList.length || impostorCount > maxImpostors) {
-            showOnlineError(`عدد الجواسيس يجب أن يكون أقل من ${maxImpostors + 1}`);
-            return;
-        }
-        
-        let wordList;
-        if (category === 'custom') {
-            loadCustomWords();
-            if (customWords.length === 0) {
-                showOnlineError('لا توجد كلمات مخصصة. أضف كلمات أولاً!');
+
+    // ✅ Remove any old game completely
+    gameRef.remove().then(() => {
+
+        playersRef.once('value').then(snapshot => {
+
+            const playersData = snapshot.val() || {};
+            const playersList = Object.keys(playersData);
+
+            if (playersList.length < 3) {
+                showOnlineError('يجب وجود 3 لاعبين على الأقل');
                 return;
             }
-            wordList = customWords;
-        } else if (category === 'mixed') {
-            const allWords = [];
-            Object.values(words).forEach(catWords => {
-                if (Array.isArray(catWords) && catWords.length > 0) {
-                    allWords.push(...catWords);
-                }
+
+            const category = document.getElementById('onlineCategorySelect').value;
+            const impostorCount = parseInt(document.getElementById('onlineImpostorCount').value);
+            const timerDuration = parseFloat(document.getElementById('onlineTimerDuration').value) * 60;
+            const isClueEnabled = document.getElementById('onlineClueEnabled').checked;
+
+            const wordObj = getRandomWord(category);
+            if (!wordObj) {
+                showOnlineError('لا توجد كلمات');
+                return;
+            }
+
+            const shuffled = [...playersList].sort(() => Math.random() - 0.5);
+            const selectedImpostors = shuffled.slice(0, impostorCount);
+
+            const gameState = {
+                status: 'showing_words',
+                word: wordObj.word,
+                hint: wordObj.clue,
+                emoji: wordObj.emoji || "",
+                impostors: selectedImpostors.reduce((obj, name) => {
+                    obj[name] = true;
+                    return obj;
+                }, {}),
+                clueEnabled: isClueEnabled,
+                timerDuration: timerDuration,
+                playersSeen: {},
+                readyToVote: {},
+                votes: {}
+            };
+
+            /* ✅ Important Order */
+            gameRef.set(gameState).then(() => {
+                roomRef.update({ status: 'playing' });
             });
-            wordList = allWords;
-        } else {
-            wordList = words[category];
-        }
-        
-        const selectedWord = wordList[Math.floor(Math.random() * wordList.length)];
-        const hint = getHint(selectedWord);
-        const shuffledPlayers = [...playersList].sort(() => Math.random() - 0.5);
-        const selectedImpostors = shuffledPlayers.slice(0, impostorCount);
-        
-        // Select random first player
-        const firstPlayer = playersList[Math.floor(Math.random() * playersList.length)];
-        
-        const gameState = {
-            status: 'showing_words',
-            word: selectedWord,
-            hint: hint,
-            impostors: selectedImpostors.reduce((obj, name) => {
-                obj[name] = true;
-                return obj;
-            }, {}),
-            clueEnabled: clueEnabled,
-            timerDuration: timerDuration,
-            firstPlayer: firstPlayer,
-            playersSeen: {},
-            readyToVote: {},
-            votes: {},
-            startedAt: firebase.database.ServerValue.TIMESTAMP
-        };
-        roomRef.update({ status: 'playing' });
-        gameRef.set(gameState);
+
+        });
+
     });
 }
 
 function handleGameStateChange(gameData) {
     if (!gameData) return;
     
-    // Check if room is back to waiting status - return to lobby
-    roomRef.child('status').once('value').then(snapshot => {
-        const roomStatus = snapshot.val();
-        if (roomStatus === 'waiting') {
-            // Reset states and show lobby
-            hasVoted = false;
-            hasSeenWord = false;
-            hasReadyToVote = false;
-            
-            if (onlineTimerInterval) {
-                clearInterval(onlineTimerInterval);
-                onlineTimerInterval = null;
-            }
-            
-            showScreen('lobbyScreen');
-            return;
-        }
-        
-        // Continue with normal game state handling
-        switch (gameData.status) {
-            case 'showing_words':
-                showOnlineWord(gameData);
-                break;
-            case 'voting':
-                showOnlineVoting(gameData);
-                break;
-            case 'results':
-                showOnlineResults(gameData);
-                break;
-        }
-    });
+    // Continue with normal game state handling
+    switch (gameData.status) {
+        case 'showing_words':
+            showOnlineWord(gameData);
+            break;
+        case 'voting':
+            showOnlineVoting(gameData);
+            break;
+        case 'results':
+            showOnlineResults(gameData);
+            break;
+    }
 }
 
 function showOnlineWord(gameData) {
@@ -1109,34 +1342,37 @@ function showOnlineWord(gameData) {
     const wordDisplay = document.getElementById('onlineWordDisplay');
     const buttonContainer = document.getElementById('onlineShowHideButtonContainer');
     const readyVoteContainer = document.getElementById('onlineReadyVoteContainer');
+    
     if (!hasSeenWord) {
         if (isImpostor) {
-            if (gameData.clueEnabled) {
-                wordDisplay.innerHTML = `
-                    <div id="onlineWordCard" class="word-display">
-                        <div id="onlineActualWord" class="word-content word-hidden">
-                            <h2>🕵️ أنت الجاسوس!</h2>
-                            <div class="hint">تلميح: ${gameData.hint}</div>
+            const clueHTML = gameData.clueEnabled ? 
+                `<div class="clue-text">التلميح: ${gameData.hint}</div>` : 
+                '';
+            
+            wordDisplay.innerHTML = `
+                <div id="onlineWordCard" class="word-display impostor-display">
+                    <div id="onlineActualWord" class="word-content word-hidden">
+                        <h2>🕵️ أنت الجاسوس!</h2>
+                        ${clueHTML}
+                        <div id="onlineEmojiContainer" class="emoji-container emoji-hidden">
+                            <div class="emoji-display impostor-emoji">${IMPOSTOR_EMOJI}</div>
                         </div>
-                        <div id="onlinePlaceholder" class="hidden-placeholder">🔒</div>
                     </div>
-                `;
-            } else {
-                wordDisplay.innerHTML = `
-                    <div id="onlineWordCard" class="word-display">
-                        <div id="onlineActualWord" class="word-content word-hidden">
-                            <h2>🕵️ أنت الجاسوس!</h2>
-                            <p style="margin-top: 15px; font-size: 1.1em;">لا يوجد تلميح</p>
-                        </div>
-                        <div id="onlinePlaceholder" class="hidden-placeholder">🔒</div>
-                    </div>
-                `;
-            }
+                    <div id="onlinePlaceholder" class="hidden-placeholder">🔒</div>
+                </div>
+            `;
         } else {
+            const emojiHTML = gameData.emoji ? 
+                `<div class="emoji-display">${gameData.emoji}</div>` : 
+                '';
+            
             wordDisplay.innerHTML = `
                 <div id="onlineWordCard" class="word-display">
                     <div id="onlineActualWord" class="word-content word-hidden">
                         <h2>${gameData.word}</h2>
+                        <div id="onlineEmojiContainer" class="emoji-container emoji-hidden">
+                            ${emojiHTML}
+                        </div>
                     </div>
                     <div id="onlinePlaceholder" class="hidden-placeholder">🔒</div>
                 </div>
@@ -1148,8 +1384,11 @@ function showOnlineWord(gameData) {
             </button>
         `;
     }
+    
     if (gameData.timerEndTime) {
         startOnlineTimerDisplay(gameData.timerEndTime);
+        
+        // Only show ready to vote button if user hasn't marked ready yet
         if (!hasReadyToVote) {
             readyVoteContainer.innerHTML = `
                 <button class="warning" onclick="setReadyToVote()">
@@ -1171,10 +1410,18 @@ function toggleOnlineWordVisibility() {
     const wordElement = document.getElementById('onlineActualWord');
     const placeholderElement = document.getElementById('onlinePlaceholder');
     const button = document.getElementById('onlineToggleWordBtn');
+    const emojiContainer = document.getElementById('onlineEmojiContainer');
+    
     if (!hasSeenWord) {
         wordElement.classList.remove('word-hidden');
         wordElement.classList.add('word-visible');
         placeholderElement.style.display = 'none';
+        
+        if (emojiContainer) {
+            emojiContainer.classList.remove('emoji-hidden');
+            emojiContainer.classList.add('emoji-visible');
+        }
+        
         button.innerHTML = '<span class="eye-icon">✅</span> شاهدت الدور';
         button.disabled = true;
         hasSeenWord = true;
@@ -1238,7 +1485,7 @@ function checkAllPlayersSeen(gameData) {
             if (isHost) {
                 setTimeout(() => {
                     startOnlineTimer(gameData.timerDuration);
-                }, 3000); // Increased delay to show announcement
+                }, 3000);
             }
         }
     });
@@ -1277,7 +1524,7 @@ function startOnlineTimerDisplay(timerEndTime) {
         clearInterval(onlineTimerInterval);
     }
     
-    // Show ready to vote button after a short delay
+    // Show ready to vote button after a short delay ONLY if player hasn't pressed it yet
     setTimeout(() => {
         if (!hasReadyToVote) {
             readyVoteContainer.innerHTML = `
@@ -1510,45 +1757,18 @@ function showOnlineResults(gameData) {
 
 function backToLobby() {
     playClickSound();
-    
-    // Reset all player states
-    hasVoted = false;
-    hasSeenWord = false;
-    hasReadyToVote = false;
-    hasVotedForHost = false;
-    
-    // Clear timer
-    if (onlineTimerInterval) {
-        clearInterval(onlineTimerInterval);
-        onlineTimerInterval = null;
-    }
-    
-    // Clear timer display
-    const timerDisplay = document.getElementById('onlineTimerDisplay');
-    if (timerDisplay) {
-        timerDisplay.style.display = 'none';
-        timerDisplay.textContent = '';
-        timerDisplay.classList.remove('warning');
-    }
-    
-    // Clear all game containers
-    document.getElementById('onlineWordDisplay').innerHTML = '';
-    document.getElementById('onlineShowHideButtonContainer').innerHTML = '';
-    document.getElementById('onlineReadyVoteContainer').innerHTML = '';
-    document.getElementById('onlineVoteButtons').innerHTML = '';
-    document.getElementById('onlineVoteWaiting').style.display = 'none';
-    
-    // Host: Remove game data and reset room status
-    if (isHost) {
-        gameRef.remove().then(() => {
-            roomRef.update({ status: 'waiting' });
-        });
-    }
-    
-    // Update leaderboard
-    updateLeaderboard();
-    
-    // Show lobby screen
+
+    if (!isHost) return;
+
+    // ✅ Delete old game first
+    gameRef.remove().then(() => {
+
+        // ✅ Then change status
+        roomRef.update({ status: 'waiting' });
+
+    });
+
+    resetOnlineUI();
     showScreen('lobbyScreen');
 }
 
@@ -1583,7 +1803,9 @@ function leaveRoom() {
     if (bannedPlayersRef) bannedPlayersRef.off();
     if (hostVotesRef) hostVotesRef.off();
     if (roomRef) {
-        roomRef.child('status').off();
+        if (roomStatusListener) {
+            roomStatusListener.cancel();
+        }
         roomRef.child('isClosed').off();
         roomRef.off();
     }
@@ -1602,11 +1824,13 @@ function leaveRoom() {
     leaderboardRef = null;
     bannedPlayersRef = null;
     hostVotesRef = null;
+    roomStatusListener = null;
     hasVoted = false;
     hasSeenWord = false;
     hasReadyToVote = false;
     hasVotedForHost = false;
     isRoomClosed = false;
+    gameListenersActive = false;
     
     backToMode();
 }
@@ -1690,28 +1914,17 @@ function startOfflineGame() {
     clueEnabled = document.getElementById('clueEnabled').checked;
     const category = document.getElementById('categorySelect').value;
     
-    let wordList;
-    if (category === 'custom') {
-        loadCustomWords();
-        if (customWords.length === 0) {
-            showError('لا توجد كلمات مخصصة. أضف كلمات أولاً!');
-            return;
-        }
-        wordList = customWords;
-    } else if (category === 'mixed') {
-        const allWords = [];
-        Object.values(words).forEach(catWords => {
-            if (Array.isArray(catWords) && catWords.length > 0) {
-                allWords.push(...catWords);
-            }
-        });
-        wordList = allWords;
-    } else {
-        wordList = words[category];
+    const wordObj = getRandomWord(category);
+    
+    if (!wordObj) {
+        showError('لا توجد كلمات مخصصة. أضف كلمات أولاً!');
+        return;
     }
     
-    currentWord = wordList[Math.floor(Math.random() * wordList.length)];
-    currentHint = getHint(currentWord);
+    currentWord = wordObj.word;
+    currentHint = getHint(wordObj);
+    currentWordEmoji = wordObj.emoji || "";
+    
     const shuffledPlayers = [...players].sort(() => Math.random() - 0.5);
     impostors = shuffledPlayers.slice(0, impostorCount);
     currentPlayerIndex = 0;
@@ -1722,41 +1935,6 @@ function startOfflineGame() {
     showPlayerWord();
 }
 
-function getHint(word) {
-    if (word.length <= 2) return word[0] + "*";
-    return word[0] + "*".repeat(word.length - 2) + word[word.length - 1];
-}
-
-function toggleWordVisibility() {
-    playRevealSound();
-    wordVisible = !wordVisible;
-    const wordElement = document.getElementById('actualWord');
-    const cardElement = document.getElementById('wordCard');
-    const placeholderElement = document.getElementById('placeholder');
-    const button = document.getElementById('toggleWordBtn');
-    const player = players[currentPlayerIndex];
-    const isImpostor = impostors.includes(player);
-    if (wordVisible) {
-        wordElement.classList.remove('word-hidden');
-        wordElement.classList.add('word-visible');
-        placeholderElement.style.display = 'none';
-        button.innerHTML = '<span class="eye-icon">👁️</span> إخفاء';
-        if (isImpostor) {
-            if (clueEnabled) {
-                cardElement.className = 'word-display impostor-display impostor-revealed';
-            } else {
-                cardElement.className = 'word-display impostor-display-no-hint impostor-revealed';
-            }
-        }
-    } else {
-        wordElement.classList.remove('word-visible');
-        wordElement.classList.add('word-hidden');
-        placeholderElement.style.display = 'block';
-        button.innerHTML = '<span class="eye-icon">👁️</span> إظهار الدور';
-        cardElement.className = 'word-display';
-    }
-}
-
 function showPlayerWord() {
     const player = players[currentPlayerIndex];
     const isImpostor = impostors.includes(player);
@@ -1764,45 +1942,92 @@ function showPlayerWord() {
     document.getElementById('currentPlayerName').textContent = `🎮 ${player}`;
     const wordDisplay = document.getElementById('wordDisplay');
     const buttonContainer = document.getElementById('showHideButtonContainer');
+    
     if (isImpostor) {
-        if (clueEnabled) {
-            wordDisplay.innerHTML = `
-                <div id="wordCard" class="word-display">
-                    <div id="actualWord" class="word-content word-hidden">
-                        <h2>🕵️ أنت الجاسوس!</h2>
-                        <div class="hint">تلميح: ${currentHint}</div>
+        // CHANGED: Use regular word-display class initially, add impostor-display only when revealed
+        wordDisplay.innerHTML = `
+            <div id="wordCard" class="word-display">
+                <div id="actualWord" class="word-content word-hidden">
+                    <h2>🕵️ أنت الجاسوس!</h2>
+                    <div class="clue-text">التلميح: ${currentHint}</div>
+                    <div id="emojiContainer" class="emoji-container emoji-hidden">
+                        <div class="emoji-display impostor-emoji">${IMPOSTOR_EMOJI}</div>
                     </div>
-                    <div id="placeholder" class="hidden-placeholder">🔒</div>
                 </div>
-            `;
-        } else {
-            wordDisplay.innerHTML = `
-                <div id="wordCard" class="word-display">
-                    <div id="actualWord" class="word-content word-hidden">
-                        <h2>🕵️ أنت الجاسوس!</h2>
-                        <p style="margin-top: 15px; font-size: 1.1em;">لا يوجد تلميح</p>
-                    </div>
-                    <div id="placeholder" class="hidden-placeholder">🔒</div>
-                </div>
-            `;
-        }
+                <div id="placeholder" class="hidden-placeholder">🔒</div>
+            </div>
+        `;
     } else {
+        const emojiHTML = currentWordEmoji ? 
+            `<div class="emoji-display">${currentWordEmoji}</div>` : 
+            '';
+        
         wordDisplay.innerHTML = `
             <div id="wordCard" class="word-display">
                 <div id="actualWord" class="word-content word-hidden">
                     <h2>${currentWord}</h2>
+                    <div id="emojiContainer" class="emoji-container emoji-hidden">
+                        ${emojiHTML}
+                    </div>
                 </div>
                 <div id="placeholder" class="hidden-placeholder">🔒</div>
             </div>
         `;
     }
+    
     buttonContainer.innerHTML = `
         <button id="toggleWordBtn" class="show-hide-btn" onclick="toggleWordVisibility()">
             <span class="eye-icon">👁️</span> إظهار الدور
         </button>
     `;
 }
-
+function toggleWordVisibility() {
+    playRevealSound();
+    wordVisible = !wordVisible;
+    const wordElement = document.getElementById('actualWord');
+    const cardElement = document.getElementById('wordCard');
+    const placeholderElement = document.getElementById('placeholder');
+    const button = document.getElementById('toggleWordBtn');
+    const emojiContainer = document.getElementById('emojiContainer');
+    const player = players[currentPlayerIndex];
+    const isImpostor = impostors.includes(player);
+    
+    if (wordVisible) {
+        wordElement.classList.remove('word-hidden');
+        wordElement.classList.add('word-visible');
+        placeholderElement.style.display = 'none';
+        
+        if (emojiContainer) {
+            emojiContainer.classList.remove('emoji-hidden');
+            emojiContainer.classList.add('emoji-visible');
+        }
+        
+        button.innerHTML = '<span class="eye-icon">🙈</span> إخفاء';
+        
+        // CHANGED: Add impostor styling when revealed
+        if (isImpostor) {
+            cardElement.classList.add('impostor-display');
+            cardElement.classList.add('impostor-revealed');
+        }
+    } else {
+        wordElement.classList.remove('word-visible');
+        wordElement.classList.add('word-hidden');
+        placeholderElement.style.display = 'block';
+        
+        if (emojiContainer) {
+            emojiContainer.classList.remove('emoji-visible');
+            emojiContainer.classList.add('emoji-hidden');
+        }
+        
+        button.innerHTML = '<span class="eye-icon">👁️</span> إظهار الدور';
+        
+        // CHANGED: Remove impostor styling when hidden
+        if (isImpostor) {
+            cardElement.classList.remove('impostor-display');
+            cardElement.classList.remove('impostor-revealed');
+        }
+    }
+}
 function nextPlayer() {
     playClickSound();
     currentPlayerIndex++;
@@ -1818,7 +2043,7 @@ function startGamePhase() {
     const alert = document.getElementById('firstPlayerAlert');
     alert.innerHTML = `<span style="display: inline-block; background: #ffd700; color: #333; padding: 8px 20px; border-radius: 20px; font-size: 0.9em; margin-right: 10px; box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);">🎯 يبدأ</span> ${firstPlayer}`;
     alert.style.display = 'block';
-    const duration = parseFloat(document.getElementById('timerDuration').value) * 60; // Convert minutes to seconds
+    const duration = parseFloat(document.getElementById('timerDuration').value);
     if (duration > 0) {
         startTimer(duration);
     }
@@ -1924,11 +2149,16 @@ function resetGame() {
     impostors = [];
     currentWord = "";
     currentHint = "";
+    currentWordEmoji = "";
     currentPlayerIndex = 0;
     votes = {};
     firstPlayer = "";
     wordVisible = false;
     document.getElementById('voteResults').style.display = 'none';
+    document.getElementById('votingSection').style.display = 'none';
+    document.getElementById('firstPlayerAlert').style.display = 'none';
+    document.getElementById('timerDisplay').textContent = '';
+    document.getElementById('timerDisplay').classList.remove('warning');
     showScreen('offlineSetupScreen');
 }
 

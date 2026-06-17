@@ -90,6 +90,15 @@ body {
     }
 }
 
+@keyframes emojiFloat {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
 h1 {
     text-align: center;
     color: #667eea;
@@ -284,7 +293,7 @@ button.show-hide-btn {
     padding: 40px;
     background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
     border-radius: 15px;
-    height: 250px;
+    min-height: 350px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -296,7 +305,8 @@ button.show-hide-btn {
 .word-display h2 {
     font-size: 2.5em;
     color: #333;
-    margin: 0;
+    margin: 10px 0;
+    word-break: break-word;
 }
 
 .word-display .hint {
@@ -306,10 +316,7 @@ button.show-hide-btn {
 }
 
 .word-content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    position: relative;
     width: 100%;
     padding: 20px;
 }
@@ -329,10 +336,6 @@ button.show-hide-btn {
 .hidden-placeholder {
     font-size: 3em;
     color: #999;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
 }
 
 .impostor-display {
@@ -361,6 +364,41 @@ button.show-hide-btn {
 
 .impostor-revealed {
     animation: pulse 2s infinite;
+}
+
+.clue-text {
+    font-size: 1.3em;
+    color: #ffeded;
+    margin-top: 15px;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.emoji-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100px;
+}
+
+.emoji-display {
+    font-size: 8em;
+    text-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    animation: emojiFloat 2s ease-in-out infinite;
+}
+
+.impostor-emoji {
+    filter: drop-shadow(0 0 10px rgba(255, 107, 107, 0.5));
+}
+
+.emoji-hidden {
+    display: none;
+}
+
+.emoji-visible {
+    display: flex;
+    animation: fadeIn 0.5s ease-in;
 }
 
 .timer {
@@ -851,11 +889,16 @@ button.show-hide-btn {
     }
 
     .word-display {
-        height: 200px;
+        min-height: 300px;
+        padding: 30px 20px;
     }
 
     .word-display h2 {
         font-size: 1.8em;
+    }
+
+    .emoji-display {
+        font-size: 5em;
     }
 
     .timer {
@@ -897,6 +940,10 @@ button.show-hide-btn {
     }
 
     .button-group {
+        grid-template-columns: 1fr;
+    }
+
+    .settings-grid {
         grid-template-columns: 1fr;
     }
 }
